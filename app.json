@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "onehealthclient",
+    "slug": "onehealthclient",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.onehealth",
+            "config": {
+                "googleMapsApiKey": "AIzaSyA4Ao9L2APODj4cfxm8w_rpMvq_GsIEuJE"
+              },
+      "supportsTablet": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
