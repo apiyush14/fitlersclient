@@ -17,6 +17,9 @@
       "**/*"
     ],
     "ios": {
+      "infoPlist": {
+      "NSAppleMusicUsageDescription": "This app uses the camera to scan barcodes on event tickets."
+       },
       "bundleIdentifier": "com.onehealth",
             "config": {
                 "googleMapsApiKey": "AIzaSyA4Ao9L2APODj4cfxm8w_rpMvq_GsIEuJE"
