@@ -1,67 +1,45 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Button, Animated,ImageBackground } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Accelerometer } from 'expo-sensors';
+import {Swipeable} from 'react-native-gesture-handler';
+import RoundButton from '../components/RoundButton';
+import Slider from '../components/Slider';
 
 const TestScreen = props=>{
 
-const [data, setData] = useState({});
-
-  useEffect(() => {
-    return () => {
-      _toggle();
-    };
-  }, []);
-
-  const _toggle = () => {
-  	  _slow();
-      _subscribe();
-  };
-
-  const _slow = () => {
-    Accelerometer.setUpdateInterval(1000);
-  };
-
-  const _subscribe = () => {
-    Accelerometer.addListener(accelerometerData => {
-      console.log(accelerometerData);
-      setData(accelerometerData);
-    });
-  };
-
-  let { x, y, z } = data;
-
-	return (
-         <View style={styles.mapContainer}>
-         <Button title='Stop Run' 
-         onPress={()=>{props.navigation.navigate('RunTrackerHome')}}/>
-         <Text style={styles.timer}>
-        x: {x} y: {y} z: {z}
-      </Text>
+return (
+         <View style={styles.sliderContainer}>
+         <Slider
+         buttonTitle='Stop' 
+         bounceValue='220' 
+         image='https://c0.wallpaperflare.com/preview/929/411/615/athletic-field-ground-lane-lines.jpg'/>
          </View>
-		);
+    );
 };
 
 const styles = StyleSheet.create({
-	mapContainer: {
-        flex: 1,
-        flexDirection: 'row',
-	},
-	map: {
-		flex: 1
-	},
-	pace: {
-		position: 'absolute'
-	},
-	timer: {
-		position: 'absolute',
-		top: '15%'
-	},
-	timerTime: {
-		position: 'absolute',
-		top: '20%'
-	}
+  sliderContainer: {
+    top: '80%'
+  },
+   slider: {
+    marginRight: '70%',
+    alignSelf: 'center',
+    backgroundColor: 'black',
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    opacity: 0.7,
+    justifyContent: 'center'
+  },
+  bgImage: {
+  width: '100%',
+  height: '100%',
+  overflow: 'hidden',
+  borderRadius: 40,
+  justifyContent: 'flex-end'
+ }
 });
 
 export default TestScreen;

@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, FlatList, TouchableOpacity,ImageBackground} from 'react-native';
 
 const ChallengeItem=props=>{
- 	
 return(
  	<View style={styles.challengeItem}>
  	<TouchableOpacity onPress={()=>{}}>

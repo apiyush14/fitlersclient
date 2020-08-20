@@ -6,6 +6,27 @@ import MusicIntegrationScreen from './screens/MusicIntegrationScreen';
 import * as Font from 'expo-font';
 import {AppLoading} from 'expo';
 import RunTrackerNavigator from './navigation/RunTrackerNavigator';
+import runReducer from './store/run-reducer';
+import {init} from './utils/DBUtils';
+import ReduxThunk from 'redux-thunk';
+import {createStore, combineReducers, applyMiddleware} from 'redux';
+import {Provider} from 'react-redux';
+
+
+const rootReducer= combineReducers({
+runs: runReducer 
+});
+
+const store=createStore(rootReducer, applyMiddleware(ReduxThunk));
+
+init().then(()=>{
+  console.log('Initialized DB Success!!!');
+})
+.catch(err=>{
+  console.log('Initialized DB Failed!!!');
+  console.log(err);
+});
+
 
 const fetchFonts=()=>{
 return Font.loadAsync({
@@ -16,7 +37,7 @@ return Font.loadAsync({
 
 export default function App() {
   return (
-      <RunTrackerNavigator/>
+      <Provider store={store}><RunTrackerNavigator/></Provider>
   );
 }
 

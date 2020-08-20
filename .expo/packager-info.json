@@ -1,9 +1,9 @@
 {
+  "packagerPort": 19001,
+  "packagerPid": 14896,
   "devToolsPort": 19002,
   "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 4812,
   "expoServerNgrokUrl": "https://sx-g54.anonymous.onehealthclient.exp.direct",
   "packagerNgrokUrl": "https://packager.sx-g54.anonymous.onehealthclient.exp.direct",
-  "ngrokPid": 4468
+  "ngrokPid": 4480
 }

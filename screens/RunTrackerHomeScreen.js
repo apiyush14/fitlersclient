@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Button, Dimensions, FlatList,
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import ChallengeList from '../components/ChallengeList';
+import RoundButton from '../components/RoundButton';
 import {CHALLENGES} from '../data/dummy-data';
 
 const windowWidth = Dimensions.get('window').width;
@@ -42,6 +43,7 @@ useEffect(()=>{
      console.log("Permission Not granted");
 	}
 	let location = await Location.getCurrentPositionAsync({});
+  console.log(location);
 	setLocation(location);
 })();
 },[]);
@@ -70,8 +72,8 @@ if(location)
          <Marker coordinate={mapRegion}/>
          </MapView>
          <View style={styles.runButton}>
-         <Button
-          title="Start My Run"
+         <RoundButton
+          title="Run"
           onPress={()=>{props.navigation.navigate('LiveRunTracker')}}/>
         </View>
         <View style={styles.challengeList}>
@@ -79,7 +81,7 @@ if(location)
           </View>
            <Animated.View style={[styles.subView,{transform: [{translateY:bounceValue}]}]}>
             <Button title="Challenge" onPress={()=>{toggleSubView()}}/>
-            <View style={styles.challengeList}>
+            <View style={styles.tabListView}>
           <ChallengeList listData={CHALLENGES}/>
           </View>
           </Animated.View>
@@ -102,14 +104,16 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '75%',
         alignSelf: 'center',
-        borderRadius: 50,
-        backgroundColor: 'lightgrey',
         opacity: 0.7
 	},
 	challengeList: {
 		position: 'absolute',
-        top: '16%'
+    top: '2%'
 	},
+  tabListView: {
+    position: 'absolute',
+    top: '20%'
+  },
     subView: {
     position: "absolute",
     backgroundColor: "white",
