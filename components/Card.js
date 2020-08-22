@@ -1,6 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+/*
+Card component with shadow effects
+*/
 const Card=props=>{
 	return <View style={{...styles.card,...props.style}}>{props.children}</View>
 };

@@ -1,3 +1,7 @@
+/*
+Model Class for Run History Item
+*/
+
 class RunDetails{
 	constructor(id,track_image,date,day,lapsedTime,totalDistance){
      this.id=id;

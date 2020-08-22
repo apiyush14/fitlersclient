@@ -173,9 +173,16 @@ return (
          image='https://c0.wallpaperflare.com/preview/929/411/615/athletic-field-ground-lane-lines.jpg'/>
          </View>):(<View></View>)
          }
-         <Text style={styles.elapsedTime}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
-         <Text style={styles.totalDistanceText}>Total Distance</Text>
+         <View style={styles.timerContainer}>
+          <View style={styles.timerIcon}>
+          <Ionicons name="ios-stopwatch" size={24} color='white'/>
+          </View>
+          <Text style={styles.elapsedTimeText}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
+         </View>
+         <View style={styles.circleContainerForDistance}>
          <Text style={styles.totalDistance}>{parseFloat(totalDistance).toFixed(2)}</Text>
+         <Text style={styles.kmText}>KM</Text>
+         </View>
          </View>
 		);
 };
@@ -184,37 +191,68 @@ const styles = StyleSheet.create({
 	liveRunTrackerContainer: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: 'lightgreen'
+        backgroundColor: 'black'
 	},
 	pauseResumeRunButton: {
         position: 'absolute',
-        top: '65%',
+        top: '63%',
         alignSelf: 'center',
         opacity: 0.7,
-        width: 90,
-        height: 90,
-        borderRadius: 90/2,
+        width: 80,
+        height: 80,
+        borderRadius: 80/2,
+        borderColor: 'springgreen',
+        borderWidth: 2,
         justifyContent: 'center',
         backgroundColor: 'black',
-        alignItems: 'center'
+        alignItems: 'center',
+        shadowColor: 'springgreen',
+        shadowOffset: {width:1,height:2},
+        shadowOpacity:1,
+        shadowRadius:6
 	},
-	elapsedTime: {
-		position: 'absolute',
-        top: '15%',
+    timerContainer: {
+        position: 'absolute',
+        flexDirection: 'column',
+        alignSelf: 'center',
+        top: '7%'
+    },
+    timerIcon: {
+        alignSelf: 'center',
+    },
+	elapsedTimeText: {
         fontSize: 30,
         alignSelf: 'center',
+        color: 'white'
 	},
+    circleContainerForDistance: {
+        position: 'absolute',
+        top: '25%',
+        alignSelf: 'center',
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        borderWidth: 3,
+        borderColor: 'springgreen',
+        backgroundColor: 'black',
+        shadowColor: 'springgreen',
+        shadowOffset: {width:1,height:2},
+        shadowOpacity:1,
+        shadowRadius:6
+    },
 	totalDistance: {
 		position: 'absolute',
-        top: '50%',
+        top: '35%',
         fontSize: 50,
         alignSelf: 'center',
+        color: 'white'
 	},
-	totalDistanceText: {
+	kmText: {
 		position: 'absolute',
-        top: '40%',
+        top: '65%',
         fontSize: 40,
         alignSelf: 'center',
+        color: 'white'
 	},
     sliderContainer: {
         top: '80%'

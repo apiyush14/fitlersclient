@@ -1,7 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View,Button,FlatList,ScrollView} from 'react-native';
+import { StyleSheet, View,FlatList} from 'react-native';
 import RunHistoryItem from '../components/RunHistoryItem';
 
+/*
+List of Run History Cards
+*/
 const RunHistoryList=props=>{
 
 console.log(props.listData);

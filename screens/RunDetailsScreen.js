@@ -4,6 +4,8 @@ import MapView, {Marker, Polyline} from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useDispatch } from 'react-redux';
 import * as runActions from '../store/run-actions';
+import Card from '../components/Card';
+import { Ionicons } from '@expo/vector-icons';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -48,8 +50,14 @@ const [date, setDate]=useState(null);
 const [day, setDay]=useState(null);
 const [totalDistance,setTotalDistance]=useState(0);
 const [lapsedTime, setLapsedTime]=useState(0);
+const [trackTimer, setTrackTimer]=useState({
+  seconds: "00",
+  minutes: "00",
+  hours: "00"
+});
 
 useEffect(() => {
+
        if(props.navigation.state.params.path)
        {
         const pathArray=props.navigation.state.params.path;
@@ -69,6 +77,15 @@ useEffect(() => {
 
        if(props.navigation.state.params.lapsedTime)
        {
+         let secondsVar = ("0" + (Math.floor(props.navigation.state.params.lapsedTime / 1000) % 60)).slice(-2);
+         let minutesVar = ("0" + (Math.floor(props.navigation.state.params.lapsedTime / 60000) % 60)).slice(-2);
+         let hoursVar = ("0" + Math.floor(props.navigation.state.params.lapsedTime / 3600000)).slice(-2);
+         setTrackTimer(
+        {
+            seconds: secondsVar,
+            minutes: minutesVar,
+            hours: hoursVar
+        });
         setLapsedTime(props.navigation.state.params.lapsedTime);
        }
 
@@ -109,13 +126,61 @@ const savePlaceHandler = (uri,date,day,lapsedTime,totalDistance) => {
 
 return (
          <View style={styles.runDetailsContainer}>
-         <MapView style={styles.map} region={mapRegion} ref={map => {mapRef = map }}
+         <MapView style={styles.mapContainer} region={mapRegion} ref={map => {mapRef = map }}
          pitchEnabled={false} rotateEnabled={false} zoomEnabled={false} scrollEnabled={false}>
          <Polyline 
          strokeWidth={5}
          strokeColor='red'
          coordinates={path} />
          </MapView>
+         <View style={styles.runMetricsContainer}>
+        
+        <View style={styles.row1}>
+           <Card style={styles.totalDistanceCard}>
+            <View style={styles.walkIcon}>
+             <Ionicons name="ios-walk" size={30} color='springgreen'/>
+            </View>
+            <Text style={styles.totalDistanceText}>{parseFloat(totalDistance).toFixed(2)} KM</Text>
+           </Card>
+
+           <Card style={styles.totalTimeCard}>
+            <View style={styles.timerIcon}>
+             <Ionicons name="ios-stopwatch" size={20} color='springgreen'/>
+            </View>
+            <Text style={styles.totalTimeText}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
+            <Text style={styles.timeMetricsText}>HH:MM:SS</Text>
+           </Card>
+        </View>
+
+          <View style={styles.row2}>
+           <Card style={styles.calendarCard}>
+            <View style={styles.calendarIcon}>
+             <Ionicons name="ios-calendar" size={25} color='springgreen'/>
+            </View>
+            <Text style={styles.calendarText}>{date}</Text>
+            <Text style={styles.dayText}>{day}</Text>
+           </Card>
+
+            <Card style={styles.caloriesCard}>
+            <View style={styles.caloriesIcon}>
+             <Ionicons name="ios-flame" size={25} color='springgreen'/>
+            </View>
+            <Text style={styles.caloriesText}>235</Text>
+            <Text style={styles.caloriesStaticText}>Calories</Text>
+           </Card>
+
+
+            <Card style={styles.paceCard}>
+            <View style={styles.paceIcon}>
+             <Ionicons name="ios-speedometer" size={25} color='springgreen'/>
+            </View>
+            <Text style={styles.averagePaceText}>5.45</Text>
+            <Text style={styles.paceStaticText}>Pace</Text>
+           </Card>
+
+          </View>
+
+         </View>
          </View>
 		);
 };
@@ -126,10 +191,144 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgrey',
         flexDirection: 'column',
     },
-    map: {
-        height: windowHeight/1.2,
-        width: windowWidth,
+    mapContainer: {
+        position: 'absolute',
+        height: '40%',
+        width: '100%',
         borderRadius: 20
+    },
+    runMetricsContainer: {
+      top: '40%',
+      position: 'absolute',
+      height: '60%',
+      width: '100%',
+      flexDirection: 'column'
+    },
+    row1: {
+      height: '30%',
+      flexDirection: 'row'
+    },
+    totalDistanceCard: {
+      marginVertical: '2%',
+      marginHorizontal: '2%',
+      backgroundColor: 'black',
+      width: '60%',
+      height: windowHeight/6
+    },
+    walkIcon: {
+      alignSelf: 'center'
+    },
+    totalDistanceText: {
+        position: 'absolute',
+        top: '35%',
+        fontSize: 50,
+        alignSelf: 'center',
+        color: 'springgreen'
+    },
+    totalTimeCard: {
+      marginVertical: '2%',
+      backgroundColor: 'black',
+      width: '33%',
+      height: windowHeight/6
+    },
+    timerIcon: {
+      alignSelf: 'center'
+    },
+    totalTimeText: {
+        position: 'absolute',
+        top: '45%',
+        fontSize: 20,
+        alignSelf: 'center',
+        color: 'springgreen'
+    },
+    timeMetricsText: {
+        position: 'absolute',
+        top: '70%',
+        fontSize: 10,
+        alignSelf: 'center',
+        color: 'springgreen'
+    },
+
+    row2: {
+      marginVertical: '5%',
+      height: '30%',
+      flexDirection: 'row'
+    },
+    calendarCard: {
+      marginVertical: '2%',
+      marginHorizontal: '2%',
+      backgroundColor: 'black',
+      width: '33%',
+      height: windowHeight/6
+    },
+    calendarIcon: {
+      alignSelf: 'center'
+    },
+    calendarText: {
+        marginVertical: '5%',
+        position: 'absolute',
+        top: '35%',
+        fontSize: 20,
+        alignSelf: 'center',
+        color: 'springgreen'
+    },
+    dayText: {
+        position: 'absolute',
+        top: '70%',
+        fontSize: 20,
+        alignSelf: 'center',
+        color: 'springgreen'
+    },
+
+    caloriesCard: {
+      marginVertical: '2%',
+      backgroundColor: 'black',
+      width: '27%',
+      height: windowHeight/6
+    },
+    caloriesIcon: {
+      alignSelf: 'center'
+    },
+    caloriesText: {
+        marginVertical: '5%',
+        position: 'absolute',
+        top: '35%',
+        fontSize: 20,
+        alignSelf: 'center',
+        color: 'springgreen'
+    },
+    caloriesStaticText: {
+        position: 'absolute',
+        top: '70%',
+        fontSize: 20,
+        alignSelf: 'center',
+        color: 'springgreen'
+    },
+
+    paceCard: {
+      marginVertical: '2%',
+      marginHorizontal: '2%',
+      backgroundColor: 'black',
+      width: '31%',
+      height: windowHeight/6
+    },
+    paceIcon: {
+      alignSelf: 'center'
+    },
+    averagePaceText: {
+        marginVertical: '5%',
+        position: 'absolute',
+        top: '35%',
+        fontSize: 20,
+        alignSelf: 'center',
+        color: 'springgreen'
+    },
+    paceStaticText: {
+        position: 'absolute',
+        top: '70%',
+        fontSize: 20,
+        alignSelf: 'center',
+        color: 'springgreen'
     }
 });
 

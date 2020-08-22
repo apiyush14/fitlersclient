@@ -1,3 +1,7 @@
+/*
+Model class for Challenge Item
+*/
+
 class Challenge{
 	constructor(id,title,imageUrl){
      this.id=id;

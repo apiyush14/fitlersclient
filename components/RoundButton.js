@@ -1,9 +1,13 @@
 import React from 'react';
 import { StyleSheet,View,Button} from 'react-native';
 
+/*
+Round Shaped Button
+*/
+
 const RoundButton=props=>{
 	return (<View style={{...styles.button,...props.style}}>
-            <Button title={props.title} onPress={props.onPress}>
+            <Button title={props.title} onPress={props.onPress} color='white'>
            </Button>
          </View>
 );

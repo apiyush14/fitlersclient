@@ -1,6 +1,11 @@
-import React,{ useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, TouchableOpacity,ImageBackground,Dimensions} from 'react-native';
+import React,{ useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity,ImageBackground,Dimensions} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+
+/*
+Run History Card Item with shadow effects
+*/
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -26,7 +31,7 @@ useEffect(() => {
      },[]);
 
 return(
- 	<View style={styles.runHistoryItem}>
+ 	<View style={styles.runHistoryItemContainer}>
  	<TouchableOpacity onPress={()=>{}}>
  	<View style={styles.trackImage}>
  	<ImageBackground
@@ -56,7 +61,7 @@ return(
 
 
 const styles = StyleSheet.create({
- runHistoryItem: {
+ runHistoryItemContainer: {
  	height: windowHeight/6,
  	width: windowWidth/1.1,
  	backgroundColor: 'white',
@@ -65,9 +70,9 @@ const styles = StyleSheet.create({
  	marginBottom: 15,
  	opacity: 0.7,
  	shadowOffset: { width: 4, height: 4 },  
-    shadowColor: 'black',  
-    shadowOpacity: 0.7,
-    shadowRadius: 2
+  shadowColor: 'black',  
+  shadowOpacity: 0.7,
+  shadowRadius: 2
  },
  trackImage: {
     width: '30%',
@@ -87,7 +92,7 @@ const styles = StyleSheet.create({
  },
  calendar: {
     width: '30%',
- 	height: '100%',
+ 	  height: '100%',
     borderRadius: 10,
     backgroundColor: 'white',
     position: "absolute",

@@ -1,8 +1,12 @@
 import React, {useState} from 'react';
-import { View, StyleSheet, Button, Animated,ImageBackground,Text } from 'react-native';
+import { View, StyleSheet, Animated,ImageBackground,Text } from 'react-native';
 import {Swipeable} from 'react-native-gesture-handler';
 import RoundButton from '../components/RoundButton';
 
+
+/*
+Swipeable slider button
+*/
 //https://c0.wallpaperflare.com/preview/929/411/615/athletic-field-ground-lane-lines.jpg
 
 /*
@@ -76,6 +80,8 @@ const styles = StyleSheet.create({
      width: 70,
      height: 70,
      borderRadius: 70/2,
+     borderColor: 'springgreen',
+     borderWidth: 2,
      backgroundColor: 'black',
      opacity: 0.9
   }

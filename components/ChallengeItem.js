@@ -1,5 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, FlatList, TouchableOpacity,ImageBackground} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity,ImageBackground, Dimensions} from 'react-native';
+
+/*
+Challenge Card with shadow effects
+*/
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const ChallengeItem=props=>{
 return(
@@ -31,8 +38,8 @@ const styles = StyleSheet.create({
  	flexDirection: 'row',
  },
  challengeItem: {
- 	height: 100,
- 	width: 200,
+ 	height: windowHeight/6,
+ 	width: windowWidth/2,
  	backgroundColor: 'white',
  	borderRadius: 10,
  	marginHorizontal: 10,

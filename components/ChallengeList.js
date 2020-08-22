@@ -1,6 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View,Button,FlatList,ScrollView} from 'react-native';
+import { StyleSheet, Text, View,FlatList} from 'react-native';
 import ChallengeItem from '../components/ChallengeItem';
+
+/*
+List Of Challenge Cards
+*/
 
 const ChallengeList=props=>{
 
@@ -10,7 +14,6 @@ const renderChallengeItem=itemData=>{
  title={itemData.item.title}
  onSelectChallenge={()=>{}}/>;
 };
-
 
 return(
 <View>
