@@ -50,6 +50,7 @@ const [date, setDate]=useState(null);
 const [day, setDay]=useState(null);
 const [totalDistance,setTotalDistance]=useState(0);
 const [lapsedTime, setLapsedTime]=useState(0);
+const [averagePace, setAveragePace]=useState(0.00);
 const [trackTimer, setTrackTimer]=useState({
   seconds: "00",
   minutes: "00",
@@ -98,6 +99,11 @@ useEffect(() => {
        {
         setDay(props.navigation.state.params.day);
        }
+
+       if(props.navigation.state.params.averagePace)
+       {
+        setAveragePace(props.navigation.state.params.averagePace);
+       }
     }, []);
 
 useEffect(() => {
@@ -116,12 +122,12 @@ const snapshot = mapRef.takeSnapshot({
   });
   snapshot.then((uri) => {
     setMapState(uri);
-    savePlaceHandler(uri,date,day,lapsedTime,totalDistance);
+    savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace);
   });
 };
 
-const savePlaceHandler = (uri,date,day,lapsedTime,totalDistance) => {
-    dispatch(runActions.addRun(uri,date,day,lapsedTime,totalDistance));
+const savePlaceHandler = (uri,date,day,lapsedTime,totalDistance,averagePace) => {
+    dispatch(runActions.addRun(uri,date,day,lapsedTime,totalDistance,averagePace));
   };
 
 return (
@@ -174,7 +180,7 @@ return (
             <View style={styles.paceIcon}>
              <Ionicons name="ios-speedometer" size={25} color='springgreen'/>
             </View>
-            <Text style={styles.averagePaceText}>5.45</Text>
+            <Text style={styles.averagePaceText}>{parseFloat(averagePace).toFixed(2)}</Text>
             <Text style={styles.paceStaticText}>Pace</Text>
            </Card>
 

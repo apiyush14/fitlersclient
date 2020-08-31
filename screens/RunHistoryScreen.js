@@ -1,31 +1,101 @@
 import React, { useState, useEffect} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button, Dimensions} from 'react-native';
+import { View, Text, StyleSheet,Animated, TouchableOpacity, Button, Dimensions} from 'react-native';
 import RunHistoryList from '../components/RunHistoryList';
 import { useSelector, useDispatch } from 'react-redux';
+import { Ionicons } from '@expo/vector-icons';
+
 import * as runActions from '../store/run-actions';
+
+import DashboardItem from '../components/DashboardItem';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const RunHistoryScreen = props=>{
+
+/*const unsubscribe = props.navigation.addListener('didFocus', () => {
+    toggleCircle();
+});*/
+
 const runsHistory = useSelector(state => state.runs.runs);
+const runSummary=useSelector(state => state.runs.runSummary);
 const dispatch=useDispatch();
 
 useEffect(()=>{
     dispatch(runActions.loadRuns());
+    dispatch(runActions.loadRunSummary());
   }, [dispatch]);
 
 
+/*var isSliderPositionLeft = true;
+const [bounceValue, setBounceValue] = useState(new Animated.Value(0));*/
+
+/*const toggleCircle=()=>{
+      var toValue = props.bounceValue;
+      if(isSliderPositionLeft) {
+      toValue = 45;
+    }
+Animated.timing(
+      bounceValue,
+      {
+        toValue: toValue,
+        duration: 2000,
+        useNativeDriver: true
+      }
+    ).start();
+isSliderPositionLeft = !isSliderPositionLeft;
+};*/
+
+const renderRunSummaryHeader=()=>{
+  console.log("Render method called");
+  console.log(runSummary);
+  if(runSummary){
+ return (
+          <View style={styles.runsHistoryDetailsPanel}>
+          <DashboardItem
+          text={parseFloat(runSummary.totalDistance).toFixed(2)+" KM"}
+          footerText="Total Distance"
+          style={styles.totalDistanceDashboardItem} 
+          icon="ios-walk"/>
+          <DashboardItem 
+          text={parseFloat(runSummary.averageDistance).toFixed(2)+" KM"}
+          footerText="Average Distance"
+          style={styles.averageDistanceDashboardItem} 
+          icon="ios-stats"/>
+          <DashboardItem 
+          text={runSummary.averagePace}
+          footerText="Average Pace"
+          style={styles.averagePaceDashboardItem} 
+          icon="ios-stopwatch"/>
+
+          <View style={styles.footerContainer}>
+           <View style={styles.footer1}>
+             <View style={styles.footer1ValueContainer}> 
+              <Ionicons name="ios-ribbon" size={30} color='springgreen'/>
+              <Text style={styles.footer1Value}> {runSummary.totalRuns}</Text>
+             </View>
+            <Text style={styles.footer1Text}>Total Runs</Text>
+           </View>
+           <View style={styles.footer2}>
+              <View style={styles.footer2ValueContainer}>
+               <Ionicons name="ios-flame" size={30} color='springgreen'/>
+               <Text style={styles.footer2Value}> 390</Text> 
+             </View>
+             <Text style={styles.footer2Text}>Calories</Text>
+           </View>
+          </View>
+         </View>
+         );
+       }
+       return <View></View>
+     };
+
 return (
          <View style={styles.runHistoryContainer}>
-         <View style={styles.runsHistoryDetailsPanel}>
-         <Text>Total Distance</Text>
-         <Text>Total Runs</Text>
-         <Text>Average Distance</Text>
-         <Text>Average Pace</Text>
-         </View>
          <View style={styles.runsScrollPanel}>
-         <RunHistoryList listData={runsHistory}/>
+         <RunHistoryList
+         header={renderRunSummaryHeader()}
+         listData={runsHistory}/>
          </View>
          </View>
 		);
@@ -35,14 +105,76 @@ const styles = StyleSheet.create({
     runHistoryContainer: {
         flex: 1,
         backgroundColor: 'lightgrey',
-        flexDirection: 'column',
+        flexDirection: 'column'
     },
     runsHistoryDetailsPanel: {
-        height: '25%'
+        paddingVertical: '20%',
+        backgroundColor: '#303030'
     },
     runsScrollPanel: {
         flex:1
+    },
+    totalDistanceDashboardItem: {
+       alignSelf: 'center',
+       top: '25%'
+    },
+    averagePaceDashboardItem: {
+        position: 'absolute',
+        top: '10%',
+        alignSelf: 'flex-start'
+    },
+    averageDistanceDashboardItem: {
+        position: 'absolute',
+        top: '10%',
+        alignSelf: 'flex-end'
+    },
+    footerContainer: {
+        flex: 1,
+        top: '20%',
+        height: 70,
+        borderColor: 'grey',
+        borderWidth: 1,
+        flexDirection: 'row'
+    },
+    footer1ValueContainer: {
+        flexDirection: 'row',
+        alignSelf: 'center'
+    },
+    footer2ValueContainer: {
+        flexDirection: 'row',
+        alignSelf: 'center'
+    },
+    footer1: {
+        flex: 1,
+        width: '50%',
+        borderRightWidth: 1,
+        borderColor: 'grey'
+    },
+    footer2: {
+        flex: 1,
+        width: '50%',
+    },
+    footer1Text: {
+      color: 'springgreen',
+      fontSize: 15,
+      alignSelf: 'center'
+    },
+    footer2Text: {
+      color: 'springgreen',
+      fontSize: 15,
+      alignSelf: 'center'
+    },
+    footer1Value: {
+       color: 'springgreen',
+       fontSize: 25,
+       alignSelf: 'center'
+    },
+    footer2Value: {
+       color: 'springgreen',
+       fontSize: 25,
+       alignSelf: 'center'
     }
+
 });
 
 export default RunHistoryScreen;

@@ -6,13 +6,23 @@ import ChallengeList from '../components/ChallengeList';
 import RoundButton from '../components/RoundButton';
 import {CHALLENGES} from '../data/dummy-data';
 
+import { useSelector, useDispatch } from 'react-redux';
+
+import * as runActions from '../store/run-actions';
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const RunTrackerHomeScreen = props=>{
 
-const [location, setLocation] = useState(null);
+const dispatch=useDispatch();
 
+useEffect(()=>{
+    dispatch(runActions.loadRuns());
+    dispatch(runActions.loadRunSummary());
+  }, [dispatch]);
+
+const [location, setLocation] = useState(null);
 
 var isHidden = true;
 const [bounceValue, setBounceValue] = useState(new Animated.Value(360));

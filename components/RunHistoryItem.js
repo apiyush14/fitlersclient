@@ -46,13 +46,28 @@ return(
  	 <Text style={styles.dateText}>{props.date}</Text>
  	</View>
  	<View style={styles.runDetails}>
- 	 <Text style={styles.distanceText}>Distance {parseFloat(props.totalDistance).toFixed(2)} KM</Text>
- 	 <View style={styles.lapsedTimeView}>
+ 	 
+   <View style={styles.distanceView}>
+ 	 <View style={styles.walkIcon}>
+   <Ionicons name="ios-walk" size={24} color='grey'/>
+   </View>
+   <Text style={styles.distanceText}>{parseFloat(props.totalDistance).toFixed(2)} KM</Text>
+   </View>
+
+   <View style={styles.lapsedTimeView}>
  	 <View style={styles.timerIcon}>
  	 <Ionicons name="ios-stopwatch" size={24} color='grey'/>
  	 </View>
  	 <Text style={styles.lapsedTimeText}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
  	 </View>
+
+   <View style={styles.paceView}>
+   <View style={styles.paceIcon}>
+   <Ionicons name="ios-speedometer" size={24} color='grey'/>
+   </View>
+   <Text style={styles.paceText}>{parseFloat(props.averagePace).toFixed(2)}</Text>
+   </View>
+
  	</View>
  	</TouchableOpacity>
  	</View>
@@ -107,30 +122,57 @@ const styles = StyleSheet.create({
  dateText: {
  	fontSize: 20,
  	alignSelf: 'center',
- 	marginVertical: '15%'
+ 	marginVertical: '15%',
+  color: 'black'
  },
  dayText: {
  	fontSize: 18,
  	marginVertical: '5%',
- 	alignSelf: 'center'
+ 	alignSelf: 'center',
+  color: 'black'
  },
  lapsedTimeView: {
    flex: 1,
-   flexDirection: 'row'
+   flexDirection: 'row',
  },
   distanceText: {
-  	marginVertical: '5%',
-  	marginHorizontal: '5%',
- 	fontSize: 15
+    marginVertical: '7%',
+  	marginHorizontal: '7%',
+ 	  fontSize: 15,
+    color: 'black'
  },
  timerIcon: {
+   marginHorizontal: '5%',
+   marginVertical: '5%'
+ },
+ distanceView: {
+   flex: 1,
+   flexDirection: 'row'
+ },
+ walkIcon: {
    marginHorizontal: '5%',
    marginVertical: '5%'
  },
  lapsedTimeText: {
  	fontSize: 17,
  	marginVertical: '7%',
- 	marginHorizontal: '5%'
+ 	marginHorizontal: '5%',
+  color: 'black'
+ },
+
+ paceView: {
+   flex: 1,
+   flexDirection: 'row'
+ },
+ paceIcon: {
+   marginHorizontal: '5%',
+   marginVertical: '5%'
+ },
+ paceText: {
+  fontSize: 17,
+  marginVertical: '7%',
+  marginHorizontal: '5%',
+  color: 'black'
  }
 });
 
