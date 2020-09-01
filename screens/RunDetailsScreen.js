@@ -50,6 +50,7 @@ const [date, setDate]=useState(null);
 const [day, setDay]=useState(null);
 const [totalDistance,setTotalDistance]=useState(0);
 const [lapsedTime, setLapsedTime]=useState(0);
+const [caloriesBurnt,setCaloriesBurnt]=useState(0);
 const [averagePace, setAveragePace]=useState(0.00);
 const [trackTimer, setTrackTimer]=useState({
   seconds: "00",
@@ -104,6 +105,11 @@ useEffect(() => {
        {
         setAveragePace(props.navigation.state.params.averagePace);
        }
+
+       if(props.navigation.state.params.caloriesBurnt)
+       {
+        setCaloriesBurnt(props.navigation.state.params.caloriesBurnt);
+       }
     }, []);
 
 useEffect(() => {
@@ -122,12 +128,12 @@ const snapshot = mapRef.takeSnapshot({
   });
   snapshot.then((uri) => {
     setMapState(uri);
-    savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace);
+    savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt);
   });
 };
 
-const savePlaceHandler = (uri,date,day,lapsedTime,totalDistance,averagePace) => {
-    dispatch(runActions.addRun(uri,date,day,lapsedTime,totalDistance,averagePace));
+const savePlaceHandler = (uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt) => {
+    dispatch(runActions.addRun(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt));
   };
 
 return (
@@ -171,7 +177,7 @@ return (
             <View style={styles.caloriesIcon}>
              <Ionicons name="ios-flame" size={25} color='springgreen'/>
             </View>
-            <Text style={styles.caloriesText}>235</Text>
+            <Text style={styles.caloriesText}>{caloriesBurnt}</Text>
             <Text style={styles.caloriesStaticText}>Calories</Text>
            </Card>
 

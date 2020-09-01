@@ -15,6 +15,7 @@ const renderRunHistoryItem=itemData=>{
  lapsedTime={itemData.item.lapsedTime}
  totalDistance={itemData.item.totalDistance}
  averagePace={itemData.item.averagePace}
+ caloriesBurnt={itemData.item.caloriesBurnt}
  onSelectRunItem={()=>{}}/>;
 };
 

@@ -31,6 +31,7 @@ weekday[6] = "Saturday";
 
 const [totalDistance,setTotalDistance]=useState(0);
 const [averagePace,setAveragePace]=useState(0.00);
+const [caloriesBurnt,setCaloriesBurnt]=useState(0);
 
 const haversine = require('haversine');
 
@@ -58,9 +59,15 @@ useEffect(() => {
 
 useEffect(() => {
         if(totalDistance>0){
+
+        //Update average pace
         const lapsedTimeinHours=lapsedTime / 3600000;
         const averagePace=(totalDistance/1000)/lapsedTimeinHours;
         setAveragePace(averagePace);
+        
+        //Update Total Calories Burnt
+        const caloriesBurnt=parseInt(65+(16/averagePace));
+        setCaloriesBurnt(caloriesBurnt);
         }
     }, [totalDistance]);
 
@@ -133,13 +140,15 @@ const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
 const stopRun=()=>{
 //Accelerometer.removeAllListeners();
+
 props.navigation.navigate('RunDetailsScreen', {
     path:pathArray,
     date:date,
     day:day,
     lapsedTime:lapsedTime,
     totalDistance:totalDistance,
-    averagePace:averagePace
+    averagePace:averagePace,
+    caloriesBurnt: caloriesBurnt
     });
 };
 

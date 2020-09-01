@@ -10,7 +10,7 @@ const initialState={
 export default (state=initialState, action)=>{
 	switch(action.type) {
 		case ADD_RUN:
-        const newRun=new RunDetails(action.run.id, action.run.track_image,action.run.date,action.run.day,action.run.lapsedTime,action.run.totalDistance, action.run.averagePace);
+        const newRun=new RunDetails(action.run.id, action.run.track_image,action.run.date,action.run.day,action.run.lapsedTime,action.run.totalDistance, action.run.averagePace, action.run.caloriesBurnt);
         
         return{...state, 
             runs: state.runs.concat(newRun)
@@ -18,7 +18,7 @@ export default (state=initialState, action)=>{
 
         case LOAD_RUNS:
         return {...state, 
-            runs: action.runs[0].map(run=>new RunDetails(run.id.toString(), run.TRACK_IMAGE.toString(),run.RUN_DATE.toString(),run.RUN_DAY.toString(),run.LAPSED_TIME.toString(),run.TOTAL_DISTANCE.toString(),run.AVERAGE_PACE))
+            runs: action.runs[0].map(run=>new RunDetails(run.id.toString(), run.TRACK_IMAGE.toString(),run.RUN_DATE.toString(),run.RUN_DAY.toString(),run.LAPSED_TIME.toString(),run.TOTAL_DISTANCE.toString(),run.AVERAGE_PACE, run.CALORIES_BURNT))
         };
 
         case UPDATE_SUMMARY:

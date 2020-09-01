@@ -47,23 +47,20 @@ isSliderPositionLeft = !isSliderPositionLeft;
 };*/
 
 const renderRunSummaryHeader=()=>{
-  console.log("Render method called");
-  console.log(runSummary);
-  if(runSummary){
  return (
           <View style={styles.runsHistoryDetailsPanel}>
           <DashboardItem
-          text={parseFloat(runSummary.totalDistance).toFixed(2)+" KM"}
+          text={runSummary!=null?parseFloat(runSummary.totalDistance).toFixed(2)+" KM":0+" KM"}
           footerText="Total Distance"
           style={styles.totalDistanceDashboardItem} 
           icon="ios-walk"/>
           <DashboardItem 
-          text={parseFloat(runSummary.averageDistance).toFixed(2)+" KM"}
+          text={runSummary!=null?parseFloat(runSummary.averageDistance).toFixed(2)+" KM":0+" KM"}
           footerText="Average Distance"
           style={styles.averageDistanceDashboardItem} 
           icon="ios-stats"/>
           <DashboardItem 
-          text={runSummary.averagePace}
+          text={runSummary!=null?parseFloat(runSummary.averagePace).toFixed(2):0.00}
           footerText="Average Pace"
           style={styles.averagePaceDashboardItem} 
           icon="ios-stopwatch"/>
@@ -72,22 +69,20 @@ const renderRunSummaryHeader=()=>{
            <View style={styles.footer1}>
              <View style={styles.footer1ValueContainer}> 
               <Ionicons name="ios-ribbon" size={30} color='springgreen'/>
-              <Text style={styles.footer1Value}> {runSummary.totalRuns}</Text>
+              <Text style={styles.footer1Value}> {runSummary!=null?parseInt(runSummary.totalRuns):0}</Text>
              </View>
             <Text style={styles.footer1Text}>Total Runs</Text>
            </View>
            <View style={styles.footer2}>
               <View style={styles.footer2ValueContainer}>
                <Ionicons name="ios-flame" size={30} color='springgreen'/>
-               <Text style={styles.footer2Value}> 390</Text> 
+               <Text style={styles.footer2Value}> 0</Text> 
              </View>
              <Text style={styles.footer2Text}>Calories</Text>
            </View>
           </View>
          </View>
          );
-       }
-       return <View></View>
      };
 
 return (
