@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button, Dimensions} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Button, Dimensions, ImageBackground} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useDispatch } from 'react-redux';
@@ -52,6 +52,7 @@ const [totalDistance,setTotalDistance]=useState(0);
 const [lapsedTime, setLapsedTime]=useState(0);
 const [caloriesBurnt,setCaloriesBurnt]=useState(0);
 const [averagePace, setAveragePace]=useState(0.00);
+const [trackImage, setTrackImage]=useState(null);
 const [trackTimer, setTrackTimer]=useState({
   seconds: "00",
   minutes: "00",
@@ -59,11 +60,15 @@ const [trackTimer, setTrackTimer]=useState({
 });
 
 useEffect(() => {
-
-       if(props.navigation.state.params.path)
+       if(props.route.params.track_image)
        {
-        const pathArray=props.navigation.state.params.path;
-        setPath(props.navigation.state.params.path);
+        setTrackImage(props.route.params.track_image);
+       }
+
+       if(props.route.params.path)
+       {
+        const pathArray=props.route.params.path;
+        setPath(props.route.params.path);
         setMapRegion({
         latitude: pathArray[Math.floor(pathArray.length/2)].latitude,
         longitude: pathArray[Math.floor(pathArray.length/2)].longitude,
@@ -72,43 +77,43 @@ useEffect(() => {
          });
        }
 
-       if(props.navigation.state.params.date)
+       if(props.route.params.date)
        {
-        setDate(props.navigation.state.params.date);
+        setDate(props.route.params.date);
        }
 
-       if(props.navigation.state.params.lapsedTime)
+       if(props.route.params.lapsedTime)
        {
-         let secondsVar = ("0" + (Math.floor(props.navigation.state.params.lapsedTime / 1000) % 60)).slice(-2);
-         let minutesVar = ("0" + (Math.floor(props.navigation.state.params.lapsedTime / 60000) % 60)).slice(-2);
-         let hoursVar = ("0" + Math.floor(props.navigation.state.params.lapsedTime / 3600000)).slice(-2);
+         let secondsVar = ("0" + (Math.floor(props.route.params.lapsedTime / 1000) % 60)).slice(-2);
+         let minutesVar = ("0" + (Math.floor(props.route.params.lapsedTime / 60000) % 60)).slice(-2);
+         let hoursVar = ("0" + Math.floor(props.route.params.lapsedTime / 3600000)).slice(-2);
          setTrackTimer(
         {
             seconds: secondsVar,
             minutes: minutesVar,
             hours: hoursVar
         });
-        setLapsedTime(props.navigation.state.params.lapsedTime);
+        setLapsedTime(props.route.params.lapsedTime);
        }
 
-       if(props.navigation.state.params.totalDistance)
+       if(props.route.params.totalDistance)
        {
-        setTotalDistance(props.navigation.state.params.totalDistance);
+        setTotalDistance(props.route.params.totalDistance);
        }
 
-       if(props.navigation.state.params.day)
+       if(props.route.params.day)
        {
-        setDay(props.navigation.state.params.day);
+        setDay(props.route.params.day);
        }
 
-       if(props.navigation.state.params.averagePace)
+       if(props.route.params.averagePace)
        {
-        setAveragePace(props.navigation.state.params.averagePace);
+        setAveragePace(props.route.params.averagePace);
        }
 
-       if(props.navigation.state.params.caloriesBurnt)
+       if(props.route.params.caloriesBurnt)
        {
-        setCaloriesBurnt(props.navigation.state.params.caloriesBurnt);
+        setCaloriesBurnt(props.route.params.caloriesBurnt);
        }
     }, []);
 
@@ -138,21 +143,29 @@ const savePlaceHandler = (uri,date,day,lapsedTime,totalDistance,averagePace,calo
 
 return (
          <View style={styles.runDetailsContainer}>
-         <MapView style={styles.mapContainer} region={mapRegion} ref={map => {mapRef = map }}
+         {trackImage==null?
+         (<MapView style={styles.mapContainer} region={mapRegion} ref={map => {mapRef = map }}
          pitchEnabled={false} rotateEnabled={false} zoomEnabled={false} scrollEnabled={false}>
          <Polyline 
          strokeWidth={5}
          strokeColor='red'
          coordinates={path} />
-         </MapView>
-         <View style={styles.runMetricsContainer}>
-        
+         </MapView>):
+         (
+           <View style={styles.mapContainer}>
+           <ImageBackground
+           source={{uri:trackImage}} 
+           style={styles.trackImage}>
+          </ImageBackground>
+          </View>)}
+         
+      <View style={styles.runMetricsContainer}>
         <View style={styles.row1}>
            <Card style={styles.totalDistanceCard}>
             <View style={styles.walkIcon}>
              <Ionicons name="ios-walk" size={30} color='springgreen'/>
             </View>
-            <Text style={styles.totalDistanceText}>{parseFloat(totalDistance).toFixed(2)} KM</Text>
+            <Text style={styles.totalDistanceText}>{parseFloat(totalDistance/1000).toFixed(2)} KM</Text>
            </Card>
 
            <Card style={styles.totalTimeCard}>
@@ -191,8 +204,24 @@ return (
            </Card>
 
           </View>
-
          </View>
+            <View style={styles.footerTabContainer}>
+            <View style={styles.footerHome}>
+            <TouchableOpacity onPress={()=>{
+              props.navigation.navigate('Home');
+            }}>
+             <Ionicons name="ios-home" size={25} color='gray'/>
+            </TouchableOpacity>
+            </View>
+
+            <View style={styles.footerRunHistory}>
+             <TouchableOpacity onPress={()=>{
+              props.navigation.navigate('History');
+             }}>
+             <Ionicons name="ios-stats" size={25} color='gray'/>
+             </TouchableOpacity>
+            </View>
+            </View>
          </View>
 		);
 };
@@ -208,6 +237,9 @@ const styles = StyleSheet.create({
         height: '40%',
         width: '100%',
         borderRadius: 20
+    },
+    trackImage: {
+      flex: 1,
     },
     runMetricsContainer: {
       top: '40%',
@@ -341,6 +373,25 @@ const styles = StyleSheet.create({
         fontSize: 20,
         alignSelf: 'center',
         color: 'springgreen'
+    },
+
+    footerTabContainer: {
+      backgroundColor: 'white',
+      position: 'absolute',
+      width: '100%',
+      height: 50,
+      bottom: 2,
+      flexDirection: 'row'
+    },
+    footerHome: {
+      width: '50%',
+      alignSelf: 'center',
+      alignItems: 'center'
+    },
+    footerRunHistory: {
+      width: '50%',
+      alignSelf: 'center',
+      alignItems: 'center'
     }
 });
 

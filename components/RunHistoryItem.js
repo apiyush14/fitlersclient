@@ -32,7 +32,7 @@ useEffect(() => {
 
 return(
  	<View style={styles.runHistoryItemContainer}>
- 	<TouchableOpacity onPress={()=>{}}>
+ 	<TouchableOpacity onPress={props.onSelectRunItem}>
  	<View style={styles.trackImage}>
  	<ImageBackground
  	source={{uri:props.image}} 
@@ -51,7 +51,7 @@ return(
  	 <View style={styles.walkIcon}>
    <Ionicons name="ios-walk" size={24} color='grey'/>
    </View>
-   <Text style={styles.distanceText}>{parseFloat(props.totalDistance).toFixed(2)} KM</Text>
+   <Text style={styles.distanceText}>{parseFloat(props.totalDistance/1000).toFixed(2)} KM</Text>
    </View>
 
    <View style={styles.lapsedTimeView}>

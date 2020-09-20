@@ -49,6 +49,7 @@ const sliderAction=()=>{
          <ImageBackground 
           source={{uri:props.image}} 
            style={{...styles.bgImage,...props.bgImageStyle}}>
+           <Text style={styles.sliderText}>Slide to Complete Run</Text>
            <Animated.View style={[{transform: [{translateX:bounceValue}]}]}>
            <Swipeable renderRightActions={toggleSlider} onSwipeableClose={sliderAction}>
            <RoundButton style={styles.sliderButton} title={props.buttonTitle}>
@@ -74,9 +75,19 @@ const styles = StyleSheet.create({
    height: '100%',
    overflow: 'hidden',
    borderRadius: 40,
-   justifyContent: 'flex-end'
+   justifyContent: 'flex-end',
+   backgroundColor: 'white',
+   opacity: 0.7
+ },
+ sliderText: {
+   position: 'absolute',
+   marginLeft: 80,
+   bottom: '30%',
+   color: 'black',
+   fontSize: 18
  },
   sliderButton: {
+     marginLeft: 3,
      width: 70,
      height: 70,
      borderRadius: 70/2,

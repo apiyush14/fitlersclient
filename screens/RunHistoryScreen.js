@@ -21,11 +21,11 @@ const runsHistory = useSelector(state => state.runs.runs);
 const runSummary=useSelector(state => state.runs.runSummary);
 const dispatch=useDispatch();
 
-useEffect(()=>{
+/*useEffect(()=>{
     dispatch(runActions.loadRuns());
     dispatch(runActions.loadRunSummary());
   }, [dispatch]);
-
+*/
 
 /*var isSliderPositionLeft = true;
 const [bounceValue, setBounceValue] = useState(new Animated.Value(0));*/
@@ -46,16 +46,28 @@ Animated.timing(
 isSliderPositionLeft = !isSliderPositionLeft;
 };*/
 
+const onSelectRunHistoryItem=(itemdata)=>{
+    props.navigation.navigate('RunDetailsScreen', {
+    track_image:itemdata.item.track_image,
+    date:itemdata.item.date,
+    day:itemdata.item.day,
+    lapsedTime:itemdata.item.lapsedTime,
+    totalDistance:itemdata.item.totalDistance,
+    averagePace:itemdata.item.averagePace,
+    caloriesBurnt: itemdata.item.caloriesBurnt
+    });
+};
+
 const renderRunSummaryHeader=()=>{
  return (
           <View style={styles.runsHistoryDetailsPanel}>
           <DashboardItem
-          text={runSummary!=null?parseFloat(runSummary.totalDistance).toFixed(2)+" KM":0+" KM"}
+          text={runSummary!=null?parseFloat(runSummary.totalDistance/1000).toFixed(2)+" KM":0+" KM"}
           footerText="Total Distance"
           style={styles.totalDistanceDashboardItem} 
           icon="ios-walk"/>
           <DashboardItem 
-          text={runSummary!=null?parseFloat(runSummary.averageDistance).toFixed(2)+" KM":0+" KM"}
+          text={runSummary!=null?parseFloat(runSummary.averageDistance/1000).toFixed(2)+" KM":0+" KM"}
           footerText="Average Distance"
           style={styles.averageDistanceDashboardItem} 
           icon="ios-stats"/>
@@ -89,6 +101,7 @@ return (
          <View style={styles.runHistoryContainer}>
          <View style={styles.runsScrollPanel}>
          <RunHistoryList
+         onSelectRunItem={onSelectRunHistoryItem}
          header={renderRunSummaryHeader()}
          listData={runsHistory}/>
          </View>

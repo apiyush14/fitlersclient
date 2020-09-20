@@ -1,25 +1,31 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button, Switch} from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import React, { useState, useEffect} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Button, Platform} from 'react-native';
 import * as Location from 'expo-location';
-import { Accelerometer  } from 'expo-sensors';
+import { Accelerometer, DeviceMotion  } from 'expo-sensors';
 import Slider from '../components/Slider';
 import RoundButton from '../components/RoundButton';
 import { Ionicons } from '@expo/vector-icons';
+import * as Permissions from 'expo-permissions';
 
 const LiveRunTrackerScreen = props=>{
 
 const [isPaused,setIsPaused]=useState(false);
 const [startTime, setStartTime]=useState(Date.now());
 const [lapsedTime, setLapsedTime]=useState(0);
-const [trackTimer, setTrackTimer]=useState({
-	seconds: "00",
-	minutes: "00",
-	hours: "00"
-});
 const [date, setDate]=useState(null);
 const [day, setDay]=useState(null);
 const [pathArray, setPathArray] = useState([]);
+const [totalDistance,setTotalDistance]=useState(0);
+const [averagePace,setAveragePace]=useState(0.00);
+const [caloriesBurnt,setCaloriesBurnt]=useState(0);
+const [isEnabled, setIsEnabled] = useState(false);
+
+const [trackTimer, setTrackTimer]=useState({
+	seconds: "00",
+	minutes: "00",
+	hours:   "00"
+});
+
 var weekday = new Array(7);
 weekday[0] = "Sunday";
 weekday[1] = "Monday";
@@ -29,40 +35,58 @@ weekday[4] = "Thursday";
 weekday[5] = "Friday";
 weekday[6] = "Saturday";
 
-const [totalDistance,setTotalDistance]=useState(0);
-const [averagePace,setAveragePace]=useState(0.00);
-const [caloriesBurnt,setCaloriesBurnt]=useState(0);
 
 const haversine = require('haversine');
 
+//Method to Subscriber to Accelerometer and add a listener to update every second
 const subscribeAccelerometer = () => {
-	Accelerometer.setUpdateInterval(1000);
-    Accelerometer.addListener(accelerometerData => {
+
+     let status =Permissions.askAsync(Permissions.MOTION);
+
+     //TODO : To fix async
+      /*  if(status!=='granted')
+        {
+          //TODO : Add Alert
+          console.log("Permission Not granted");
+        }*/
+
+	DeviceMotion.setUpdateInterval(1000);
+    DeviceMotion.addListener(accelerometerData => {
     updateUI(accelerometerData);
     });
   };
 
+//Method to Unsubscriber to Accelerometer
 const unSubscribeAccelerometer = () => {
-   Accelerometer.removeAllListeners();
+   DeviceMotion.removeAllListeners();
   };
 
+//Load Time useEffect hook
 useEffect(() => {
         var today = new Date();
         var dateFull=today.getDate() + "/"+ parseInt(today.getMonth()+1) +"/"+ today.getFullYear();
         setDate(dateFull);
         setDay(weekday[today.getDay()]);
-	    subscribeAccelerometer();
+
+        subscribeAccelerometer();
+
+        /*let {status} = await Location.requestPermissionsAsync();
+        if(status!=='granted')
+        {
+          //TODO : Add Alert
+          console.log("Permission Not granted");
+        }*/
+       
         /*let timer = setInterval(() => updateUI() , 1000);
         return () => clearInterval(timer)*/
     }, []);
 
-
+// Update averagePace and Calories once distance gets changed
 useEffect(() => {
         if(totalDistance>0){
-
         //Update average pace
-        const lapsedTimeinHours=lapsedTime / 3600000;
-        const averagePace=(totalDistance/1000)/lapsedTimeinHours;
+        const lapsedTimeinMinutes=lapsedTime / 60000;
+        const averagePace=lapsedTimeinMinutes/(totalDistance/1000);
         setAveragePace(averagePace);
         
         //Update Total Calories Burnt
@@ -72,8 +96,10 @@ useEffect(() => {
     }, [totalDistance]);
 
 
+//Method to Update UI each second based on accelerometer data
 const updateUI=(accelerometerData)=>{
 	(async ()=>{
+
     setStartTime(startTime=>{
          const currentTime=Date.now();
          setLapsedTime(lapsedTime=>{
@@ -92,12 +118,9 @@ const updateUI=(accelerometerData)=>{
          return currentTime;
     });
 
-    let {status} = await Location.requestPermissionsAsync();
-	if(status!=='granted')
-	{
-     console.log("Permission Not granted");
-	}
+    // Update Location
 	let location = await Location.getCurrentPositionAsync({});
+
 	if(location)
 	{
 		let currentLocation=
@@ -107,12 +130,37 @@ const updateUI=(accelerometerData)=>{
          latitudeDelta: 0.000757,
          longitudeDelta: 0.0008,
          weight: 2
-		};
+	    };
+     
+     //Performance handling to not store data if location is not changed (can be calibrated)
+      let isToUpdatePath= false;
+      if(pathArray.length==0||(pathArray.length>0
+        &&(Math.abs(pathArray[pathArray.length-1].latitude-location.coords.latitude))>0
+        &&(Math.abs(pathArray[pathArray.length-1].longitude-location.coords.longitude))>0))
+      {
+        isToUpdatePath=true;
+      }
 
-	 setPathArray(pathArray=>{
-	 if(pathArray.length>1&&(accelerometerData.x>0.5||accelerometerData.y>0.5||accelerometerData.z>0.5))
+    if(isToUpdatePath){
+      // Update path array with new co-ordinates
+	  setPathArray(pathArray=>{
+
+
+      let magnitude=Math.sqrt(accelerometerData.acceleration.x*accelerometerData.acceleration.x
+        + accelerometerData.acceleration.y*accelerometerData.acceleration.y
+        + accelerometerData.acceleration.z*accelerometerData.acceleration.z);
+
+     let magnitudeIncludeAcclr=Math.sqrt(accelerometerData.acceleration.x*accelerometerData.acceleration.x
+        + accelerometerData.acceleration.y*accelerometerData.acceleration.y
+        + accelerometerData.acceleration.z*accelerometerData.acceleration.z);
+     
+     //Calibrate here for accelerometer sensor
+     /*console.log("----------Blocking------------");
+     console.log(accelerometerData);*/
+	 if(pathArray.length>1&&magnitude>6)
 	 {
-        //console.log(accelerometerData);
+        /*console.log("----------Adding------------");
+        console.log(accelerometerData);*/
        let endLocation={
         latitude: pathArray[pathArray.length-1].latitude,
         longitude: pathArray[pathArray.length-1].longitude
@@ -128,19 +176,16 @@ const updateUI=(accelerometerData)=>{
        });
      }
 	 	return [...pathArray,currentLocation];});
+    }
 	}
 	
     }
     )();
 };
 
-const [isEnabled, setIsEnabled] = useState(false);
-const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-
-
+//Complete the run and load Run Details Screen
 const stopRun=()=>{
 //Accelerometer.removeAllListeners();
-
 props.navigation.navigate('RunDetailsScreen', {
     path:pathArray,
     date:date,
@@ -152,11 +197,13 @@ props.navigation.navigate('RunDetailsScreen', {
     });
 };
 
+// Pause Run
 const pauseRun=()=>{
 setIsPaused(true);
 unSubscribeAccelerometer();
 };
 
+//Resume Run
 const resumeRun=()=>{
 setStartTime(Date.now());
 setIsPaused(false);
@@ -176,12 +223,14 @@ return (
          {!isPaused?
          (
             <TouchableOpacity style={styles.pauseResumeRunButton} onPress={()=>{pauseRun()}}>
-             <Ionicons name="ios-pause" size={48} color='white'/>
+             <Ionicons name={Platform.OS === 'android'?"md-pause":"ios-pause"}
+             size={48} color='white'/>
             </TouchableOpacity>
            ):
          (
             <TouchableOpacity style={styles.pauseResumeRunButton} onPress={()=>{resumeRun()}}>
-             <Ionicons name="ios-play" size={48} color='white'/>
+             <Ionicons name={Platform.OS === 'android'?"md-play":"ios-play"}
+             size={48} color='white'/>
             </TouchableOpacity>
            )
          }
@@ -191,26 +240,28 @@ return (
          sliderAction={stopRun}
          buttonTitle='Stop' 
          bounceValue='220' 
-         image='https://c0.wallpaperflare.com/preview/929/411/615/athletic-field-ground-lane-lines.jpg'/>
+         />
          </View>):(<View></View>)
          }
          <View style={styles.timerContainer}>
           <View style={styles.timerIcon}>
-          <Ionicons name="ios-stopwatch" size={24} color='lightgrey'/>
+          <Ionicons name={Platform.OS === 'android'?"md-stopwatch":"ios-stopwatch"}
+           size={24} color='lightgrey'/>
           </View>
           <Text style={styles.elapsedTimeText}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
          </View>
 
          <View style={styles.averagePaceContainer}>
           <View style={styles.paceIcon}>
-          <Ionicons name="ios-speedometer" size={24} color='lightgrey'/>
+          <Ionicons name={Platform.OS === 'android'?"md-speedometer":"ios-speedometer"}
+           size={24} color='lightgrey'/>
           </View>
           <Text style={styles.averagePaceText}>{parseFloat(averagePace).toFixed(2)}</Text>
          </View>
 
          <View style={styles.circleContainerForDistance}>
-         <Text style={styles.totalDistance}>{parseFloat(totalDistance).toFixed(2)}</Text>
-         <Text style={styles.kmText}>KM</Text>
+          <Text style={styles.totalDistance}>{parseFloat(totalDistance/1000).toFixed(2)}</Text>
+          <Text style={styles.kmText}>KM</Text>
          </View>
          </View>
 		);
@@ -222,6 +273,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: 'black'
 	},
+
 	pauseResumeRunButton: {
         position: 'absolute',
         top: '63%',
