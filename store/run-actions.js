@@ -6,17 +6,22 @@ export const LOAD_RUNS='LOAD_RUNS';
 export const UPDATE_SUMMARY='UPDATE_SUMMARY';
 export const LOAD_RUN_SUMMARY='LOAD_RUN_SUMMARY';
 
-export const addRun=(track_image, date, day, lapsedTime, totalDistance,averagePace, caloriesBurnt)=>{
+export const addRun=(track_image, date, day, lapsedTime, totalDistance,averagePace, caloriesBurnt,path)=>{
 	return async dispatch=>{
         try{
            /* await FileSystem.moveAsync({
             from: track_image,
             to: newPath
         });*/
+        var pathString=path.map((location)=>""+location.latitude+","+location.longitude).join(';');
+
+        console.log('Path String is');
+        console.log(pathString);
+
         var filePathPrefix="file://";
         var filePath=filePathPrefix.concat(track_image.toString());
         
-        const dbResult= await insertRun(filePath,date.toString(),day.toString(),lapsedTime.toString(),totalDistance.toString(),averagePace.toString(),caloriesBurnt.toString());
+        const dbResult= await insertRun(filePath,date.toString(),day.toString(),lapsedTime.toString(),totalDistance.toString(),averagePace.toString(),caloriesBurnt.toString(), pathString);
         
         const dbResultForRunSummary=await fetchRunSummary();
         
@@ -38,7 +43,7 @@ export const addRun=(track_image, date, day, lapsedTime, totalDistance,averagePa
          dbResultUpdatedRunSummary= await updateRunSummary(updatedRunSummary.totalDistance, updatedRunSummary.totalRuns, updatedRunSummary.averagePace, updatedRunSummary.averageDistance);
         }
         
-        dispatch({type: ADD_RUN, run: {id: dbResult.insertId.toString(), track_image: filePath, date: date.toString(), day: day.toString(),lapsedTime: lapsedTime.toString(),totalDistance: totalDistance.toString(), averagePace: averagePace.toString(), caloriesBurnt: caloriesBurnt.toString()}});
+        dispatch({type: ADD_RUN, run: {id: dbResult.insertId.toString(), track_image: filePath, date: date.toString(), day: day.toString(),lapsedTime: lapsedTime.toString(),totalDistance: totalDistance.toString(), averagePace: averagePace.toString(), caloriesBurnt: caloriesBurnt.toString(), path: path}});
         
         if(dbResultUpdatedRunSummary.rows._array.length>0){
            console.log("Updating Run Summary from DB");

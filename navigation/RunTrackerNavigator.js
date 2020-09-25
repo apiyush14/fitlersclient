@@ -27,14 +27,15 @@ return (
 };
 
 const RunTrackerStackNavigator=({navigation, route})=>{
+  //console.log(route);
 return (
   <stackNavigator.Navigator>
     <stackNavigator.Screen name="RunTrackerTabNavigator" component={RunTrackerTabNavigator}
     options={{
-      title: route.state.routes[0].state.index===0?'Runner Home':'Wall of Fame',
+      title: ((route.state&&route.state.routes[0]&&route.state.routes[0].state.index===0)|| (!route.state&&route.name==='Home'))?'Runner Home':'Wall of Fame',
       headerLeft: ()=>{
         //Condition to be verfied in testing, used index of tab stack to check
-        if(route.state&&route.state.routes[0].state.index===0
+        if(route.state&&route.state.routes[0]&&route.state.routes[0].state.index===0
           ||(!route.state&&route.name==='Home')){
         return (
           <View styles={styles.person}>

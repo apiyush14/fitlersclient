@@ -7,14 +7,17 @@ import RoundButton from '../components/RoundButton';
 import { Ionicons } from '@expo/vector-icons';
 import * as Permissions from 'expo-permissions';
 
+let lapsedTime=0;
+let pathArray=[];
+let startTime=Date.now();
+let lastLocation={};
+let temporaryDistance=0;
+
 const LiveRunTrackerScreen = props=>{
 
 const [isPaused,setIsPaused]=useState(false);
-const [startTime, setStartTime]=useState(Date.now());
-const [lapsedTime, setLapsedTime]=useState(0);
 const [date, setDate]=useState(null);
 const [day, setDay]=useState(null);
-const [pathArray, setPathArray] = useState([]);
 const [totalDistance,setTotalDistance]=useState(0);
 const [averagePace,setAveragePace]=useState(0.00);
 const [caloriesBurnt,setCaloriesBurnt]=useState(0);
@@ -68,6 +71,10 @@ useEffect(() => {
         setDate(dateFull);
         setDay(weekday[today.getDay()]);
 
+        lapsedTime=0;
+        pathArray=[];
+        startTime=Date.now();
+
         subscribeAccelerometer();
 
         /*let {status} = await Location.requestPermissionsAsync();
@@ -99,24 +106,21 @@ useEffect(() => {
 //Method to Update UI each second based on accelerometer data
 const updateUI=(accelerometerData)=>{
 	(async ()=>{
+     const currentTime=Date.now();
+     let updatedLapsedTime=lapsedTime+(currentTime-startTime);
+     let secondsVar = ("0" + (Math.floor(updatedLapsedTime / 1000) % 60)).slice(-2);
+     let minutesVar = ("0" + (Math.floor(updatedLapsedTime / 60000) % 60)).slice(-2);
+     let hoursVar = ("0" + Math.floor(updatedLapsedTime / 3600000)).slice(-2);
 
-    setStartTime(startTime=>{
-         const currentTime=Date.now();
-         setLapsedTime(lapsedTime=>{
-         let updatedLapsedTime=lapsedTime+(currentTime-startTime);
-         let secondsVar = ("0" + (Math.floor(updatedLapsedTime / 1000) % 60)).slice(-2);
-         let minutesVar = ("0" + (Math.floor(updatedLapsedTime / 60000) % 60)).slice(-2);
-         let hoursVar = ("0" + Math.floor(updatedLapsedTime / 3600000)).slice(-2);
-         setTrackTimer(
+     setTrackTimer(
         {
             seconds: secondsVar,
             minutes: minutesVar,
             hours: hoursVar
         });
-         return updatedLapsedTime;   
-         });
-         return currentTime;
-    });
+
+     lapsedTime= updatedLapsedTime;
+     startTime= currentTime;
 
     // Update Location
 	let location = await Location.getCurrentPositionAsync({});
@@ -134,17 +138,22 @@ const updateUI=(accelerometerData)=>{
      
      //Performance handling to not store data if location is not changed (can be calibrated)
       let isToUpdatePath= false;
-      if(pathArray.length==0||(pathArray.length>0
+      
+      /*if(pathArray.length==0||(pathArray.length>0
         &&(Math.abs(pathArray[pathArray.length-1].latitude-location.coords.latitude))>0
         &&(Math.abs(pathArray[pathArray.length-1].longitude-location.coords.longitude))>0))
       {
         isToUpdatePath=true;
-      }
+      }*/
 
-    if(isToUpdatePath){
+      console.log("Global Value");
+      console.log(pathArray.length);
+
+    //if(isToUpdatePath){
       // Update path array with new co-ordinates
-	  setPathArray(pathArray=>{
-
+	  //setPathArray(pathArray=>{
+      //console.log("Inside Value");
+      //console.log(pathArray);
 
       let magnitude=Math.sqrt(accelerometerData.acceleration.x*accelerometerData.acceleration.x
         + accelerometerData.acceleration.y*accelerometerData.acceleration.y
@@ -157,26 +166,46 @@ const updateUI=(accelerometerData)=>{
      //Calibrate here for accelerometer sensor
      /*console.log("----------Blocking------------");
      console.log(accelerometerData);*/
-	 if(pathArray.length>1&&magnitude>6)
+      if(pathArray.length===0){
+          isToUpdatePath=true;
+      }
+
+     // When Running
+	 else if(pathArray.length>0&&magnitude>6)
 	 {
         /*console.log("----------Adding------------");
         console.log(accelerometerData);*/
        let endLocation={
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude
+       };
+
+       let startLocation={
         latitude: pathArray[pathArray.length-1].latitude,
         longitude: pathArray[pathArray.length-1].longitude
        };
 
-       let startLocation={
-        latitude: pathArray[pathArray.length-2].latitude,
-        longitude: pathArray[pathArray.length-2].longitude
-       };
-        setTotalDistance(totalDistance=>{
-        //console.log(totalDistance+haversine(startLocation, endLocation, {unit: 'meter'}));
-       	return totalDistance+haversine(startLocation, endLocation, {unit: 'meter'});
-       });
+       let lastLocationVar={
+        latitude: lastLocation.latitude,
+        longitude: lastLocation.longitude
+       }
+        temporaryDistance=temporaryDistance+haversine(lastLocation, endLocation, {unit: 'meter'});
+        if(temporaryDistance>=10){
+             isToUpdatePath=true;
+             setTotalDistance(totalDistance=>{
+              //console.log(totalDistance+haversine(startLocation, endLocation, {unit: 'meter'}));
+              return totalDistance+temporaryDistance;
+             });
+             temporaryDistance=0;
+        }
+       
      }
-	 	return [...pathArray,currentLocation];});
+        if(isToUpdatePath){
+        pathArray=[...pathArray,currentLocation];
     }
+        lastLocation=currentLocation;
+	 	//return [...pathArray,currentLocation];});
+    //}
 	}
 	
     }
@@ -205,7 +234,8 @@ unSubscribeAccelerometer();
 
 //Resume Run
 const resumeRun=()=>{
-setStartTime(Date.now());
+//setStartTime(Date.now());
+startTime=Date.now();
 setIsPaused(false);
 subscribeAccelerometer();
 };

@@ -9,9 +9,11 @@ import { Ionicons } from '@expo/vector-icons';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+var isCalledFromHistoryScreen=false;
+
 let mapRef=null;
 
-/*const TESTPOINTS = [
+const TESTPOINTS = [
   {latitude: 31.624708978431634, longitude: 74.87492581820307},
   {latitude:31.624808978431635, longitude:74.87502581820307},
   {latitude:31.624908978431636, longitude:74.87512581820307},
@@ -38,7 +40,6 @@ let mapRef=null;
   {latitude:31.625108978431664, longitude:74.87692581820307},
   {latitude:31.625008978431664, longitude:74.87702581820307}
 ];
-*/
 
 const RunDetailsScreen = props=>{
 
@@ -60,6 +61,11 @@ const [trackTimer, setTrackTimer]=useState({
 });
 
 useEffect(() => {
+       if(props.route.params.sourceScreen){
+            if(props.route.params.sourceScreen==='RunHistoryScreen'){
+              isCalledFromHistoryScreen=true;
+            }
+       }
        if(props.route.params.track_image)
        {
         setTrackImage(props.route.params.track_image);
@@ -76,6 +82,11 @@ useEffect(() => {
         longitudeDelta: Math.abs(pathArray[pathArray.length-1].longitude-pathArray[0].longitude)+0.001
          });
        }
+
+       //To be removed
+       if(!isCalledFromHistoryScreen){
+       setPath(TESTPOINTS);
+     }
 
        if(props.route.params.date)
        {
@@ -118,7 +129,7 @@ useEffect(() => {
     }, []);
 
 useEffect(() => {
-       if(path.length>0){
+       if(path.length>0&&(!isCalledFromHistoryScreen)){
        takeSnapshot();
      }
     }, [path]);
@@ -133,32 +144,24 @@ const snapshot = mapRef.takeSnapshot({
   });
   snapshot.then((uri) => {
     setMapState(uri);
-    savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt);
+    savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path);
   });
 };
 
-const savePlaceHandler = (uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt) => {
-    dispatch(runActions.addRun(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt));
+const savePlaceHandler = (uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path) => {
+    dispatch(runActions.addRun(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path));
   };
 
 return (
          <View style={styles.runDetailsContainer}>
-         {trackImage==null?
-         (<MapView style={styles.mapContainer} region={mapRegion} ref={map => {mapRef = map }}
-         pitchEnabled={false} rotateEnabled={false} zoomEnabled={false} scrollEnabled={false}>
+         <MapView style={styles.mapContainer} region={mapRegion} ref={map => {mapRef = map }}
+         pitchEnabled={true} rotateEnabled={true} zoomEnabled={true} scrollEnabled={true}>
          <Polyline 
          strokeWidth={5}
          strokeColor='red'
-         coordinates={path} />
-         </MapView>):
-         (
-           <View style={styles.mapContainer}>
-           <ImageBackground
-           source={{uri:trackImage}} 
-           style={styles.trackImage}>
-          </ImageBackground>
-          </View>)}
-         
+         coordinates={path}/>
+         </MapView>
+
       <View style={styles.runMetricsContainer}>
         <View style={styles.row1}>
            <Card style={styles.totalDistanceCard}>

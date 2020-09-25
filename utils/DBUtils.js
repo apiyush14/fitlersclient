@@ -5,7 +5,7 @@ const db=SQLite.openDatabase('onehealth.db');
 export const init=()=>{ 
 const promise=new Promise((resolve, reject)=>{ 
 db.transaction((tx)=>{ 
-    tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (id INTEGER PRIMARY KEY NOT NULL, TRACK_IMAGE TEXT NOT NULL, RUN_DATE TEXT NOT NULL,RUN_DAY TEXT NOT NULL,LAPSED_TIME TEXT NOT NULL,TOTAL_DISTANCE TEXT NOT NULL, AVERAGE_PACE TEXT NOT NULL, CALORIES_BURNT TEXT NOT NULL);',
+    tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (id INTEGER PRIMARY KEY NOT NULL, TRACK_IMAGE TEXT NOT NULL, RUN_DATE TEXT NOT NULL,RUN_DAY TEXT NOT NULL,LAPSED_TIME TEXT NOT NULL,TOTAL_DISTANCE TEXT NOT NULL, AVERAGE_PACE TEXT NOT NULL, CALORIES_BURNT TEXT NOT NULL, PATH TEXT NOT NULL);',
     //tx.executeSql('DROP TABLE RUN_DETAILS;', 
         [], 
         ()=>{ 
@@ -38,11 +38,11 @@ db.transaction((tx)=>{
 return promise; 
 };
 
-export const insertRun=(track_image, date, day, lapsedTime, totalDistance, averagePace, caloriesBurnt)=>{
+export const insertRun=(track_image, date, day, lapsedTime, totalDistance, averagePace, caloriesBurnt, path)=>{
 	const promise=new Promise((resolve, reject)=>{
 db.transaction((tx)=>{
-	tx.executeSql('INSERT INTO RUN_DETAILS (TRACK_IMAGE,RUN_DATE,RUN_DAY,LAPSED_TIME,TOTAL_DISTANCE, AVERAGE_PACE, CALORIES_BURNT) VALUES (?,?,?,?,?,?,?);',
-		[track_image,date,day,lapsedTime,totalDistance, averagePace, caloriesBurnt],
+	tx.executeSql('INSERT INTO RUN_DETAILS (TRACK_IMAGE,RUN_DATE,RUN_DAY,LAPSED_TIME,TOTAL_DISTANCE, AVERAGE_PACE, CALORIES_BURNT, PATH) VALUES (?,?,?,?,?,?,?,?);',
+		[track_image,date,day,lapsedTime,totalDistance, averagePace, caloriesBurnt, path],
 		(_,result)=>{
           resolve(result);
 		},

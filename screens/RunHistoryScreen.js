@@ -54,7 +54,9 @@ const onSelectRunHistoryItem=(itemdata)=>{
     lapsedTime:itemdata.item.lapsedTime,
     totalDistance:itemdata.item.totalDistance,
     averagePace:itemdata.item.averagePace,
-    caloriesBurnt: itemdata.item.caloriesBurnt
+    caloriesBurnt: itemdata.item.caloriesBurnt,
+    path: itemdata.item.path,
+    sourceScreen: 'RunHistoryScreen' 
     });
 };
 
