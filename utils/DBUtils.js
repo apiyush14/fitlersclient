@@ -5,8 +5,8 @@ const db=SQLite.openDatabase('onehealth.db');
 export const init=()=>{ 
 const promise=new Promise((resolve, reject)=>{ 
 db.transaction((tx)=>{ 
-    tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (id INTEGER PRIMARY KEY NOT NULL, TRACK_IMAGE TEXT NOT NULL, RUN_DATE TEXT NOT NULL,RUN_DAY TEXT NOT NULL,LAPSED_TIME TEXT NOT NULL,TOTAL_DISTANCE TEXT NOT NULL, AVERAGE_PACE TEXT NOT NULL, CALORIES_BURNT TEXT NOT NULL, PATH TEXT NOT NULL);',
-    //tx.executeSql('DROP TABLE RUN_DETAILS;', 
+    tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (RUN_ID INTEGER PRIMARY KEY NOT NULL, RUN_TOTAL_TIME TEXT NOT NULL, RUN_DISTANCE TEXT NOT NULL,RUN_PACE TEXT NOT NULL,RUN_CALORIES_BURNT TEXT NOT NULL,RUN_CREDITS TEXT NOT NULL, RUN_DATE TEXT NOT NULL, RUN_DAY TEXT NOT NULL, RUN_PATH TEXT NOT NULL, RUN_TRACK_SNAP_URL TEXT NOT NULL);',
+    //tx.executeSql('DROP TABLE RUN_DETAILS;',
         [], 
         ()=>{ 
           resolve(); 
@@ -16,7 +16,7 @@ db.transaction((tx)=>{
         }); 
 
     tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_SUMMARY (id INTEGER PRIMARY KEY NOT NULL, TOTAL_DISTANCE TEXT NOT NULL, TOTAL_RUNS TEXT NOT NULL,AVERAGE_PACE TEXT NOT NULL,AVERAGE_DISTANCE TEXT NOT NULL);',
-    //tx.executeSql('DROP TABLE RUN_SUMMARY;',  
+    //tx.executeSql('DROP TABLE RUN_SUMMARY;',
      [], 
         ()=>{ 
           resolve(); 
@@ -38,11 +38,11 @@ db.transaction((tx)=>{
 return promise; 
 };
 
-export const insertRun=(track_image, date, day, lapsedTime, totalDistance, averagePace, caloriesBurnt, path)=>{
+export const insertRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl)=>{
 	const promise=new Promise((resolve, reject)=>{
 db.transaction((tx)=>{
-	tx.executeSql('INSERT INTO RUN_DETAILS (TRACK_IMAGE,RUN_DATE,RUN_DAY,LAPSED_TIME,TOTAL_DISTANCE, AVERAGE_PACE, CALORIES_BURNT, PATH) VALUES (?,?,?,?,?,?,?,?);',
-		[track_image,date,day,lapsedTime,totalDistance, averagePace, caloriesBurnt, path],
+	tx.executeSql('INSERT INTO RUN_DETAILS (RUN_TOTAL_TIME,RUN_DISTANCE,RUN_PACE,RUN_CALORIES_BURNT,RUN_CREDITS, RUN_DATE, RUN_DAY, RUN_PATH, RUN_TRACK_SNAP_URL) VALUES (?,?,?,?,?,?,?,?,?);',
+		[runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl],
 		(_,result)=>{
           resolve(result);
 		},

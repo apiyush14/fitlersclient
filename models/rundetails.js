@@ -3,17 +3,18 @@ Model Class for Run History Item
 */
 
 class RunDetails{
-	constructor(id,track_image,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path){
-     this.id=id;
-     this.track_image=track_image;
-     this.date=date;
-     this.day=day;
-     this.lapsedTime=lapsedTime;
-     this.totalDistance=totalDistance;
-     this.averagePace=averagePace;
-     this.caloriesBurnt=caloriesBurnt;
-     this.path=path;
-	}
+     constructor(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl){
+     this.runId=runId;
+     this.runTotalTime=runTotalTime;
+     this.runDistance=runDistance;
+     this.runPace=runPace;
+     this.runCaloriesBurnt=runCaloriesBurnt;
+     this.runCredits=runCredits;
+     this.runDate=runDate;
+     this.runDay=runDay;
+     this.runPath=runPath;
+     this.runTrackSnapUrl=runTrackSnapUrl;
+     }
 }
 
 export default RunDetails;

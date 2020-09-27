@@ -10,17 +10,21 @@ const initialState={
 export default (state=initialState, action)=>{
 	switch(action.type) {
 		case ADD_RUN:
-        const newRun=new RunDetails(action.run.id, action.run.track_image,action.run.date,action.run.day,action.run.lapsedTime,action.run.totalDistance, action.run.averagePace, action.run.caloriesBurnt, action.run.path);
+        console.log('Add Run');
+        console.log(action.run);
+        const newRun=new RunDetails(action.run.runId, action.run.runTotalTime,action.run.runDistance,action.run.runPace,action.run.runCaloriesBurnt,action.run.runCredits, action.run.runDate, action.run.runDay, action.run.runPath, action.run.runTrackSnapUrl);
         
         return{...state, 
             runs: state.runs.concat(newRun)
         };
 
         case LOAD_RUNS:
+        console.log('Load Runs');
+        console.log(action.runs);
         return {...state, 
             runs: action.runs[0].map((run)=>
                 {  
-                    var pathArr=run.PATH.split(";");
+                    var pathArr=run.RUN_PATH.split(";");
 
                     var path=pathArr.map(loc=>{
                         var locationArr=loc.split(",");
@@ -31,9 +35,9 @@ export default (state=initialState, action)=>{
                         return location;
                     });
 
-                    console.log('Final Path Array after conversion is ');
-                    console.log(path);
-                    return new RunDetails(run.id.toString(), run.TRACK_IMAGE.toString(),run.RUN_DATE.toString(),run.RUN_DAY.toString(),run.LAPSED_TIME.toString(),run.TOTAL_DISTANCE.toString(),run.AVERAGE_PACE, run.CALORIES_BURNT, path);})
+                    //console.log('Final Path Array after conversion is ');
+                    //console.log(path);
+                    return new RunDetails(run.RUN_ID, run.RUN_TOTAL_TIME,run.RUN_DISTANCE,run.RUN_PACE,run.RUN_CALORIES_BURNT,run.RUN_CREDITS,run.RUN_DATE, run.RUN_DAY, path, run.RUN_TRACK_SNAP_URL);})
         };
 
         case UPDATE_SUMMARY:

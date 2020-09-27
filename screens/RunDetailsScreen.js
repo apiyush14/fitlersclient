@@ -144,12 +144,13 @@ const snapshot = mapRef.takeSnapshot({
   });
   snapshot.then((uri) => {
     setMapState(uri);
-    savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path);
+    //savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path);
+    savePlaceHandler(lapsedTime,totalDistance,averagePace,caloriesBurnt,null,date,day,path,uri);
   });
 };
 
-const savePlaceHandler = (uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path) => {
-    dispatch(runActions.addRun(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path));
+const savePlaceHandler = (runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl) => {
+    dispatch(runActions.addRun(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl));
   };
 
 return (

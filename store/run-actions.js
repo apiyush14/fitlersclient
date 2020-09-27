@@ -6,22 +6,23 @@ export const LOAD_RUNS='LOAD_RUNS';
 export const UPDATE_SUMMARY='UPDATE_SUMMARY';
 export const LOAD_RUN_SUMMARY='LOAD_RUN_SUMMARY';
 
-export const addRun=(track_image, date, day, lapsedTime, totalDistance,averagePace, caloriesBurnt,path)=>{
+export const addRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl)=>{
 	return async dispatch=>{
         try{
            /* await FileSystem.moveAsync({
             from: track_image,
             to: newPath
         });*/
-        var pathString=path.map((location)=>""+location.latitude+","+location.longitude).join(';');
+        //console.log('Add Run');
+        var pathString=runPath.map((path)=>""+path.latitude+","+path.longitude).join(';');
 
-        console.log('Path String is');
-        console.log(pathString);
+        //console.log('Path String is');
+        //console.log(pathString);
 
         var filePathPrefix="file://";
-        var filePath=filePathPrefix.concat(track_image.toString());
+        var filePath=filePathPrefix.concat(runTrackSnapUrl.toString());
         
-        const dbResult= await insertRun(filePath,date.toString(),day.toString(),lapsedTime.toString(),totalDistance.toString(),averagePace.toString(),caloriesBurnt.toString(), pathString);
+        const dbResult= await insertRun(runTotalTime.toString(),runDistance.toString(),runPace.toString(),runCaloriesBurnt.toString(),0,runDate.toString(),runDay.toString(),pathString,runTrackSnapUrl.toString());
         
         const dbResultForRunSummary=await fetchRunSummary();
         
@@ -31,19 +32,19 @@ export const addRun=(track_image, date, day, lapsedTime, totalDistance,averagePa
         if(dbResultForRunSummary.rows._array.length===0)
         {
          console.log("Called in initial state");
-         dbResultUpdatedRunSummary= await insertRunSummary(totalDistance, "1", averagePace, totalDistance);
+         dbResultUpdatedRunSummary= await insertRunSummary(runDistance, "1", runPace, runDistance);
         }
         else{    
           updatedRunSummary={
-          totalDistance: parseFloat(dbResultForRunSummary.rows._array[0].TOTAL_DISTANCE)+parseFloat(totalDistance),
+          totalDistance: parseFloat(dbResultForRunSummary.rows._array[0].TOTAL_DISTANCE)+parseFloat(runDistance),
           totalRuns: parseInt(dbResultForRunSummary.rows._array[0].TOTAL_RUNS)+1,
-          averagePace: ((parseFloat(dbResultForRunSummary.rows._array[0].AVERAGE_PACE)*parseInt(dbResultForRunSummary.rows._array[0].TOTAL_RUNS))+averagePace)/(parseInt(dbResultForRunSummary.rows._array[0].TOTAL_RUNS)+1),
+          averagePace: ((parseFloat(dbResultForRunSummary.rows._array[0].AVERAGE_PACE)*parseInt(dbResultForRunSummary.rows._array[0].TOTAL_RUNS))+runPace)/(parseInt(dbResultForRunSummary.rows._array[0].TOTAL_RUNS)+1),
           averageDistance: dbResultForRunSummary.rows._array[0].TOTAL_DISTANCE/dbResultForRunSummary.rows._array[0].TOTAL_RUNS
         };
          dbResultUpdatedRunSummary= await updateRunSummary(updatedRunSummary.totalDistance, updatedRunSummary.totalRuns, updatedRunSummary.averagePace, updatedRunSummary.averageDistance);
         }
         
-        dispatch({type: ADD_RUN, run: {id: dbResult.insertId.toString(), track_image: filePath, date: date.toString(), day: day.toString(),lapsedTime: lapsedTime.toString(),totalDistance: totalDistance.toString(), averagePace: averagePace.toString(), caloriesBurnt: caloriesBurnt.toString(), path: path}});
+        dispatch({type: ADD_RUN, run: {runId: dbResult.insertId.toString(), runTotalTime: runTotalTime, runDistance: runDistance, runPace: runPace, runCaloriesBurnt: runCaloriesBurnt, runCredits: runCredits, runDate: runDate, runDay: runDay, runPath: pathString, runTrackSnapUrl: runTrackSnapUrl}});
         
         if(dbResultUpdatedRunSummary.rows._array.length>0){
            console.log("Updating Run Summary from DB");
@@ -55,6 +56,8 @@ export const addRun=(track_image, date, day, lapsedTime, totalDistance,averagePa
             console.log(updatedRunSummary);
           dispatch({type: UPDATE_SUMMARY,runSummary:{id: 1, TOTAL_DISTANCE: updatedRunSummary.totalDistance,TOTAL_RUNS: updatedRunSummary.totalRuns,AVERAGE_PACE: updatedRunSummary.averagePace,AVERAGE_DISTANCE: updatedRunSummary.averageDistance}});
         } 
+      
+      addRunToServer(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,pathString,runTrackSnapUrl);
 
     }
     catch(err){
@@ -91,3 +94,36 @@ catch(err){
  };
 }
 };
+
+const addRunToServer=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,pathString,runTrackSnapUrl)=>{
+    const runData={
+      userId: 'piyush123',
+      runTotalTime: runTotalTime,
+      runDistance: runDistance,
+      runPace: runPace,
+      runCaloriesBurnt: runCaloriesBurnt,
+      runCredits: '0',
+      runDate: runDate,
+      runDay: runDay,
+      runPath: pathString,
+      runTrackSnapUrl: runTrackSnapUrl
+    };
+
+    let runDataArr=[];
+    runDataArr = runDataArr.concat(runData);
+    const addRunsRequest={
+      runDetailsList: runDataArr
+    };
+    
+    fetch("http://192.168.1.66:7001/run-details/addRuns", { 
+    method: 'POST', 
+    headers: { 
+    'Content-Type':'application/json' 
+    }, 
+    body: JSON.stringify({ 
+      runDetailsList: runDataArr
+   }) 
+  }).then(response={ 
+    
+  });
+}

@@ -9,13 +9,13 @@ const RunHistoryList=props=>{
 
 const renderRunHistoryItem=itemData=>{
  return <RunHistoryItem
- image={itemData.item.track_image}
- date={itemData.item.date}
- day={itemData.item.day}
- lapsedTime={itemData.item.lapsedTime}
- totalDistance={itemData.item.totalDistance}
- averagePace={itemData.item.averagePace}
- caloriesBurnt={itemData.item.caloriesBurnt}
+ image={itemData.item.runTrackSnapUrl}
+ date={itemData.item.runDate}
+ day={itemData.item.runDay}
+ lapsedTime={itemData.item.runTotalTime}
+ totalDistance={itemData.item.runDistance}
+ averagePace={itemData.item.runPace}
+ caloriesBurnt={itemData.item.runCaloriesBurnt}
  onSelectRunItem={()=>{props.onSelectRunItem(itemData)}}/>;
 };
 
@@ -24,7 +24,7 @@ return(
   <FlatList
    ListHeaderComponent={props.header}
    data={props.listData}
-   keyExtractor={(item,index)=>item.id}
+   keyExtractor={(item,index)=>item.runId.toString()}
    renderItem={renderRunHistoryItem} >
    </FlatList>
  </View>

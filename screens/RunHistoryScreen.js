@@ -48,14 +48,14 @@ isSliderPositionLeft = !isSliderPositionLeft;
 
 const onSelectRunHistoryItem=(itemdata)=>{
     props.navigation.navigate('RunDetailsScreen', {
-    track_image:itemdata.item.track_image,
-    date:itemdata.item.date,
-    day:itemdata.item.day,
-    lapsedTime:itemdata.item.lapsedTime,
-    totalDistance:itemdata.item.totalDistance,
-    averagePace:itemdata.item.averagePace,
-    caloriesBurnt: itemdata.item.caloriesBurnt,
-    path: itemdata.item.path,
+    track_image:itemdata.item.runTrackSnapUrl,
+    date:itemdata.item.runDate,
+    day:itemdata.item.runDay,
+    lapsedTime:itemdata.item.runTotalTime,
+    totalDistance:itemdata.item.runDistance,
+    averagePace:itemdata.item.runPace,
+    caloriesBurnt: itemdata.item.runCaloriesBurnt,
+    path: itemdata.item.runPath,
     sourceScreen: 'RunHistoryScreen' 
     });
 };
