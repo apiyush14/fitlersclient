@@ -3,7 +3,7 @@ Model Class for Run History Item
 */
 
 class RunDetails{
-     constructor(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl){
+     constructor(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl,isSyncDone){
      this.runId=runId;
      this.runTotalTime=runTotalTime;
      this.runDistance=runDistance;
@@ -14,6 +14,7 @@ class RunDetails{
      this.runDay=runDay;
      this.runPath=runPath;
      this.runTrackSnapUrl=runTrackSnapUrl;
+     this.isSyncDone=isSyncDone;
      }
 }
 

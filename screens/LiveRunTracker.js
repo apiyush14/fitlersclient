@@ -146,8 +146,8 @@ const updateUI=(accelerometerData)=>{
         isToUpdatePath=true;
       }*/
 
-      console.log("Global Value");
-      console.log(pathArray.length);
+      //console.log("Global Value");
+      //console.log(pathArray.length);
 
     //if(isToUpdatePath){
       // Update path array with new co-ordinates

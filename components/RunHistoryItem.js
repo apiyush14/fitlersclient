@@ -11,7 +11,6 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const RunHistoryItem=props=>{
-console.log(props.image);
 const [trackTimer, setTrackTimer]=useState({
 	seconds: "00",
 	minutes: "00",

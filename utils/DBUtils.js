@@ -5,7 +5,7 @@ const db=SQLite.openDatabase('onehealth.db');
 export const init=()=>{ 
 const promise=new Promise((resolve, reject)=>{ 
 db.transaction((tx)=>{ 
-    tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (RUN_ID INTEGER PRIMARY KEY NOT NULL, RUN_TOTAL_TIME TEXT NOT NULL, RUN_DISTANCE TEXT NOT NULL,RUN_PACE TEXT NOT NULL,RUN_CALORIES_BURNT TEXT NOT NULL,RUN_CREDITS TEXT NOT NULL, RUN_DATE TEXT NOT NULL, RUN_DAY TEXT NOT NULL, RUN_PATH TEXT NOT NULL, RUN_TRACK_SNAP_URL TEXT NOT NULL);',
+    tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (RUN_ID INTEGER PRIMARY KEY NOT NULL, RUN_TOTAL_TIME TEXT NOT NULL, RUN_DISTANCE TEXT NOT NULL,RUN_PACE TEXT NOT NULL,RUN_CALORIES_BURNT TEXT NOT NULL,RUN_CREDITS TEXT NOT NULL, RUN_DATE TEXT NOT NULL, RUN_DAY TEXT NOT NULL, RUN_PATH TEXT NOT NULL, RUN_TRACK_SNAP_URL TEXT NOT NULL,IS_SYNC_DONE TEXT NOT NULL);',
     //tx.executeSql('DROP TABLE RUN_DETAILS;',
         [], 
         ()=>{ 
@@ -38,17 +38,33 @@ db.transaction((tx)=>{
 return promise; 
 };
 
-export const insertRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl)=>{
+export const insertRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl,isSyncDone)=>{
 	const promise=new Promise((resolve, reject)=>{
 db.transaction((tx)=>{
-	tx.executeSql('INSERT INTO RUN_DETAILS (RUN_TOTAL_TIME,RUN_DISTANCE,RUN_PACE,RUN_CALORIES_BURNT,RUN_CREDITS, RUN_DATE, RUN_DAY, RUN_PATH, RUN_TRACK_SNAP_URL) VALUES (?,?,?,?,?,?,?,?,?);',
-		[runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl],
+	tx.executeSql('INSERT INTO RUN_DETAILS (RUN_TOTAL_TIME,RUN_DISTANCE,RUN_PACE,RUN_CALORIES_BURNT,RUN_CREDITS, RUN_DATE, RUN_DAY, RUN_PATH, RUN_TRACK_SNAP_URL,IS_SYNC_DONE) VALUES (?,?,?,?,?,?,?,?,?,?);',
+		[runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl,isSyncDone],
 		(_,result)=>{
           resolve(result);
 		},
 		(_,err)=>{
          reject(err);
 		});
+});
+});
+return promise;
+};
+
+export const deleteRuns=(runIds)=>{
+  const promise=new Promise((resolve, reject)=>{
+  db.transaction((tx)=>{
+  tx.executeSql('DELETE FROM RUN_DETAILS where RUN_ID in ('+runIds+');',
+    [],
+    (_,result)=>{
+          resolve(result);
+    },
+    (_,err)=>{
+         reject(err);
+    });
 });
 });
 return promise;
@@ -65,6 +81,38 @@ db.transaction((tx)=>{
 		(_,err)=>{
          reject(err);
 		});
+});
+});
+return promise;
+};
+
+export const fetchRunsToSync=()=>{
+const promise=new Promise((resolve, reject)=>{
+db.transaction((tx)=>{
+  tx.executeSql('SELECT * FROM RUN_DETAILS where IS_SYNC_DONE="0"',
+    [],
+    (_,result)=>{
+          resolve(result);
+    },
+    (_,err)=>{
+         reject(err);
+    });
+});
+});
+return promise;
+};
+
+export const updateRunsSyncState=(pendingRunsForSync)=>{
+  const promise=new Promise((resolve, reject)=>{
+  db.transaction((tx)=>{
+  tx.executeSql('UPDATE RUN_DETAILS SET IS_SYNC_DONE="1" where RUN_ID in (?);',
+    [pendingRunsForSync],
+    (_,result)=>{
+          resolve(result);
+    },
+    (_,err)=>{
+         reject(err);
+    });
 });
 });
 return promise;

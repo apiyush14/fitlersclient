@@ -19,13 +19,20 @@ const renderRunHistoryItem=itemData=>{
  onSelectRunItem={()=>{props.onSelectRunItem(itemData)}}/>;
 };
 
+const onEndReached=()=>{
+ console.log('Reached End');
+};
+
 return(
 <View>
   <FlatList
    ListHeaderComponent={props.header}
    data={props.listData}
    keyExtractor={(item,index)=>item.runId.toString()}
-   renderItem={renderRunHistoryItem} >
+   renderItem={renderRunHistoryItem}
+   onEndReachedThreshold={0}
+   onEndReached={onEndReached}
+   initialNumToRender={10}>
    </FlatList>
  </View>
  );

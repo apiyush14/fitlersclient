@@ -3,6 +3,7 @@ import { View, Text, StyleSheet,Animated, TouchableOpacity, Button, Dimensions} 
 import RunHistoryList from '../components/RunHistoryList';
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
+import NetInfo from '@react-native-community/netinfo';
 
 import * as runActions from '../store/run-actions';
 
@@ -19,7 +20,37 @@ const RunHistoryScreen = props=>{
 
 const runsHistory = useSelector(state => state.runs.runs);
 const runSummary=useSelector(state => state.runs.runSummary);
+const pendingRunsForSync=useSelector(state=>state.runs.runs.filter(run => run.isSyncDone==="0"));
 const dispatch=useDispatch();
+
+useEffect(()=>{
+ syncPendingRuns();
+  const unsubscribe = NetInfo.addEventListener(state => {
+   handleNetworkStateChanges(state.type);
+});
+}, []);
+
+
+const handleNetworkStateChanges=(type) => {
+    switch (type) {
+        case 'none':
+        case 'unknown':
+            // offline statuses, so do nothing
+            return
+        default:
+           syncPendingRuns();
+    }
+};
+
+const syncPendingRuns=()=>{
+  NetInfo.fetch().then(state=>{
+        //console.log('Network State');
+        //console.log(state);
+        if(state.isConnected&&pendingRunsForSync!==null&&pendingRunsForSync.length>0){
+         dispatch(runActions.syncPendingRuns(pendingRunsForSync));
+      }
+      });
+};
 
 /*useEffect(()=>{
     dispatch(runActions.loadRuns());
