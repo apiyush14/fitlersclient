@@ -6,6 +6,7 @@ export const ADD_RUN='ADD_RUN';
 export const LOAD_RUNS='LOAD_RUNS';
 export const UPDATE_SUMMARY='UPDATE_SUMMARY';
 export const LOAD_RUN_SUMMARY='LOAD_RUN_SUMMARY';
+export const UPDATE_RUN_SYNC_STATE='UPDATE_RUN_SYNC_STATE';
 
 export const addRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl)=>{
 	return async dispatch=>{
@@ -63,7 +64,7 @@ export const addRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredit
          dbResultUpdatedRunSummary= await updateRunSummary(updatedRunSummary.totalDistance, updatedRunSummary.totalRuns, updatedRunSummary.averagePace, updatedRunSummary.averageDistance);
         }
         
-        dispatch({type: ADD_RUN, run: {runId: dbResult.insertId.toString(), runTotalTime: runTotalTime, runDistance: runDistance, runPace: runPace, runCaloriesBurnt: runCaloriesBurnt, runCredits: runCredits, runDate: runDate, runDay: runDay, runPath: pathString, runTrackSnapUrl: runTrackSnapUrl, isSyncDone: "0"}});
+        dispatch({type: ADD_RUN, run: {runId: dbResult.insertId.toString(), runTotalTime: runTotalTime, runDistance: runDistance, runPace: runPace, runCaloriesBurnt: runCaloriesBurnt, runCredits: runCredits, runDate: runDate, runDay: runDay, runPath: runPath, runTrackSnapUrl: runTrackSnapUrl, isSyncDone: "0"}});
         
         if(dbResultUpdatedRunSummary.rows._array.length>0){
            //console.log("Updating Run Summary from DB");
@@ -80,7 +81,7 @@ export const addRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredit
         //console.log('Network State');
         //console.log(state);
         if(state.isConnected){
-        addRunToServer(dbResult.insertId.toString(),runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,pathString,runTrackSnapUrl);
+        //addRunToServer(dbResult.insertId.toString(),runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,pathString,runTrackSnapUrl);
       }
       });
     }
@@ -124,16 +125,21 @@ catch(err){
 
 export const syncPendingRuns=(pendingRunsForSync)=>{
 
-console.log('Inside Sync Pending Runs');
-console.log(pendingRunsForSync);
+//console.log('Inside Sync Pending Runs');
+//console.log(pendingRunsForSync);
 
 return async dispatch=>{
     try
        {
+         //console.log('Inside dispatch');
+         //console.log(pendingRunsForSync);
+
          let runDataArr=[];
          pendingRunsForSync.map(pendingRun=>{
+          var pathString=pendingRun.runPath.map((path)=>""+path.latitude+","+path.longitude).join(';');
           const runData={
-            userId: pendingRun.userId,
+            runId: pendingRun.runId,
+            userId: 'piyush123',
             runTotalTime: pendingRun.runTotalTime,
             runDistance: pendingRun.runDistance,
             runPace: pendingRun.runPace,
@@ -141,14 +147,14 @@ return async dispatch=>{
             runCredits: '0',
             runDate: pendingRun.runDate,
             runDay: pendingRun.runDay,
-            runPath: pendingRun.pathString,
+            runPath: pathString,
             runTrackSnapUrl: pendingRun.runTrackSnapUrl
           };
           runDataArr = runDataArr.concat(runData);
          });
 
-    console.log('Run Request');
-    console.log(runDataArr);
+    //console.log('Run Request');
+    //console.log(runDataArr);
     const addRunsRequest={
       runDetailsList: runDataArr
     };
@@ -164,6 +170,7 @@ return async dispatch=>{
   }).then(response => response.json())
     .then((responseJson)=> {
       updateSyncStateInDB(pendingRunsForSync);
+      dispatch({type: UPDATE_RUN_SYNC_STATE, pendingRunsForSync});
     });   
        }
 catch(err){

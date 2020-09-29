@@ -4,6 +4,7 @@ import RunHistoryList from '../components/RunHistoryList';
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import NetInfo from '@react-native-community/netinfo';
+import { useIsFocused } from "@react-navigation/native";
 
 import * as runActions from '../store/run-actions';
 
@@ -14,21 +15,36 @@ const windowHeight = Dimensions.get('window').height;
 
 const RunHistoryScreen = props=>{
 
+const isFocused = useIsFocused();
 /*const unsubscribe = props.navigation.addListener('didFocus', () => {
     toggleCircle();
 });*/
+
 
 const runsHistory = useSelector(state => state.runs.runs);
 const runSummary=useSelector(state => state.runs.runSummary);
 const pendingRunsForSync=useSelector(state=>state.runs.runs.filter(run => run.isSyncDone==="0"));
 const dispatch=useDispatch();
 
-useEffect(()=>{
- syncPendingRuns();
-  const unsubscribe = NetInfo.addEventListener(state => {
-   handleNetworkStateChanges(state.type);
-});
-}, []);
+
+useEffect(() => {
+        let networkSubscriber;
+        if(isFocused){
+           console.log('Run History');
+           console.log(pendingRunsForSync);
+           syncPendingRuns();
+           networkSubscriber = NetInfo.addEventListener(state => {
+           handleNetworkStateChanges(state.type);
+          });
+        }
+        else if(networkSubscriber){
+          networkSubscriber();
+        }
+    }, [props, isFocused]);
+
+/*useEffect(()=>{
+  
+}, []);*/
 
 
 const handleNetworkStateChanges=(type) => {

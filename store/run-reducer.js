@@ -1,4 +1,4 @@
-import {ADD_RUN,LOAD_RUNS,UPDATE_SUMMARY,LOAD_RUN_SUMMARY} from './run-actions';
+import {ADD_RUN,LOAD_RUNS,UPDATE_SUMMARY,LOAD_RUN_SUMMARY,UPDATE_RUN_SYNC_STATE} from './run-actions';
 import RunDetails from '../models/rundetails';
 import RunSummary from '../models/runsummary';
 
@@ -21,7 +21,6 @@ export default (state=initialState, action)=>{
             runs: action.runs[0].map((run)=>
                 {  
                     var pathArr=run.RUN_PATH.split(";");
-
                     var path=pathArr.map(loc=>{
                         var locationArr=loc.split(",");
                         var location={
@@ -50,6 +49,15 @@ export default (state=initialState, action)=>{
         return {...state,
              runSummary: new RunSummary(loadedSummary.id.toString(), loadedSummary.TOTAL_DISTANCE.toString(),loadedSummary.TOTAL_RUNS.toString(),loadedSummary.AVERAGE_PACE.toString(),loadedSummary.AVERAGE_DISTANCE.toString())
         };
+
+        case UPDATE_RUN_SYNC_STATE:
+        let i;
+        const pendingRunsForSync=action.pendingRunsForSync;
+        for(i=0;i<pendingRunsForSync.length;i++){
+            let runToBeUpdatedIndex=state.runs.findIndex(run=>run.runId===pendingRunsForSync[i].runId);
+            state.runs[runToBeUpdatedIndex].isSyncDone="1";
+        }
+        return state;
 
 		default:
 		return state;
