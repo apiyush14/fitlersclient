@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, View,FlatList} from 'react-native';
+import { StyleSheet,View,FlatList,ActivityIndicator} from 'react-native';
 import RunHistoryItem from '../components/RunHistoryItem';
-
 /*
 List of Run History Cards
 */
@@ -19,19 +18,16 @@ const renderRunHistoryItem=itemData=>{
  onSelectRunItem={()=>{props.onSelectRunItem(itemData)}}/>;
 };
 
-const onEndReached=()=>{
- console.log('Reached End');
-};
-
 return(
 <View>
   <FlatList
    ListHeaderComponent={props.header}
+   ListFooterComponent={props.footer}
    data={props.listData}
    keyExtractor={(item,index)=>item.runId.toString()}
    renderItem={renderRunHistoryItem}
    onEndReachedThreshold={0}
-   onEndReached={onEndReached}
+   onEndReached={()=>{props.onEndReached()}}
    initialNumToRender={10}>
    </FlatList>
  </View>

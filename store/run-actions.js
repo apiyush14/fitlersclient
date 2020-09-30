@@ -7,6 +7,7 @@ export const LOAD_RUNS='LOAD_RUNS';
 export const UPDATE_SUMMARY='UPDATE_SUMMARY';
 export const LOAD_RUN_SUMMARY='LOAD_RUN_SUMMARY';
 export const UPDATE_RUN_SYNC_STATE='UPDATE_RUN_SYNC_STATE';
+export const UPDATE_RUNS_FROM_SERVER='UPDATE_RUNS_FROM_SERVER';
 
 export const addRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl)=>{
 	return async dispatch=>{
@@ -105,6 +106,33 @@ catch(err){
 	console.log(err);
 	throw err;
  };
+}
+};
+
+export const loadRunsFromServer=(pageNumber)=>{
+ return async dispatch=>{
+ return new Promise((resolve,reject)=>{
+  try{
+    var URL="http://192.168.1.66:7001/run-details/user/piyush123/getAllRuns?page=";
+    URL=URL+pageNumber;
+    fetch(URL, { 
+    method: 'GET', 
+    headers: { 
+    'Content-Type':'application/json' 
+    }
+  }).then(response => response.json())
+    .then((response)=> {
+     console.log('GET API results');
+     console.log(response);
+     dispatch({type: UPDATE_RUNS_FROM_SERVER, runs:response.runDetailsList})
+     resolve();
+    });   
+}
+catch(err){
+  console.log(err);
+  throw err;
+ };
+});
 }
 };
 

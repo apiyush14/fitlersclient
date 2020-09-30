@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { View, Text, StyleSheet,Animated, TouchableOpacity, Button, Dimensions} from 'react-native';
+import { View, Text, StyleSheet,Animated, TouchableOpacity, Button, Dimensions,ActivityIndicator} from 'react-native';
 import RunHistoryList from '../components/RunHistoryList';
 import { useSelector, useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,10 +16,11 @@ const windowHeight = Dimensions.get('window').height;
 const RunHistoryScreen = props=>{
 
 const isFocused = useIsFocused();
+const [isLoading, setIsLoading]=useState(false);
+const [pageNumber, setPageNumber]=useState(1);
 /*const unsubscribe = props.navigation.addListener('didFocus', () => {
     toggleCircle();
 });*/
-
 
 const runsHistory = useSelector(state => state.runs.runs);
 const runSummary=useSelector(state => state.runs.runSummary);
@@ -30,8 +31,8 @@ const dispatch=useDispatch();
 useEffect(() => {
         let networkSubscriber;
         if(isFocused){
-           console.log('Run History');
-           console.log(pendingRunsForSync);
+           //console.log('Run History');
+           //console.log(pendingRunsForSync);
            syncPendingRuns();
            networkSubscriber = NetInfo.addEventListener(state => {
            handleNetworkStateChanges(state.type);
@@ -66,6 +67,29 @@ const syncPendingRuns=()=>{
          dispatch(runActions.syncPendingRuns(pendingRunsForSync));
       }
       });
+};
+
+const loadMoreDataFromServer=()=>{
+ setIsLoading(true);
+  setPageNumber((pageNumber)=>{
+  console.log('Going with page number');
+  console.log(pageNumber);
+  NetInfo.fetch().then(state=>{
+        //console.log('Network State');
+        //console.log(state);
+        if(state.isConnected&&(runsHistory[runsHistory.length-1].runId>1)){
+         dispatch(runActions.loadRunsFromServer(pageNumber)).then(()=>{
+          console.log('Load from Server Completed');
+          setIsLoading(false);
+         });
+      }
+      else{
+        setIsLoading(false);
+      }
+ });
+  return pageNumber+1;
+});
+  
 };
 
 /*useEffect(()=>{
@@ -105,6 +129,21 @@ const onSelectRunHistoryItem=(itemdata)=>{
     path: itemdata.item.runPath,
     sourceScreen: 'RunHistoryScreen' 
     });
+};
+
+const renderRunSummaryFooter=()=>{
+ return (
+        <View>
+         {isLoading?
+          (
+           <ActivityIndicator size="large" color="green"/>
+          ):
+          (
+           <View></View>
+          )
+        }
+        </View>
+  );
 };
 
 const renderRunSummaryHeader=()=>{
@@ -151,7 +190,10 @@ return (
          <View style={styles.runsScrollPanel}>
          <RunHistoryList
          onSelectRunItem={onSelectRunHistoryItem}
+         onEndReached={loadMoreDataFromServer}
+         isLoading={isLoading}
          header={renderRunSummaryHeader()}
+         footer={renderRunSummaryFooter()}
          listData={runsHistory}/>
          </View>
          </View>

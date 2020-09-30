@@ -1,4 +1,4 @@
-import {ADD_RUN,LOAD_RUNS,UPDATE_SUMMARY,LOAD_RUN_SUMMARY,UPDATE_RUN_SYNC_STATE} from './run-actions';
+import {ADD_RUN,LOAD_RUNS,UPDATE_SUMMARY,LOAD_RUN_SUMMARY,UPDATE_RUN_SYNC_STATE,UPDATE_RUNS_FROM_SERVER} from './run-actions';
 import RunDetails from '../models/rundetails';
 import RunSummary from '../models/runsummary';
 
@@ -57,6 +57,27 @@ export default (state=initialState, action)=>{
             let runToBeUpdatedIndex=state.runs.findIndex(run=>run.runId===pendingRunsForSync[i].runId);
             state.runs[runToBeUpdatedIndex].isSyncDone="1";
         }
+        return state;
+
+        case UPDATE_RUNS_FROM_SERVER:
+        var updatedRunsFromServer=action.runs.map((run)=>{
+        if(!state.runs.find(stateRun=>stateRun.runId===run.runId)){
+            console.log('Inside condition');
+            var pathArr=run.runPath.split(";");
+            var path=pathArr.map(loc=>{
+            var locationArr=loc.split(",");
+            var location={
+                latitude: parseFloat(locationArr[0]),
+                longitude: parseFloat(locationArr[1])
+                        };
+                return location;
+                });
+            return new RunDetails(run.runId, run.runTotalTime,run.runDistance,run.runPace,run.runCaloriesBurnt,run.runCredits,run.runDate, run.runDay, path, run.runTrackSnapUrl, "1");
+        }
+       }).filter(updatedRun=>updatedRun!==undefined);
+        console.log('Updated Runs from server');
+        console.log(updatedRunsFromServer);
+        state.runs=state.runs.concat(updatedRunsFromServer);
         return state;
 
 		default:
