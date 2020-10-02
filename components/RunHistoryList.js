@@ -8,13 +8,13 @@ const RunHistoryList=props=>{
 
 const renderRunHistoryItem=itemData=>{
  return <RunHistoryItem
- image={itemData.item.runTrackSnapUrl}
- date={itemData.item.runDate}
- day={itemData.item.runDay}
- lapsedTime={itemData.item.runTotalTime}
- totalDistance={itemData.item.runDistance}
- averagePace={itemData.item.runPace}
- caloriesBurnt={itemData.item.runCaloriesBurnt}
+ runTrackSnapUrl={itemData.item.runTrackSnapUrl}
+ runDate={itemData.item.runDate}
+ runDay={itemData.item.runDay}
+ runTotalTime={itemData.item.runTotalTime}
+ runDistance={itemData.item.runDistance}
+ runPace={itemData.item.runPace}
+ runCaloriesBurnt={itemData.item.runCaloriesBurnt}
  onSelectRunItem={()=>{props.onSelectRunItem(itemData)}}/>;
 };
 

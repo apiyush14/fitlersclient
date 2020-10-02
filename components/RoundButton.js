@@ -1,15 +1,17 @@
 import React from 'react';
-import { StyleSheet,View,Button} from 'react-native';
+import { StyleSheet,View,Text,TouchableOpacity,Dimensions} from 'react-native';
 
 /*
 Round Shaped Button
 */
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 const RoundButton=props=>{
-	return (<View style={{...styles.button,...props.style}}>
-            <Button title={props.title} onPress={props.onPress} color='white'>
-           </Button>
-         </View>
+	return (<TouchableOpacity style={{...styles.button,...props.style}} onPress={props.onPress}>
+            <Text style={styles.buttonTitle}>{props.title}</Text>
+         </TouchableOpacity>
 );
 };
 
@@ -20,8 +22,13 @@ const styles = StyleSheet.create({
      height: 90,
      borderRadius: 90/2,
      opacity: 0.7,
-     justifyContent: 'center'
+     justifyContent: 'center',
+     alignItems: 'center'
   },
+  buttonTitle: {
+    color: 'white',
+    fontSize: windowWidth/21
+  }
 });
 
 export default RoundButton;

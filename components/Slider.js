@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { View, StyleSheet, Animated,ImageBackground,Text } from 'react-native';
+import { View, StyleSheet, Animated,ImageBackground,Text,Dimensions } from 'react-native';
 import {Swipeable} from 'react-native-gesture-handler';
 import RoundButton from '../components/RoundButton';
 
@@ -16,6 +16,9 @@ Sample Usage:
          bounceValue='220' 
          image='uri'/>
 */
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const Slider=props=>{
 
@@ -68,7 +71,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'black',
     borderRadius: 40,
-    opacity: 0.5
+    opacity: 1
   },
   bgImage: {
    width: '100%',
@@ -76,15 +79,15 @@ const styles = StyleSheet.create({
    overflow: 'hidden',
    borderRadius: 40,
    justifyContent: 'flex-end',
-   backgroundColor: 'white',
-   opacity: 0.7
+   backgroundColor: 'lightgreen',
+   opacity: 1
  },
  sliderText: {
    position: 'absolute',
    marginLeft: 80,
    bottom: '30%',
    color: 'black',
-   fontSize: 18
+   fontSize: (windowWidth*0.9)/21
  },
   sliderButton: {
      marginLeft: 3,

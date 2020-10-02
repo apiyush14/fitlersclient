@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Button, Dimensions,Animated} from 'react-native';
+import { View, StyleSheet, Button, Dimensions,Animated,Alert} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import ChallengeList from '../components/ChallengeList';
@@ -7,6 +7,7 @@ import RoundButton from '../components/RoundButton';
 import {CHALLENGES} from '../data/dummy-data';
 import {useDispatch} from 'react-redux';
 import * as runActions from '../store/run-actions';
+import * as Permissions from 'expo-permissions';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -15,7 +16,6 @@ const RunTrackerHomeScreen = (props)=>{
 
 const dispatch=useDispatch();
 
-const [location, setLocation] = useState(null);
 const [mapRegion, setMapRegion] = useState({
         latitude: 31,
         longitude: 74,
@@ -25,39 +25,44 @@ const [mapRegion, setMapRegion] = useState({
 
 //Load Run History Data
 useEffect(()=>{
-  
   const fetchData=async ()=>{
-    await dispatch(runActions.loadRuns());
-    await dispatch(runActions.loadRunSummary());
+    dispatch(runActions.loadRuns());
+    dispatch(runActions.loadRunSummary());
    };
    fetchData();
   }, []);
 
 //Load Location Details
 useEffect(()=>{
-
 (async ()=>{
+
   let {status} = await Location.requestPermissionsAsync();
+  let statusMotion = await Permissions.askAsync(Permissions.MOTION);
+
+  //Motion Sensor Permission Handling
+  if(statusMotion.status!=='granted'){
+     Alert.alert("Location Alert","Location Permission is required!!!");
+     console.log("Permission Not granted");
+  }
+  
+  //Location Sensor Permission Handling
   if(status!=='granted')
   {
      //TODO : To handle alert to change settings
+     Alert.alert("Location Alert","Location Permission is required!!!");
      console.log("Permission Not granted");
   }
+  else{
   let location = await Location.getCurrentPositionAsync({});
-  setLocation(location);
-})();
-},[]);
-
-//Location change effect hook
-useEffect(()=>{
-if(location){
- setMapRegion({
+  setMapRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         latitudeDelta: 0.000757,
         longitudeDelta: 0.0008
- });}
-},[location]);
+  });
+  }
+})();
+},[]);
 
 //Logic to handle shutter tab for challenges
 var isHidden = true;
@@ -128,7 +133,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '70%',
         alignSelf: 'center',
-        opacity: 0.7
+        opacity: 0.9
 	},
 
 	challengeList: {
@@ -140,7 +145,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '20%'
   },
-  
+
     subView: {
     position: "absolute",
     backgroundColor: "white",

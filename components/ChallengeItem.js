@@ -12,7 +12,7 @@ const ChallengeItem=props=>{
 return(
  	<View style={styles.challengeItem}>
  	<TouchableOpacity onPress={()=>{}}>
- 	<View>
+ 	<View style={styles.imageContainer}>
  	<ImageBackground 
  	source={{uri:props.image}} 
  	style={styles.bgImage}>
@@ -27,7 +27,7 @@ return(
 
 const styles = StyleSheet.create({
 	title: {
-     fontSize: 22,
+     fontSize: windowWidth/21,
      color: 'white',
      backgroundColor: 'rgba(0,0,0,0.5)',
      paddingVertical: 5,
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
  	flexDirection: 'row',
  },
  challengeItem: {
- 	height: windowHeight/6,
+ 	height: windowHeight/6.5,
  	width: windowWidth/2,
  	backgroundColor: 'white',
  	borderRadius: 10,
@@ -48,7 +48,8 @@ const styles = StyleSheet.create({
  	shadowOffset: { width: 4, height: 4 },  
     shadowColor: 'black',  
     shadowOpacity: 0.7,
-    shadowRadius: 2
+    shadowRadius: 2,
+    elevation: 10
  },
  challengeHeader: {
  	height: '70%'
@@ -58,6 +59,11 @@ const styles = StyleSheet.create({
  	justifyContent: 'space-between',
  	alignItems: 'center',
  	marginVertical: 2
+ },
+ imageContainer:{
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
  },
  bgImage: {
  	width: '100%',

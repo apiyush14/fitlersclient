@@ -18,9 +18,9 @@ const [trackTimer, setTrackTimer]=useState({
 });
 
 useEffect(() => {
-         let secondsVar = ("0" + (Math.floor(props.lapsedTime / 1000) % 60)).slice(-2);
-         let minutesVar = ("0" + (Math.floor(props.lapsedTime / 60000) % 60)).slice(-2);
-         let hoursVar = ("0" + Math.floor(props.lapsedTime / 3600000)).slice(-2);
+         let secondsVar = ("0" + (Math.floor(props.runTotalTime / 1000) % 60)).slice(-2);
+         let minutesVar = ("0" + (Math.floor(props.runTotalTime / 60000) % 60)).slice(-2);
+         let hoursVar = ("0" + Math.floor(props.runTotalTime / 3600000)).slice(-2);
          setTrackTimer(
         {
             seconds: secondsVar,
@@ -34,15 +34,15 @@ return(
  	<TouchableOpacity onPress={props.onSelectRunItem}>
  	<View style={styles.trackImage}>
  	<ImageBackground
- 	source={{uri:props.image}} 
+ 	source={{uri:props.runTrackSnapUrl}} 
  	style={styles.bgImage}>
  	</ImageBackground>
  	</View>
  	<View style={styles.calendar}>
- 	 <Text style={styles.dayText}>{props.day}</Text>
+ 	 <Text style={styles.dayText}>{props.runDay}</Text>
  	 <View style={styles.calendarLine}>
  	 </View>
- 	 <Text style={styles.dateText}>{props.date}</Text>
+ 	 <Text style={styles.dateText}>{props.runDate}</Text>
  	</View>
  	<View style={styles.runDetails}>
  	 
@@ -50,7 +50,7 @@ return(
  	 <View style={styles.walkIcon}>
    <Ionicons name="ios-walk" size={24} color='grey'/>
    </View>
-   <Text style={styles.distanceText}>{parseFloat(props.totalDistance/1000).toFixed(2)} KM</Text>
+   <Text style={styles.distanceText}>{parseFloat(props.runDistance/1000).toFixed(2)} KM</Text>
    </View>
 
    <View style={styles.lapsedTimeView}>
@@ -64,7 +64,7 @@ return(
    <View style={styles.paceIcon}>
    <Ionicons name="ios-speedometer" size={24} color='grey'/>
    </View>
-   <Text style={styles.paceText}>{parseFloat(props.averagePace).toFixed(2)}</Text>
+   <Text style={styles.paceText}>{parseFloat(props.runPace).toFixed(2)}</Text>
    </View>
 
  	</View>

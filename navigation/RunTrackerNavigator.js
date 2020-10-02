@@ -29,7 +29,7 @@ return (
 const RunTrackerStackNavigator=({navigation, route})=>{
   //console.log(route);
 return (
-  <stackNavigator.Navigator>
+  <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
     <stackNavigator.Screen name="RunTrackerTabNavigator" component={RunTrackerTabNavigator}
     options={{
       title: ((route.state&&route.state.routes[0]&&route.state.routes[0].state.index===0)|| (!route.state&&route.name==='Home'))?'Runner Home':'Wall of Fame',

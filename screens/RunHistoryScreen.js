@@ -119,14 +119,14 @@ isSliderPositionLeft = !isSliderPositionLeft;
 
 const onSelectRunHistoryItem=(itemdata)=>{
     props.navigation.navigate('RunDetailsScreen', {
-    track_image:itemdata.item.runTrackSnapUrl,
-    date:itemdata.item.runDate,
-    day:itemdata.item.runDay,
-    lapsedTime:itemdata.item.runTotalTime,
-    totalDistance:itemdata.item.runDistance,
-    averagePace:itemdata.item.runPace,
-    caloriesBurnt: itemdata.item.runCaloriesBurnt,
-    path: itemdata.item.runPath,
+    runTrackSnapUrl:itemdata.item.runTrackSnapUrl,
+    runDate:itemdata.item.runDate,
+    runDay:itemdata.item.runDay,
+    runTotalTime:itemdata.item.runTotalTime,
+    runDistance:itemdata.item.runDistance,
+    runPace:itemdata.item.runPace,
+    runCaloriesBurnt: itemdata.item.runCaloriesBurnt,
+    runPath: itemdata.item.runPath,
     sourceScreen: 'RunHistoryScreen' 
     });
 };
