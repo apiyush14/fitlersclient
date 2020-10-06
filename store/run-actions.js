@@ -112,7 +112,6 @@ catch(err){
 export const loadRunsFromServer=(pageNumber)=>{
  return async dispatch=>{
  return new Promise((resolve,reject)=>{
-  try{
     var URL="http://192.168.1.66:7001/run-details/user/piyush123/getAllRuns?page=";
     URL=URL+pageNumber;
     fetch(URL, { 
@@ -126,12 +125,9 @@ export const loadRunsFromServer=(pageNumber)=>{
      console.log(response);
      dispatch({type: UPDATE_RUNS_FROM_SERVER, runs:response.runDetailsList})
      resolve();
-    });   
-}
-catch(err){
-  console.log(err);
-  throw err;
- };
+    }).catch(err=>{
+      reject(err);
+    });
 });
 }
 };

@@ -15,12 +15,13 @@ return(
  	      <View style={{...props.style,...styles.circleDashboardBorder}}>
           <LinearGradient style={styles.circleDashboardContainer}
           colors={['#303030', 'grey']}>
+          </LinearGradient>
            <Text style={styles.text}>{props.text}</Text>
            <Text style={styles.footerText}>{props.footerText}</Text>
           <View style={styles.icon}>
             <Ionicons name={props.icon} size={50} color='springgreen'/>
           </View>
-          </LinearGradient>
+          
           </View>
  	);
 };
@@ -35,6 +36,8 @@ const styles = StyleSheet.create({
         shadowOffset: {width:2,height:2},
         shadowOpacity:1,
         shadowRadius:6,
+        elevation: 4,
+        alignItems: 'center'
     },
     circleDashboardBorder: {
         width: (windowWidth+12)/2.5,
@@ -42,11 +45,13 @@ const styles = StyleSheet.create({
         borderRadius: (windowWidth+12)/5,
         borderWidth: 3,
         borderColor: 'springgreen',
+        alignItems: 'center',
         shadowColor: 'springgreen',
         shadowOffset: {width:3,height:4},
         shadowOpacity:1,
         shadowRadius:6,
-        opacity: 0.6
+        opacity: 0.6,
+        elevation: 4
     },
     icon: {
         position: 'absolute',
@@ -60,23 +65,23 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '40%',
         color: 'springgreen',
-        alignSelf: 'center',
         shadowColor: 'black',
         shadowOffset: {width:2,height:2},
         shadowOpacity:1,
         shadowRadius:2,
-        fontSize: 30,
+        fontSize: windowWidth/21,
+        alignSelf: 'center'
     },
     footerText: {
         position: 'absolute',
         top: '70%',
         color: 'springgreen',
-        alignSelf: 'center',
         shadowColor: 'black',
         shadowOffset: {width:2,height:2},
         shadowOpacity:1,
         shadowRadius:2,
-        fontSize: 15,
+        fontSize: windowWidth/27,
+        alignSelf: 'center'
     }
 });
 

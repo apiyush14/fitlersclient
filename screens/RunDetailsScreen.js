@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+
 var isCalledFromHistoryScreen=false;
 
 let mapRef=null;
@@ -42,7 +43,7 @@ const TESTPOINTS = [
 
 const RunDetailsScreen = props=>{
 
-  const dispatch = useDispatch();
+const dispatch = useDispatch();
 
 //State Variables
 //const [mapState,setMapState]=useState(null);
@@ -101,6 +102,7 @@ useEffect(() => {
 
        //To be removed
        if(!isCalledFromHistoryScreen){
+         console.log('Setting Up Run Path');
          setRunPath(TESTPOINTS);
        }
        
@@ -113,7 +115,7 @@ useEffect(() => {
  }
 }, [runPath]);
 
-//Methos to take a snapshot and call save method
+//Method to take a snapshot and call save method
 const takeSnapshot=()=>{
   const snapshot = mapRef.takeSnapshot({
    // width: 300,      // optional, when omitted the view-width is used
@@ -142,6 +144,8 @@ return (
  strokeWidth={5}
  strokeColor='red'
  coordinates={runPath}/>
+ <Marker pinColor='green' coordinate={runPath[0]}/>
+ <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>
  </MapView>
 
  <View style={styles.runMetricsContainer}>

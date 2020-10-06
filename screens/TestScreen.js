@@ -6,25 +6,47 @@ import { Accelerometer } from 'expo-sensors';
 import {Swipeable} from 'react-native-gesture-handler';
 import RoundButton from '../components/RoundButton';
 import Slider from '../components/Slider';
-import ChallengeItem from '../components/ChallengeItem';
+import DashboardItem from '../components/DashboardItem';
 
 const TestScreen = props=>{
 
 return (
-         <ChallengeItem style={styles.cardItem}
- image='hjk'
- title='test'
- onSelectChallenge={()=>{}}/>
+   <View style={styles.containerView1}>
+    <View style={{...props.style,...styles.circleDashboardBorder}}>
+     <View style={styles.containerView}>
+     </View>
+    </View>
+   </View>
     );
 };
 
 const styles = StyleSheet.create({
-  cardItem: {
-    height: 300,
-    width: 150,
-    alignSelf: 'center',
-    elevation: 4
-  }
+	containerView1: {
+      alignItems: 'center',
+      backgroundColor: 'white'
+	},
+	    containerView:{
+        width: 130,
+        height: 130,
+        borderRadius: (330+12)/5,
+        borderColor: 'springgreen',
+        borderWidth: 2,
+        alignSelf: 'center',
+        top: 5
+	},
+ circleDashboardBorder: {
+        width: (330+12)/2.5,
+        height: (330+12)/2.5,
+        borderRadius: (330+12)/5,
+        shadowColor: "springgreen",
+        shadowOffset: {
+      	width: 0,
+	    height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+        elevation: 3
+    },
 });
 
 export default TestScreen;
