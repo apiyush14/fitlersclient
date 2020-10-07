@@ -63,6 +63,8 @@ const [trackTimer, setTrackTimer]=useState({
 
 //Load Screen Use Effect hook used to populate state variables
 useEffect(() => {
+  
+  console.log(props.route);
 
   if(props.route.params.sourceScreen){
     if(props.route.params.sourceScreen==='RunHistoryScreen'){
@@ -194,23 +196,6 @@ return (
 
  </View>
  </View>
- <View style={styles.footerTabContainer}>
- <View style={styles.footerHome}>
- <TouchableOpacity onPress={()=>{
-  props.navigation.navigate('RunTrackerTabNavigator',{screen:'Home'});
-}}>
-<Ionicons name="ios-home" size={25} color='gray'/>
-</TouchableOpacity>
-</View>
-
-<View style={styles.footerRunHistory}>
-<TouchableOpacity onPress={()=>{
-  props.navigation.navigate('History');
-}}>
-<Ionicons name="ios-stats" size={25} color='gray'/>
-</TouchableOpacity>
-</View>
-</View>
 </View>
 );
 };

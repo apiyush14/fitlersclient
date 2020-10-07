@@ -2,9 +2,9 @@ import React from 'react';
 import {Ionicons} from '@expo/vector-icons';
 import { Platform, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer} from '@react-navigation/native';
 import RunTrackerHomeScreen from '../screens/RunTrackerHomeScreen';
 import LiveRunTracker from '../screens/LiveRunTracker';
 import RunDetailsScreen from '../screens/RunDetailsScreen';
@@ -19,32 +19,35 @@ const tabNavigator=createBottomTabNavigator();
 const RunTrackerNavigator=()=>{
 return (
   <NavigationContainer>
-    <drawerNavigator.Navigator>
-     <drawerNavigator.Screen name="Home" component={RunTrackerStackNavigator}/>
+    <drawerNavigator.Navigator screenOptions={{
+      swipeEnabled: false
+    }}>
+     <drawerNavigator.Screen name="Home" component={RunTrackerTabNavigator}/>
     </drawerNavigator.Navigator>
   </NavigationContainer>
   );
 };
 
 const RunTrackerStackNavigator=({navigation, route})=>{
-  //console.log(route);
 return (
   <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
-    <stackNavigator.Screen name="RunTrackerTabNavigator" component={RunTrackerTabNavigator}
+     <stackNavigator.Screen name="Home" component={RunTrackerHomeScreen} 
     options={{
-      title: ((route.state&&route.state.routes[0]&&route.state.routes[0].state.index===0)|| (!route.state&&route.name==='Home'))?'Runner Home':'Wall of Fame',
+      tabBarVisible: false,
+      title: 'Runner Home',
       headerLeft: ()=>{
-        //Condition to be verfied in testing, used index of tab stack to check
-        if(route.state&&route.state.routes[0]&&route.state.routes[0].state.index===0
-          ||(!route.state&&route.name==='Home')){
         return (
           <View styles={styles.person}>
            <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
             <Ionicons name="ios-person" size={40} color='grey'/>
            </TouchableOpacity>
           </View>
-        );}
+        );
      } 
+    }}/>
+     <stackNavigator.Screen name="History" component={RunHistoryScreen} 
+    options={{
+      title: 'Wall of Fame'
     }}/>
     <stackNavigator.Screen name="LiveRunTracker" component={LiveRunTracker} 
     options={{
@@ -52,23 +55,38 @@ return (
     }}/>
     <stackNavigator.Screen name="RunDetailsScreen" component={RunDetailsScreen}
     options={{
+    title: 'Run Details',
     headerLeft: null
   }}/>
   </stackNavigator.Navigator>
   );
 };
 
-const RunTrackerTabNavigator=()=>{
+const RunTrackerHistoryStackNavigator=({navigation, route})=>{
+return (
+  <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
+     <stackNavigator.Screen name="History" component={RunHistoryScreen} 
+    options={{
+      title: 'Wall of Fame'
+    }}/>
+  </stackNavigator.Navigator>
+  );
+};
+
+const RunTrackerTabNavigator=({navigation, route})=>{
 return (
    <tabNavigator.Navigator 
-    screenOptions={({ route }) => ({
+    screenOptions={(screenRoute) => ({
+          tabBarVisible: route.state&&screenRoute.name==='Home'&&
+          route.state.routes[route.state.index].state
+          &&route.state.routes[route.state.index].state.index===1?false:true,
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
-            if (route.name === 'Home') {
+            if (screenRoute.route.name === 'Home') {
               iconName = focused
                 ? Platform.OS === 'android'?'md-home':'ios-home'
                 : Platform.OS === 'android'?'md-home':'ios-home';
-            } else if (route.name === 'History') {
+            } else if (screenRoute.route.name === 'History') {
               iconName = focused 
                          ? Platform.OS === 'android'?'md-stats':'ios-stats' 
                          : Platform.OS === 'android'?'md-stats':'ios-stats';
@@ -82,8 +100,8 @@ return (
           inactiveTintColor: 'gray'
         }}
     >
-      <tabNavigator.Screen name="Home" component={RunTrackerHomeScreen} />
-      <tabNavigator.Screen name="History" component={RunHistoryScreen} />
+      <tabNavigator.Screen name="Home" component={RunTrackerStackNavigator} />
+      <tabNavigator.Screen name="History" component={RunTrackerHistoryStackNavigator} />
     </tabNavigator.Navigator>
  );
 };
@@ -104,88 +122,5 @@ const styles = StyleSheet.create({
    left: 10
  }
 });
-
-/*
-const RunTrackerNavigator = createStackNavigator(
-  {
-    RunTrackerHome: RunTrackerHomeScreen,
-    LiveRunTracker: 
-    {
-     screen: LiveRunTracker, 
-     navigationOptions: {
-      
-    }
-   }
-    ,
-    RunDetailsScreen: RunDetailsScreen,
-    TestScreen: TestScreen
-  },
-  {
-    defaultNavigationOptions: {
-      headerStyle: {
-        backgroundColor: Platform.OS === 'android' ? 'white' : 'white'
-      },
-      headerTintColor: Platform.OS === 'android' ? 'white' : 'white'
-    }
-  }
-);
-
-
-RunTrackerNavigator.navigationOptions = ({ navigation }) => {
-  let navigationOptions = {};
-  if (navigation.state.index === 1) {
-    navigationOptions.tabBarVisible = false;
-  }
-
-  return navigationOptions;
-};
-
-const RunHistoryNavigator = createStackNavigator(
-  {
-    RunHistoryScreen: RunHistoryScreen
-  },
-  {
-    defaultNavigationOptions: {
-      headerStyle: {
-        backgroundColor: Platform.OS === 'android' ? 'white' : 'white'
-      },
-      headerTintColor: Platform.OS === 'android' ? 'white' : 'white'
-    }
-  }
-);
-
-const RunTrackerTabNavigator=createBottomTabNavigator(
-{
-  RunTracker: {
-  screen: RunTrackerNavigator, 
-  navigationOptions: {
- tabBarIcon: (tabInfo)=>
- {
-  return (
-  <Ionicons 
-  name='ios-home' 
-  size={25}
-  />
-  );
- }
-}
-},
-RunHistory: {
-  screen:RunHistoryNavigator, 
-  navigationOptions: {
-  tabBarIcon: (tabInfo)=>
- {
-  return (<Ionicons name='ios-stats' size={25}/>);
- }
-}
-}
-
-},
-{
-  tabBarOptions: {
-    activeTintColor: 'grey'
-  }
-}
-);*/
 
 export default RunTrackerNavigator;
