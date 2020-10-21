@@ -61,7 +61,10 @@ export default (state=initialState, action)=>{
 
         case UPDATE_RUNS_FROM_SERVER:
         var updatedRunsFromServer=action.runs.map((run)=>{
-        if(!state.runs.find(stateRun=>stateRun.runId===run.runId)){
+            console.log('Run Updated From Server');
+            console.log(run);
+            console.log(state.runs.findIndex(stateRun=>stateRun.runId===run.runId));
+        if(state.runs.findIndex(stateRun=>stateRun.runId===run.runId)<0){
             console.log('Inside condition');
             var pathArr=run.runPath.split(";");
             var path=pathArr.map(loc=>{
@@ -76,7 +79,7 @@ export default (state=initialState, action)=>{
         }
        }).filter(updatedRun=>updatedRun!==undefined);
         console.log('Updated Runs from server');
-        console.log(updatedRunsFromServer);
+        //console.log(updatedRunsFromServer);
         state.runs=state.runs.concat(updatedRunsFromServer);
         return state;
 

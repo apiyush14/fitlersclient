@@ -17,7 +17,6 @@ const RunHistoryScreen = props=>{
   const isFocused = useIsFocused();
   const dispatch=useDispatch();
   const [isLoading, setIsLoading]=useState(false);
-  const [pageNumber, setPageNumber]=useState(1);
 /*const unsubscribe = props.navigation.addListener('didFocus', () => {
     toggleCircle();
   });*/
@@ -63,35 +62,36 @@ const handleNetworkStateChanges=(type) => {
         //console.log('Network State');
         //console.log(state);
         if(state.isConnected&&pendingRunsForSync!==null&&pendingRunsForSync.length>0){
-         dispatch(runActions.syncPendingRuns(pendingRunsForSync));
+         dispatch(runActions.syncPendingRuns(pendingRunsForSync)).then(()=>{
+
+         }).catch(err=>{
+
+         });
        }
      });
         };
 
-    //Method to lazy load Runs from server 
-        const loadMoreDataFromServer=()=>{
+     //Method to lazy load Runs from server 
+      const loadMoreDataFromServer=()=>{
          setIsLoading(true);
-         setPageNumber((pageNumber)=>{
-          //console.log('Going with page number');
-          //console.log(pageNumber);
-          let newPageNumber=pageNumber;
-          NetInfo.fetch().then(state=>{
+         let pageNumber=Math.floor(runsHistory.length/3);
+         //console.log('Going with page number');
+         //console.log(pageNumber);
+         NetInfo.fetch().then(state=>{
         if(state.isConnected&&(runsHistory[runsHistory.length-1].runId>1)){
           dispatch(runActions.loadRunsFromServer(pageNumber)).then(()=>{
           //console.log('Load from Server Completed');
           setIsLoading(false);
-          newPageNumber=newPageNumber+1;
         }).catch(err=>{
-           setIsLoading(false);
+          //console.log('In error block');
+          setIsLoading(false);
         });
        }
        else{
         setIsLoading(false);
       }
     });
-          return newPageNumber;
-        });
-       };
+       };  
 
 //Event Listener to be called on selecting Run and to navigate to Run History Screen
 const onSelectRunHistoryItem=(itemdata)=>{

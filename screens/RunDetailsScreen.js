@@ -142,12 +142,15 @@ return (
  <View style={styles.runDetailsContainer}>
  <MapView style={styles.mapContainer} region={mapRegion} ref={map => {mapRef = map }}
  pitchEnabled={true} rotateEnabled={true} zoomEnabled={true} scrollEnabled={true}>
+ {runPath?(
  <Polyline 
  strokeWidth={5}
  strokeColor='red'
- coordinates={runPath}/>
- <Marker pinColor='green' coordinate={runPath[0]}/>
- <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>
+ coordinates={runPath}/>):(<View></View>)}
+ {runPath?(
+ <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
+ {runPath?(
+ <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
  </MapView>
 
  <View style={styles.runMetricsContainer}>

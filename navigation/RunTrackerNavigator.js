@@ -61,7 +61,7 @@ const RunTrackerTabNavigator=({navigation, route})=>{
   <tabNavigator.Screen name="Home" component={RunTrackerStackNavigator} 
   listeners={{
     tabPress: e=>{
-      if(route.state.routes[0].state.index===1){
+      if(route.state.routes[0].state&&route.state.routes[0].state.index===1){
       navigation.dispatch(popAction);
     }
     }
@@ -83,7 +83,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
         return (
           <View styles={styles.person}>
           <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
-          <Ionicons name="ios-person" size={40} color='grey'/>
+          <Ionicons name={Platform.OS === 'android'?'md-person':'ios-person'} size={40} color='grey'/>
           </TouchableOpacity>
           </View>
           );
