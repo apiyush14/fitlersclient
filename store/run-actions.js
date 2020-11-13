@@ -10,7 +10,7 @@ export const UPDATE_RUN_SYNC_STATE='UPDATE_RUN_SYNC_STATE';
 export const UPDATE_RUNS_FROM_SERVER='UPDATE_RUNS_FROM_SERVER';
 
 // Add a new run to the local DB
-export const addRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl)=>{
+export const addRun=(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl)=>{
 	return async dispatch=>{
         try{
         await dispatch(checkAndDeleteRunsIfNeeded());
@@ -20,8 +20,8 @@ export const addRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredit
         var filePath=filePathPrefix.concat(runTrackSnapUrl.toString());
         
         //Insert And Update Run
-        const dbResult= await insertRun(runTotalTime.toString(),runDistance.toString(),runPace.toString(),runCaloriesBurnt.toString(),0,runDate.toString(),runDay.toString(),pathString,runTrackSnapUrl.toString(),"0");
-        dispatch({type: ADD_RUN, run: {runId: dbResult.insertId.toString(), runTotalTime: runTotalTime, runDistance: runDistance, runPace: runPace, runCaloriesBurnt: runCaloriesBurnt, runCredits: runCredits, runDate: runDate, runDay: runDay, runPath: runPath, runTrackSnapUrl: runTrackSnapUrl, isSyncDone: "0"}});
+        const dbResult= await insertRun(runId,runTotalTime.toString(),runDistance.toString(),runPace.toString(),runCaloriesBurnt.toString(),0,runStartDateTime.toString(),runDate.toString(),runDay.toString(),pathString,runTrackSnapUrl.toString(),"0");
+        dispatch({type: ADD_RUN, run: {runId: runId, runTotalTime: runTotalTime, runDistance: runDistance, runPace: runPace, runCaloriesBurnt: runCaloriesBurnt, runCredits: runCredits,runStartDateTime: runStartDateTime, runDate: runDate, runDay: runDay, runPath: runPath, runTrackSnapUrl: runTrackSnapUrl, isSyncDone: "0"}});
         
         //Update Run Summary
         var dbResultForRunSummary=await fetchRunSummary();
@@ -74,7 +74,7 @@ export const loadRuns=()=>{
  	try{
     const dbResult=await fetchRuns();
     dbResult.rows._array.sort(function(a,b){
-      return parseInt(b.RUN_ID)-parseInt(a.RUN_ID);
+      return b.RUN_ID-a.RUN_ID;
     });
     dispatch({type: LOAD_RUNS, runs:[dbResult.rows._array]});
 }
@@ -144,6 +144,7 @@ return async dispatch=>{
             runPace: pendingRun.runPace,
             runCaloriesBurnt: pendingRun.runCaloriesBurnt,
             runCredits: '0',
+            runStartDateTime: pendingRun.runStartDateTime,
             runDate: pendingRun.runDate,
             runDay: pendingRun.runDay,
             runPath: pathString,
@@ -178,7 +179,7 @@ return async dispatch=>{
 }
 };
 
-const addRunToServer=(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,pathString,runTrackSnapUrl)=>{
+const addRunToServer=(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,pathString,runTrackSnapUrl)=>{
     const runData={
       runId: runId,
       userId: 'piyush123',
@@ -187,6 +188,7 @@ const addRunToServer=(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,ru
       runPace: runPace,
       runCaloriesBurnt: runCaloriesBurnt,
       runCredits: '0',
+      runStartDateTime: runStartDateTime,
       runDate: runDate,
       runDay: runDay,
       runPath: pathString,
@@ -238,7 +240,7 @@ const checkAndDeleteRunsIfNeeded=()=>{
          let runIdsToBeDeleted="";
 
          existingRuns.rows._array.sort(function(a,b){
-           return parseInt(b.RUN_ID)-parseInt(a.RUN_ID);
+           return b.RUN_ID-a.RUN_ID;
           });
          
           for(runsToBeDeleted=existingRuns.rows._array.length-2; runsToBeDeleted>0;runsToBeDeleted--){

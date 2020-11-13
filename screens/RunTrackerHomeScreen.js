@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Button, Dimensions,Animated,Alert} from 'react-native';
+import { View, StyleSheet, Button, Dimensions,Animated,Alert,Modal} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import RoundButton from '../components/RoundButton';
-import {useDispatch} from 'react-redux';
+import {useDispatch,useSelector} from 'react-redux';
 import * as runActions from '../store/run-actions';
+import * as eventActions from '../store/event-actions';
 import * as Permissions from 'expo-permissions';
 
 import ChallengeList from '../components/ChallengeList';
 import {CHALLENGES} from '../data/dummy-data';
+import EventView from '../components/EventView';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -16,6 +18,10 @@ const windowHeight = Dimensions.get('window').height;
 const RunTrackerHomeScreen = (props)=>{
 
   const dispatch=useDispatch();
+  
+  // State Selectors
+  const eventDetails = useSelector(state => state.events.eventDetails);
+
 
 // State Variables
   const [mapRegion, setMapRegion] = useState({
@@ -24,12 +30,15 @@ const RunTrackerHomeScreen = (props)=>{
     latitudeDelta: 0.000757,
     longitudeDelta: 0.0008
   });
+  const [modalVisible,setModalVisible]=useState(false);
+  const [modalEventDetails,setModalEventDetails]=useState(null);
 
 //Load Run History Data upon initialization
 useEffect(()=>{
   const fetchData=async ()=>{
     dispatch(runActions.loadRuns());
     dispatch(runActions.loadRunSummary());
+    dispatch(eventActions.loadEventsFromServer());
   };
   fetchData();
 }, []);
@@ -67,6 +76,21 @@ useEffect(()=>{
 })();
 },[]);
 
+
+const onClickEventItem=(eventItem)=>{
+ setModalEventDetails(eventItem);
+ setModalVisible(true);
+};
+
+const onCloseEventItem=(eventItem)=>{
+ setModalVisible(false);
+};
+
+const onRegisterEventItem=(eventItem)=>{
+ dispatch(eventActions.registerUserForEvent(modalEventDetails.eventId,"piyush123"));
+ setModalVisible(false);
+};
+
 //Logic to handle shutter tab for challenges
 var isHidden = true;
 const [bounceValue, setBounceValue] = useState(new Animated.Value(360));
@@ -91,6 +115,14 @@ isHidden = !isHidden;
 
 return (
   <View style={styles.runTrackerHomeContainer}>
+   
+  <Modal animationType="slide" transparent={true} visible={modalVisible}
+  onRequestClose={()=>{}}>
+   <EventView 
+   onRegisterEventItem={onRegisterEventItem} 
+   onCloseEventItem={onCloseEventItem} 
+   eventDetails={modalEventDetails}/>
+  </Modal>
 
   <MapView style={styles.mapContainer} region={mapRegion}
   pitchEnabled={false} rotateEnabled={false} zoomEnabled={true} scrollEnabled={false}>
@@ -104,15 +136,16 @@ return (
   </View>
 
   <View style={styles.challengeList}>
-  <ChallengeList listData={CHALLENGES}/>
+  <ChallengeList listData={eventDetails} onClickEventItem={onClickEventItem}/>
   </View>
 
+  {/* Commented for now as Challenge is out of scope for now
   <Animated.View style={[styles.subView,{transform: [{translateY:bounceValue}]}]}>
   <Button title="Challenge" onPress={()=>{toggleSubView()}}/>
   <View style={styles.tabListView}>
   <ChallengeList listData={CHALLENGES}/>
   </View>
-  </Animated.View>
+  </Animated.View>*/}
 
   </View>
   );
@@ -127,7 +160,7 @@ const styles = StyleSheet.create({
   },
 
   mapContainer: {
-    height: '90%',
+    height: '100%',
     width: '100%',
     borderRadius: 20
   },

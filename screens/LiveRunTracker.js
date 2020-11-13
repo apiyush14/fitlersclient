@@ -6,6 +6,7 @@ import Slider from '../components/Slider';
 import RoundButton from '../components/RoundButton';
 import { Ionicons } from '@expo/vector-icons';
 
+let runId=0;
 let runTotalTime=0;
 let runPath=[];
 let startTime=Date.now();
@@ -13,6 +14,7 @@ let lastLocation={};
 let temporaryDistance=0;
 let runDate=null;
 let runDay=null;
+let runStartDateTime=null;
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -44,6 +46,8 @@ const LiveRunTrackerScreen = props=>{
 //Load Time useEffect hook
 useEffect(() => {
   var today = new Date();
+  runId=today.getTime();
+  runStartDateTime=today.toJSON();
   runDate=today.getDate() + "/"+ parseInt(today.getMonth()+1) +"/"+ today.getFullYear();
   runDay=weekday[today.getDay()];
   runTotalTime=0;
@@ -180,13 +184,15 @@ const updateUI=(accelerometerData)=>{
 const stopRun=()=>{
 //Accelerometer.removeAllListeners();
 props.navigation.navigate('RunDetailsScreen', {
+  runId:runId,
   runPath:runPath,
   runDate:runDate,
   runDay:runDay,
   runTotalTime:runTotalTime,
   runDistance:runDistance,
   runPace:runPace,
-  runCaloriesBurnt: runCaloriesBurnt
+  runCaloriesBurnt: runCaloriesBurnt,
+  runStartDateTime: runStartDateTime
 });
 };
 

@@ -10,7 +10,7 @@ const initialState={
 export default (state=initialState, action)=>{
 	switch(action.type) {
 		case ADD_RUN:
-        let newRun=new RunDetails(action.run.runId, action.run.runTotalTime,action.run.runDistance,action.run.runPace,action.run.runCaloriesBurnt,action.run.runCredits, action.run.runDate, action.run.runDay, action.run.runPath, action.run.runTrackSnapUrl, action.run.isSyncDone);
+        let newRun=new RunDetails(action.run.runId, action.run.runTotalTime,action.run.runDistance,action.run.runPace,action.run.runCaloriesBurnt,action.run.runCredits,action.run.runStartDateTime, action.run.runDate, action.run.runDay, action.run.runPath, action.run.runTrackSnapUrl, action.run.isSyncDone);
         const newRunArr=[newRun].concat(state.runs);
         return{...state, 
             runs: newRunArr
@@ -32,7 +32,7 @@ export default (state=initialState, action)=>{
 
                     //console.log('Final Path Array after conversion is ');
                     //console.log(path);
-                    return new RunDetails(run.RUN_ID, run.RUN_TOTAL_TIME,run.RUN_DISTANCE,run.RUN_PACE,run.RUN_CALORIES_BURNT,run.RUN_CREDITS,run.RUN_DATE, run.RUN_DAY, path, run.RUN_TRACK_SNAP_URL, run.IS_SYNC_DONE);})
+                    return new RunDetails(run.RUN_ID, run.RUN_TOTAL_TIME,run.RUN_DISTANCE,run.RUN_PACE,run.RUN_CALORIES_BURNT,run.RUN_CREDITS,run.RUN_START_DATE_TIME,run.RUN_DATE,run.RUN_DAY, path, run.RUN_TRACK_SNAP_URL, run.IS_SYNC_DONE);})
         };
 
         case UPDATE_SUMMARY:
@@ -75,7 +75,7 @@ export default (state=initialState, action)=>{
                         };
                 return location;
                 });
-            return new RunDetails(run.runId, run.runTotalTime,run.runDistance,run.runPace,run.runCaloriesBurnt,run.runCredits,run.runDate, run.runDay, path, run.runTrackSnapUrl, "1");
+            return new RunDetails(run.runId, run.runTotalTime,run.runDistance,run.runPace,run.runCaloriesBurnt,run.runCredits,run.runStartDateTime,run.runDate, run.runDay, path, run.runTrackSnapUrl, "1");
         }
        }).filter(updatedRun=>updatedRun!==undefined);
         console.log('Updated Runs from server');

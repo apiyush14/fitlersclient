@@ -6,16 +6,13 @@ import { Accelerometer } from 'expo-sensors';
 import {Swipeable} from 'react-native-gesture-handler';
 import RoundButton from '../components/RoundButton';
 import Slider from '../components/Slider';
-import DashboardItem from '../components/DashboardItem';
+import EventView from '../components/EventView';
 
 const TestScreen = props=>{
 
 return (
    <View style={styles.containerView1}>
-    <View style={{...props.style,...styles.circleDashboardBorder}}>
-     <View style={styles.containerView}>
-     </View>
-    </View>
+    <EventView />
    </View>
     );
 };

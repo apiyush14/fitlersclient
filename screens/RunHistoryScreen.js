@@ -78,7 +78,7 @@ const handleNetworkStateChanges=(type) => {
          //console.log('Going with page number');
          //console.log(pageNumber);
          NetInfo.fetch().then(state=>{
-        if(state.isConnected&&(runsHistory[runsHistory.length-1].runId>1)){
+        if(state.isConnected&&runsHistory.length>0&&(runsHistory[runsHistory.length-1].runId>1)){
           dispatch(runActions.loadRunsFromServer(pageNumber)).then(()=>{
           //console.log('Load from Server Completed');
           setIsLoading(false);

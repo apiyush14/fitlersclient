@@ -7,6 +7,7 @@ import * as Font from 'expo-font';
 import {AppLoading} from 'expo';
 import RunTrackerNavigator from './navigation/RunTrackerNavigator';
 import runReducer from './store/run-reducer';
+import eventReducer from './store/event-reducer';
 import {init} from './utils/DBUtils';
 import ReduxThunk from 'redux-thunk';
 import {createStore, combineReducers, applyMiddleware} from 'redux';
@@ -14,7 +15,8 @@ import {Provider} from 'react-redux';
 
 
 const rootReducer= combineReducers({
-runs: runReducer 
+runs: runReducer,
+events: eventReducer
 });
 
 const store=createStore(rootReducer, applyMiddleware(ReduxThunk));

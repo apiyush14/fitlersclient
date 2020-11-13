@@ -9,10 +9,12 @@ List Of Challenge Cards
 const ChallengeList=props=>{
 
 const renderChallengeItem=itemData=>{
- return <ChallengeItem 
- image={itemData.item.imageUrl}
- title={itemData.item.title}
- onSelectChallenge={()=>{}}/>;
+ return <ChallengeItem
+ image={"http://192.168.1.66:7001/event-details/getDisplayImage/"+itemData.item.eventId}
+ title={itemData.item.eventName}
+ onClickEventItem={()=>{
+ 	props.onClickEventItem(itemData.item);
+ }}/>;
 };
 
 return(
@@ -20,7 +22,7 @@ return(
   <FlatList
    horizontal={true}
    data={props.listData}
-   keyExtractor={(item,index)=>item.id}
+   keyExtractor={(item,index)=>item.eventId.toString()}
    renderItem={renderChallengeItem} >
    </FlatList>
  </View>

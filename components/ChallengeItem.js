@@ -11,7 +11,7 @@ const windowHeight = Dimensions.get('window').height;
 const ChallengeItem=props=>{
 return(
  	<View style={styles.challengeItem}>
- 	<TouchableOpacity onPress={()=>{}}>
+ 	<TouchableOpacity onPress={props.onClickEventItem}>
  	<View style={styles.imageContainer}>
  	<ImageBackground 
  	source={{uri:props.image}} 

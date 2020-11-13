@@ -5,7 +5,7 @@ const db=SQLite.openDatabase('onehealth.db');
 export const init=()=>{ 
 const promise=new Promise((resolve, reject)=>{ 
 db.transaction((tx)=>{ 
-    tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (RUN_ID INTEGER PRIMARY KEY NOT NULL, RUN_TOTAL_TIME TEXT NOT NULL, RUN_DISTANCE TEXT NOT NULL,RUN_PACE TEXT NOT NULL,RUN_CALORIES_BURNT TEXT NOT NULL,RUN_CREDITS TEXT NOT NULL, RUN_DATE TEXT NOT NULL, RUN_DAY TEXT NOT NULL, RUN_PATH TEXT NOT NULL, RUN_TRACK_SNAP_URL TEXT NOT NULL,IS_SYNC_DONE TEXT NOT NULL);',
+    tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (RUN_ID INTEGER PRIMARY KEY NOT NULL, RUN_TOTAL_TIME TEXT NOT NULL, RUN_DISTANCE TEXT NOT NULL,RUN_PACE TEXT NOT NULL,RUN_CALORIES_BURNT TEXT NOT NULL,RUN_CREDITS TEXT NOT NULL,RUN_START_DATE_TIME TEXT NOT NULL ,RUN_DATE TEXT NOT NULL, RUN_DAY TEXT NOT NULL, RUN_PATH TEXT NOT NULL, RUN_TRACK_SNAP_URL TEXT NOT NULL,IS_SYNC_DONE TEXT NOT NULL);',
     //tx.executeSql('DROP TABLE RUN_DETAILS;',
         [], 
         ()=>{ 
@@ -38,15 +38,16 @@ db.transaction((tx)=>{
 return promise; 
 };
 
-export const insertRun=(runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl,isSyncDone)=>{
+export const insertRun=(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl,isSyncDone)=>{
 	const promise=new Promise((resolve, reject)=>{
 db.transaction((tx)=>{
-	tx.executeSql('INSERT INTO RUN_DETAILS (RUN_TOTAL_TIME,RUN_DISTANCE,RUN_PACE,RUN_CALORIES_BURNT,RUN_CREDITS, RUN_DATE, RUN_DAY, RUN_PATH, RUN_TRACK_SNAP_URL,IS_SYNC_DONE) VALUES (?,?,?,?,?,?,?,?,?,?);',
-		[runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,runPath,runTrackSnapUrl,isSyncDone],
+	tx.executeSql('INSERT INTO RUN_DETAILS (RUN_ID,RUN_TOTAL_TIME,RUN_DISTANCE,RUN_PACE,RUN_CALORIES_BURNT,RUN_CREDITS,RUN_START_DATE_TIME ,RUN_DATE, RUN_DAY, RUN_PATH, RUN_TRACK_SNAP_URL,IS_SYNC_DONE) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);',
+		[runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl,isSyncDone],
 		(_,result)=>{
           resolve(result);
 		},
 		(_,err)=>{
+      console.log('Insertion Run Failed');
          reject(err);
 		});
 });
