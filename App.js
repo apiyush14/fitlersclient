@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React,{ useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LiveRunTracker from './screens/LiveRunTracker';
 import MusicIntegrationScreen from './screens/MusicIntegrationScreen';
@@ -12,7 +12,8 @@ import {init} from './utils/DBUtils';
 import ReduxThunk from 'redux-thunk';
 import {createStore, combineReducers, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
-
+import * as authActions from './store/auth-actions'
+import {useDispatch,useSelector} from 'react-redux';
 
 const rootReducer= combineReducers({
 runs: runReducer,

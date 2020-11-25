@@ -25,6 +25,16 @@ db.transaction((tx)=>{
          reject(err); 
         }); 
 
+     tx.executeSql('CREATE TABLE IF NOT EXISTS USER_AUTHENTICATION_DETAILS (id INTEGER PRIMARY KEY NOT NULL, USER_ID TEXT NOT NULL, USER_SECRET_KEY TEXT NOT NULL);',
+    //tx.executeSql('DROP TABLE USER_AUTHENTICATION_DETAILS;',
+     [], 
+        ()=>{ 
+          resolve(); 
+        },
+        (_,err)=>{ 
+         reject(err); 
+        }); 
+
     /*tx.executeSql('INSERT INTO RUN_SUMMARY (total_distance,total_runs,average_pace,average_distance) VALUES (?,?,?,?);',
     	 ["0","0","0","0"], 
         ()=>{ 
@@ -106,7 +116,7 @@ return promise;
 export const updateRunsSyncState=(pendingRunsForSync)=>{
   const promise=new Promise((resolve, reject)=>{
   db.transaction((tx)=>{
-  tx.executeSql('UPDATE RUN_DETAILS SET IS_SYNC_DONE="1" where RUN_ID in (?);',
+  tx.executeSql('UPDATE RUN_DETAILS SET IS_SYNC_DONE="1" where RUN_ID in (?)',
     [pendingRunsForSync],
     (_,result)=>{
           resolve(result);
@@ -138,7 +148,7 @@ return promise;
 export const updateRunSummary=(totalDistance,totalRuns,averagePace,averageDistance)=>{
 	const promise=new Promise((resolve, reject)=>{
 db.transaction((tx)=>{
-	tx.executeSql('UPDATE RUN_SUMMARY SET TOTAL_DISTANCE=?,TOTAL_RUNS=?,AVERAGE_PACE=?,AVERAGE_DISTANCE=?;',
+	tx.executeSql('UPDATE RUN_SUMMARY SET TOTAL_DISTANCE=?,TOTAL_RUNS=?,AVERAGE_PACE=?,AVERAGE_DISTANCE=?',
 		[totalDistance,totalRuns,averagePace,averageDistance],
 		(_,result)=>{
           resolve(result);
@@ -154,7 +164,7 @@ return promise;
 export const fetchRunSummary=()=>{
 const promise=new Promise((resolve, reject)=>{
 db.transaction((tx)=>{
-	tx.executeSql('SELECT * FROM RUN_SUMMARY',
+	tx.executeSql('SELECT * FROM RUN_SUMMARY;',
 		[],
 		(_,result)=>{
           resolve(result);
@@ -162,6 +172,54 @@ db.transaction((tx)=>{
 		(_,err)=>{
          reject(err);
 		});
+});
+});
+return promise;
+};
+
+export const insertUser=(userId,userSecretKey)=>{
+  const promise=new Promise((resolve, reject)=>{
+db.transaction((tx)=>{
+  tx.executeSql('INSERT INTO USER_AUTHENTICATION_DETAILS (USER_ID,USER_SECRET_KEY) VALUES (?,?)',
+    [userId,userSecretKey],
+    (_,result)=>{
+          resolve(result);
+    },
+    (_,err)=>{
+         reject(err);
+    });
+});
+});
+return promise;
+};
+
+export const updateUser=(userId,userSecretKey)=>{
+  const promise=new Promise((resolve, reject)=>{
+db.transaction((tx)=>{
+  tx.executeSql('UPDATE USER_AUTHENTICATION_DETAILS SET USER_ID=?,USER_SECRET_KEY=?',
+    [userId,userSecretKey],
+    (_,result)=>{
+          resolve(result);
+    },
+    (_,err)=>{
+         reject(err);
+    });
+});
+});
+return promise;
+};
+
+export const fetchUserAuthenticationDetails=()=>{
+const promise=new Promise((resolve, reject)=>{
+db.transaction((tx)=>{
+  tx.executeSql('SELECT * FROM USER_AUTHENTICATION_DETAILS;',
+    [],
+    (_,result)=>{
+          resolve(result);
+    },
+    (_,err)=>{
+         reject(err);
+    });
 });
 });
 return promise;

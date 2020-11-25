@@ -12,6 +12,8 @@ import ChallengeList from '../components/ChallengeList';
 import {CHALLENGES} from '../data/dummy-data';
 import EventView from '../components/EventView';
 
+import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 

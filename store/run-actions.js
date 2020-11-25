@@ -87,14 +87,13 @@ catch(err){
 
 export const loadRunsFromServer=(pageNumber)=>{
  return async dispatch=>{
+  var header= await dispatch(getUserAuthenticationToken());
  return new Promise((resolve,reject)=>{
     var URL="http://192.168.1.66:7001/run-details/getRuns/piyush123?page=";
     URL=URL+pageNumber;
     fetch(URL, { 
     method: 'GET', 
-    headers: { 
-    'Content-Type':'application/json' 
-    }
+    headers: header
   }).then(response => response.json())
     .then((response)=> {
      //console.log('GET API results');
@@ -129,6 +128,8 @@ export const syncPendingRuns=(pendingRunsForSync)=>{
 //console.log(pendingRunsForSync);
 
 return async dispatch=>{
+  
+  var header= await dispatch(getUserAuthenticationToken());
   return new Promise((resolve,reject)=>{
          //console.log('Inside dispatch');
          //console.log(pendingRunsForSync);
@@ -161,9 +162,7 @@ return async dispatch=>{
     
     fetch("http://192.168.1.66:7001/run-details/addRuns/piyush123", { 
     method: 'POST', 
-    headers: { 
-    'Content-Type':'application/json' 
-    }, 
+    headers: header, 
     body: JSON.stringify({ 
       runDetailsList: runDataArr
    }) 

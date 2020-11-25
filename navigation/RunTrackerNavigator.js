@@ -9,7 +9,10 @@ import RunTrackerHomeScreen from '../screens/RunTrackerHomeScreen';
 import LiveRunTracker from '../screens/LiveRunTracker';
 import RunDetailsScreen from '../screens/RunDetailsScreen';
 import RunHistoryScreen from '../screens/RunHistoryScreen';
+import LogInScreen from '../screens/LogInScreen';
+import SplashScreen from '../screens/SplashScreen';
 import TestScreen from '../screens/TestScreen';
+import {useDispatch,useSelector} from 'react-redux';
 
 const drawerNavigator = createDrawerNavigator();
 const stackNavigator=createStackNavigator();
@@ -75,6 +78,8 @@ const RunTrackerTabNavigator=({navigation, route})=>{
 const RunTrackerStackNavigator=({navigation, route})=>{
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
+    <stackNavigator.Screen name="SplashNavigator" component={SplashNavigator}/>
+    <stackNavigator.Screen name="LoginStackNavigator" component={LoginStackNavigator}/>
     <stackNavigator.Screen name="Home" component={RunTrackerHomeScreen} 
     options={{
       tabBarVisible: false,
@@ -123,5 +128,29 @@ const RunTrackerStackNavigator=({navigation, route})=>{
        left: 10
      }
    });
+
+  //Login Stack Navigator
+  const LoginStackNavigator=({navigation, route})=>{
+    return (
+      <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
+      <stackNavigator.Screen name="LogInScreen" component={LogInScreen} 
+      options={{
+        
+      }}/>
+      </stackNavigator.Navigator>
+      );
+    };
+
+  const SplashNavigator=({navigation, route})=>{
+    return (
+      <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
+      <stackNavigator.Screen name="SplashScreen" component={SplashScreen} 
+      options={{
+        
+      }}/>
+      </stackNavigator.Navigator>
+      );
+    };
+
 
    export default RunTrackerNavigator;
