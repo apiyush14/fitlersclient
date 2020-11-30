@@ -1,6 +1,7 @@
 import React from 'react';
 import {Ionicons} from '@expo/vector-icons';
 import { Platform, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { AsyncStorage } from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -10,9 +11,12 @@ import LiveRunTracker from '../screens/LiveRunTracker';
 import RunDetailsScreen from '../screens/RunDetailsScreen';
 import RunHistoryScreen from '../screens/RunHistoryScreen';
 import LogInScreen from '../screens/LogInScreen';
+import LogOutScreen from '../screens/LogOutScreen';
 import SplashScreen from '../screens/SplashScreen';
 import TestScreen from '../screens/TestScreen';
 import {useDispatch,useSelector} from 'react-redux';
+
+export const UPDATE_USER_AUTH_DETAILS='UPDATE_USER_AUTH_DETAILS';
 
 const drawerNavigator = createDrawerNavigator();
 const stackNavigator=createStackNavigator();
@@ -21,12 +25,24 @@ const popAction = StackActions.pop(1);
 
 //Main Navigator
 const RunTrackerNavigator=()=>{
+  const dispatch=useDispatch();
   return (
     <NavigationContainer>
     <drawerNavigator.Navigator screenOptions={{
       swipeEnabled: false
     }}>
     <drawerNavigator.Screen name="Home" component={RunTrackerTabNavigator}/>
+    <drawerNavigator.Screen name="LogOut" component={LogOutScreen}
+    listeners={({ navigation }) => ({ 
+        state: (e) => {
+           if (e.data.state.index === 1) {
+              AsyncStorage.removeItem('USER_ID');
+              dispatch({type: UPDATE_USER_AUTH_DETAILS, authDetails:{userId: null, secret: null}});
+              navigation.navigate("Home");
+           }
+        }
+    })}
+    />
     </drawerNavigator.Navigator>
     </NavigationContainer>
     );
@@ -34,13 +50,18 @@ const RunTrackerNavigator=()=>{
 
 // Tab Navigator
 const RunTrackerTabNavigator=({navigation, route})=>{
+  //console.log('=============Route====================');
+  //console.log(route.state);
+   
+  var isTabNavigationVisible=(route.state&&route.state.index===1)
+  ||(route.state&&route.state.index!==1&&route.state.routes[route.state.index].state
+    &&(route.state.routes[route.state.index].state.routeNames[0]!=='LoginStackNavigator'
+      &&route.state.routes[route.state.index].state.index!==1))?true:false;
+  
   return (
    <tabNavigator.Navigator 
    screenOptions={(screenRoute) => ({
-    tabBarVisible: route.state&&
-    route.state.routes[route.state.index].state
-    &&route.state.routes[route.state.index].state.index===1
-    &&route.state.routes[route.state.index].state.routes[1].name==='LiveRunTracker'?false:true,
+    tabBarVisible: isTabNavigationVisible,
     tabBarIcon: ({ focused, color, size }) => {
       let iconName;
       if (screenRoute.route.name === 'Home') {
@@ -64,9 +85,14 @@ const RunTrackerTabNavigator=({navigation, route})=>{
   <tabNavigator.Screen name="Home" component={RunTrackerStackNavigator} 
   listeners={{
     tabPress: e=>{
-      if(route.state.routes[0].state&&route.state.routes[0].state.index===1){
+      console.log('==============Home Tab Navigator================');
+      console.log(e);
+      //if (e.data.state.index === 1) {
+              //navigation.navigate("HomeScreen");
+        //   }
+      /*if(route.state.routes[0].state&&route.state.routes[0].state.index===1){
       navigation.dispatch(popAction);
-    }
+    }*/
     }
   }}/>
   <tabNavigator.Screen name="History" component={RunTrackerHistoryStackNavigator} />
@@ -76,11 +102,20 @@ const RunTrackerTabNavigator=({navigation, route})=>{
 
 //Main Stack Navigator
 const RunTrackerStackNavigator=({navigation, route})=>{
+
+  const authDetails = useSelector(state => state.authDetails);
+
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
-    <stackNavigator.Screen name="SplashNavigator" component={SplashNavigator}/>
-    <stackNavigator.Screen name="LoginStackNavigator" component={LoginStackNavigator}/>
-    <stackNavigator.Screen name="Home" component={RunTrackerHomeScreen} 
+    {authDetails.userId==null ? (
+    <stackNavigator.Screen name="LoginStackNavigator" component={LoginStackNavigator}
+     options={{
+      headerShown: false
+    }}
+    /> 
+    ): (
+    <React.Fragment>
+    <stackNavigator.Screen name="HomeScreen" component={RunTrackerHomeScreen} 
     options={{
       tabBarVisible: false,
       title: 'Runner Home',
@@ -107,6 +142,8 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       title: 'Run Details',
       headerLeft: null
     }}/>
+    </React.Fragment>
+     )}
     </stackNavigator.Navigator>
     );
   };
@@ -119,6 +156,11 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       options={{
         title: 'Wall of Fame'
       }}/>
+      <stackNavigator.Screen name="RunDetailsScreen" component={RunDetailsScreen}
+    options={{
+      title: 'Run Details',
+      headerLeft: null
+    }}/>
       </stackNavigator.Navigator>
       );
     };
@@ -132,25 +174,21 @@ const RunTrackerStackNavigator=({navigation, route})=>{
   //Login Stack Navigator
   const LoginStackNavigator=({navigation, route})=>{
     return (
-      <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
-      <stackNavigator.Screen name="LogInScreen" component={LogInScreen} 
-      options={{
-        
-      }}/>
-      </stackNavigator.Navigator>
-      );
-    };
-
-  const SplashNavigator=({navigation, route})=>{
-    return (
-      <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
+      <stackNavigator.Navigator 
+      screenOptions={
+        {gestureEnabled: false}
+       }>
       <stackNavigator.Screen name="SplashScreen" component={SplashScreen} 
       options={{
-        
+        headerShown: false,
+        tabBarVisible: false
+      }}/>
+      <stackNavigator.Screen name="LogInScreen" component={LogInScreen} 
+      options={{
+        headerShown: false
       }}/>
       </stackNavigator.Navigator>
       );
     };
-
 
    export default RunTrackerNavigator;

@@ -8,16 +8,19 @@ export const loadEventsFromServer=()=>{
     var header= await dispatch(getUserAuthenticationToken());
  return new Promise((resolve,reject)=>{
     var URL="http://192.168.1.66:7001/event-details/getEvents";
+    console.log(header);
     fetch(URL, { 
     method: 'GET',
     headers: header
   }).then(response => response.json())
     .then((response)=> {
-     //console.log('GET API results');
+     //console.log('===============GET API results');
      //console.log(response);
      dispatch({type: UPDATE_EVENTS_FROM_SERVER, eventDetails:response.eventDetails});
      resolve();
     }).catch(err=>{
+      console.log('================Error While loading===========');
+      console.log(err);
       reject(err);
     });
 });

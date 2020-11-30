@@ -1,6 +1,8 @@
 import NetInfo from '@react-native-community/netinfo';
 import { AsyncStorage } from 'react-native';
 
+export const UPDATE_USER_AUTH_DETAILS='UPDATE_USER_AUTH_DETAILS';
+
 //TODO MSISDN should be encrypted
 export const generateOTPForMSISDN=(msisdn)=>{
  return async dispatch=>{
@@ -36,11 +38,11 @@ export const validateOTPForMSISDN=(msisdn,otpCode)=>{
     }
   }).then(response => response.json())
     .then((response)=> {
-     console.log('===============Handshake Response');
-     console.log(response);
-     dispatch(tempMethodForTesting(response));
-     dispatch(updateUserAuthenticationDetailsInDB(response));
-     resolve();
+     if(response.isValid===true){
+      dispatch(updateUserAuthenticationDetailsInDB(response));
+      dispatch({type: UPDATE_USER_AUTH_DETAILS, authDetails:response});
+     }
+     resolve(response);
     }).catch(err=>{
       reject(err);
     });

@@ -1,41 +1,51 @@
 import React, { useState, useEffect} from 'react';
-import { View, Text,TextInput, StyleSheet,Dimensions,Modal} from 'react-native';
-import RoundButton from '../components/RoundButton';
-import * as authActions from '../store/auth-actions';
-import {useDispatch,useSelector} from 'react-redux';
-import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
+import { View, StyleSheet,ActivityIndicator,ImageBackground} from 'react-native';
+import {useDispatch} from 'react-redux';
+import { AsyncStorage } from 'react-native';
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+export const UPDATE_USER_AUTH_DETAILS='UPDATE_USER_AUTH_DETAILS';
 
+//Splash Screen to load Application pre-requisites
 const SplashScreen = props=>{
 
+const [animating, setAnimating] = useState(true);
 const dispatch=useDispatch();
 
 useEffect(()=>{
-  const fetchData=async()=>{
-    return await dispatch(getUserAuthenticationToken());
-  };
-  fetchData();
-  console.log('============Return Data========================');
-  console.log(fetchData);
-  if(!fetchData){
-   props.navigation.navigate('LoginStackNavigator');
-}
-else{
-   props.navigation.navigate('Home');
-}
-}, []);
+  setTimeout(() => {
+   setAnimating(false);
+    AsyncStorage.getItem('USER_ID').then((userId)=>{
+    dispatch({type: UPDATE_USER_AUTH_DETAILS, authDetails:{userId: userId, secret: null}});
+    userId===null?props.navigation.navigate('LogInScreen'):props.navigation.navigate('Home');
+   })
+}, 5000);}, []);
 
 return (
-  <View>
-   <Text>Splash Screen</Text>
+  <View style={styles.splashScreenContainer}>
+  <ImageBackground 
+  source={require('../assets/images/splash.jpg')} 
+  style={styles.bgImage}>
+   <ActivityIndicator
+        animating={animating}
+        color="lightblue"
+        size="large"
+        style={styles.activityIndicator}
+      />
+  </ImageBackground>
   </View>
  );
 };
 
 const styles = StyleSheet.create({
-
+ splashScreenContainer: {
+  flex: 1
+ },
+ bgImage: {
+  flex: 1
+ },
+ activityIndicator: {
+  top: '50%'
+ }
 });
 
 export default SplashScreen;

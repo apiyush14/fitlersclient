@@ -9,7 +9,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const RoundButton=props=>{
-	return (<TouchableOpacity style={{...styles.button,...props.style}} onPress={props.onPress}>
+	return (<TouchableOpacity style={{...styles.button,...props.style}} onPress={props.onPress} disabled={props.disabled}>
             <Text style={styles.buttonTitle}>{props.title}</Text>
          </TouchableOpacity>
 );
