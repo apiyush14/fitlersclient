@@ -151,9 +151,9 @@ return (
  strokeWidth={5}
  strokeColor='red'
  coordinates={runPath}/>):(<View></View>)}
- {runPath?(
+ {runPath[0]!==undefined?(
  <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
- {runPath?(
+ {runPath[runPath.length-1]!==undefined?(
  <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
  </MapView>
 

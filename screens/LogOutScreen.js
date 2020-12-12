@@ -1,16 +1,20 @@
 import React from 'react';
-import { View, StyleSheet} from 'react-native';
+import {
+	View,
+	StyleSheet
+} from 'react-native';
 
-const LogOutScreen = props=>{
+//Dummy LogOutScreen
+const LogOutScreen = props => {
 
-return (
-  <View>
-   
-  </View>
- );
+	return ( <
+		View >
+
+		<
+		/View>
+	);
 };
 
-const styles = StyleSheet.create({
-});
+const styles = StyleSheet.create({});
 
 export default LogOutScreen;

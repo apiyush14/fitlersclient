@@ -1,24 +1,43 @@
-import React, { useState, useEffect} from 'react';
-import { View, StyleSheet,ActivityIndicator,ImageBackground} from 'react-native';
-import {useDispatch} from 'react-redux';
-import { AsyncStorage } from 'react-native';
+import React, {
+  useState,
+  useEffect
+} from 'react';
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  ImageBackground
+} from 'react-native';
+import {
+  useDispatch
+} from 'react-redux';
+import {
+  AsyncStorage
+} from 'react-native';
 
-export const UPDATE_USER_AUTH_DETAILS='UPDATE_USER_AUTH_DETAILS';
+export const UPDATE_USER_AUTH_DETAILS = 'UPDATE_USER_AUTH_DETAILS';
 
 //Splash Screen to load Application pre-requisites
-const SplashScreen = props=>{
+const SplashScreen = props => {
 
-const [animating, setAnimating] = useState(true);
-const dispatch=useDispatch();
+    const [animating, setAnimating] = useState(true);
+    const dispatch = useDispatch();
 
-useEffect(()=>{
-  setTimeout(() => {
-   setAnimating(false);
-    AsyncStorage.getItem('USER_ID').then((userId)=>{
-    dispatch({type: UPDATE_USER_AUTH_DETAILS, authDetails:{userId: userId, secret: null}});
-    userId===null?props.navigation.navigate('LogInScreen'):props.navigation.navigate('Home');
-   })
-}, 5000);}, []);
+    useEffect(() => {
+      setTimeout(() => {
+        setAnimating(false);
+        AsyncStorage.getItem('USER_ID').then((userId) => {
+          dispatch({
+            type: UPDATE_USER_AUTH_DETAILS,
+            authDetails: {
+              userId: userId,
+              secret: null
+            }
+          });
+          userId === null ? props.navigation.navigate('LogInScreen') : props.navigation.navigate('Home');
+        }).catch(err => props.navigation.navigate('LogInScreen'))
+      }, 5000);
+    }, []);
 
 return (
   <View style={styles.splashScreenContainer}>

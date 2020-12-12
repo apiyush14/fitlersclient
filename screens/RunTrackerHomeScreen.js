@@ -7,12 +7,10 @@ import {useDispatch,useSelector} from 'react-redux';
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import * as Permissions from 'expo-permissions';
+import { AsyncStorage } from 'react-native';
 
 import ChallengeList from '../components/ChallengeList';
-import {CHALLENGES} from '../data/dummy-data';
 import EventView from '../components/EventView';
-
-import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -49,32 +47,31 @@ useEffect(()=>{
 useEffect(()=>{
   (async ()=>{
 
-    let {status} = await Location.requestPermissionsAsync();
-    let statusMotion = await Permissions.askAsync(Permissions.MOTION);
-  
-  //TODO : To handle alert to change settings
-  //Motion Sensor Permission Handling
-  if(statusMotion.status!=='granted'){
-   Alert.alert("Location Alert","Motion Sensor Permission is required!!!");
-   console.log("Permission Not granted");
- }
-
-  //Location Sensor Permission Handling
-  if(status!=='granted')
-  {
-     //TODO : To handle alert to change settings
-     Alert.alert("Location Alert","Location Permission is required!!!");
-     console.log("Permission Not granted");
-   }
-   else{
-    let location = await Location.getCurrentPositionAsync({});
-    setMapRegion({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      latitudeDelta: 0.000757,
-      longitudeDelta: 0.0008
+    Location.requestPermissionsAsync().then(response=>{
+      if(response.status!=='granted'){
+        //TODO : To handle alert to change settings
+        Alert.alert("Location Alert","Location Permission is required!!!");
+      }
+      else{
+        Location.getCurrentPositionAsync({}).then(response=>{
+          setMapRegion({
+           latitude: response.coords.latitude,
+           longitude: response.coords.longitude,
+           latitudeDelta: 0.000757,
+           longitudeDelta: 0.0008
+       });
+        });
+      }
     });
-  }
+    
+   Permissions.askAsync(Permissions.MOTION).then(response=>{
+     //TODO : To handle alert to change settings
+     //Motion Sensor Permission Handling
+    if(response.status!=='granted'){
+     Alert.alert("Location Alert","Motion Sensor Permission is required!!!");
+     }
+   });
+
 })();
 },[]);
 
@@ -89,11 +86,15 @@ const onCloseEventItem=(eventItem)=>{
 };
 
 const onRegisterEventItem=(eventItem)=>{
- dispatch(eventActions.registerUserForEvent(modalEventDetails.eventId,"piyush123"));
+  AsyncStorage.getItem('USER_ID').then(response=>{
+    dispatch(eventActions.registerUserForEvent(modalEventDetails.eventId,response));
+  });
  setModalVisible(false);
 };
 
 //Logic to handle shutter tab for challenges
+
+/*
 var isHidden = true;
 const [bounceValue, setBounceValue] = useState(new Animated.Value(360));
 
@@ -113,7 +114,7 @@ Animated.spring(
   }
   ).start();
 isHidden = !isHidden;
-};
+};*/
 
 return (
   <View style={styles.runTrackerHomeContainer}>

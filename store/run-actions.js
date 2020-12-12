@@ -1,252 +1,379 @@
-import {insertRun,fetchRuns,fetchRunSummary,updateRunSummary,insertRunSummary,updateRunsSyncState,deleteRuns} from '../utils/DBUtils';
+import {
+  insertRun,
+  fetchRuns,
+  fetchRunSummary,
+  updateRunSummary,
+  insertRunSummary,
+  updateRunsSyncState,
+  deleteRuns
+} from '../utils/DBUtils';
 import * as FileSystem from 'expo-file-system';
 import NetInfo from '@react-native-community/netinfo';
+import {
+  AsyncStorage
+} from 'react-native';
+import configData from "../config/config.json";
+import {
+  getUserAuthenticationToken
+} from '../utils/AuthenticationUtils';
 
-export const ADD_RUN='ADD_RUN';
-export const LOAD_RUNS='LOAD_RUNS';
-export const UPDATE_SUMMARY='UPDATE_SUMMARY';
-export const LOAD_RUN_SUMMARY='LOAD_RUN_SUMMARY';
-export const UPDATE_RUN_SYNC_STATE='UPDATE_RUN_SYNC_STATE';
-export const UPDATE_RUNS_FROM_SERVER='UPDATE_RUNS_FROM_SERVER';
+export const UPDATE_RUN_DETAILS = 'UPDATE_RUN_DETAILS';
+export const UPDATE_RUN_SUMMARY = 'UPDATE_RUN_SUMMARY';
+export const UPDATE_RUN_SYNC_STATE = 'UPDATE_RUN_SYNC_STATE';
 
-// Add a new run to the local DB
-export const addRun=(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl)=>{
-	return async dispatch=>{
-        try{
-        await dispatch(checkAndDeleteRunsIfNeeded());
+//Method to add a new Run to Local DB and to server
+export const addRun = (runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, runCredits, runStartDateTime, runDate, runDay, runPath, runTrackSnapUrl) => {
+  return async dispatch => {
+    var userId = await AsyncStorage.getItem('USER_ID');
+    return new Promise((resolve, reject) => {
 
-        var pathString=runPath.map((path)=>""+path.latitude+","+path.longitude).join(';');
-        var filePathPrefix="file://";
-        var filePath=filePathPrefix.concat(runTrackSnapUrl.toString());
-        
-        //Insert And Update Run
-        const dbResult= await insertRun(runId,runTotalTime.toString(),runDistance.toString(),runPace.toString(),runCaloriesBurnt.toString(),0,runStartDateTime.toString(),runDate.toString(),runDay.toString(),pathString,runTrackSnapUrl.toString(),"0");
-        dispatch({type: ADD_RUN, run: {runId: runId, runTotalTime: runTotalTime, runDistance: runDistance, runPace: runPace, runCaloriesBurnt: runCaloriesBurnt, runCredits: runCredits,runStartDateTime: runStartDateTime, runDate: runDate, runDay: runDay, runPath: runPath, runTrackSnapUrl: runTrackSnapUrl, isSyncDone: "0"}});
-        
-        //Update Run Summary
-        var dbResultForRunSummary=await fetchRunSummary();
-        var updatedRunSummary;
+      dispatch(checkAndDeleteRunsIfNeeded());
 
-        if(dbResultForRunSummary.rows._array.length===0)
-        {
-         //console.log("Called in initial state");
-         dbResultForRunSummary= await insertRunSummary(runDistance, "1", runPace, runDistance);
-        }
-        else{
-          updatedRunSummary={
-          totalDistance: parseFloat(dbResultForRunSummary.rows._array[0].TOTAL_DISTANCE)+parseFloat(runDistance),
-          totalRuns: parseInt(dbResultForRunSummary.rows._array[0].TOTAL_RUNS)+1,
-          averagePace: ((parseFloat(dbResultForRunSummary.rows._array[0].AVERAGE_PACE)*parseInt(dbResultForRunSummary.rows._array[0].TOTAL_RUNS))+runPace)/(parseInt(dbResultForRunSummary.rows._array[0].TOTAL_RUNS)+1),
-          averageDistance: dbResultForRunSummary.rows._array[0].TOTAL_DISTANCE/dbResultForRunSummary.rows._array[0].TOTAL_RUNS
-        };
-         dbResultForRunSummary= await updateRunSummary(updatedRunSummary.totalDistance, updatedRunSummary.totalRuns, updatedRunSummary.averagePace, updatedRunSummary.averageDistance);
-        }
-        dbResultForRunSummary=await fetchRunSummary();
+      var pathString = runPath.map((path) => "" + path.latitude + "," + path.longitude).join(';');
+      var filePathPrefix = "file://";
+      var filePath = filePathPrefix.concat(runTrackSnapUrl.toString());
 
-        if(dbResultForRunSummary.rows._array.length>0){
-           //console.log("Updating Run Summary from DB");
-           //console.log(dbResultUpdatedRunSummary.rows._array[0]);
-          dispatch({type: UPDATE_SUMMARY,runSummary:dbResultForRunSummary.rows._array[0]});
-        }
-        /*else{
-            //console.log("Updating Run Summary from source");
-            //console.log(updatedRunSummary);
-          dispatch({type: UPDATE_SUMMARY,runSummary:{id: 1, TOTAL_DISTANCE: updatedRunSummary.totalDistance,TOTAL_RUNS: updatedRunSummary.totalRuns,AVERAGE_PACE: updatedRunSummary.averagePace,AVERAGE_DISTANCE: updatedRunSummary.averageDistance}});
-        } */
-      
-      NetInfo.fetch().then(state=>{
-        //console.log('Network State');
-        //console.log(state);
-        if(state.isConnected){
-        //addRunToServer(dbResult.insertId.toString(),runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runDate,runDay,pathString,runTrackSnapUrl);
-      }
-      });
-    }
-    catch(err){
-    	console.log(err);
-    	throw err;
-    }
-	};
-};
-
-export const loadRuns=()=>{
- return async dispatch=>{
- 	try{
-    const dbResult=await fetchRuns();
-    dbResult.rows._array.sort(function(a,b){
-      return b.RUN_ID-a.RUN_ID;
-    });
-    dispatch({type: LOAD_RUNS, runs:[dbResult.rows._array]});
-}
-catch(err){
-	console.log(err);
-	throw err;
- };
-}
-};
-
-export const loadRunsFromServer=(pageNumber)=>{
- return async dispatch=>{
-  var header= await dispatch(getUserAuthenticationToken());
- return new Promise((resolve,reject)=>{
-    var URL="http://192.168.1.66:7001/run-details/getRuns/piyush123?page=";
-    URL=URL+pageNumber;
-    fetch(URL, { 
-    method: 'GET', 
-    headers: header
-  }).then(response => response.json())
-    .then((response)=> {
-     //console.log('GET API results');
-     //console.log(response);
-     dispatch({type: UPDATE_RUNS_FROM_SERVER, runs:response.runDetailsList})
-     resolve();
-    }).catch(err=>{
-      reject(err);
-    });
-});
-}
-};
-
-export const loadRunSummary=()=>{
- return async dispatch=>{
-    try{
-    const dbResult=await fetchRunSummary();
-    if(dbResult.rows._array.length>0){
-    dispatch({type: LOAD_RUN_SUMMARY, runSummary:dbResult.rows._array[0]});
-  }
-}
-catch(err){
-    console.log(err);
-    throw err;
- };
-}
-};
-
-export const syncPendingRuns=(pendingRunsForSync)=>{
-
-//console.log('Inside Sync Pending Runs');
-//console.log(pendingRunsForSync);
-
-return async dispatch=>{
-  
-  var header= await dispatch(getUserAuthenticationToken());
-  return new Promise((resolve,reject)=>{
-         //console.log('Inside dispatch');
-         //console.log(pendingRunsForSync);
-
-         let runDataArr=[];
-         pendingRunsForSync.map(pendingRun=>{
-          var pathString=pendingRun.runPath.map((path)=>""+path.latitude+","+path.longitude).join(';');
-          const runData={
-            runId: pendingRun.runId,
-            userId: 'piyush123',
-            runTotalTime: pendingRun.runTotalTime,
-            runDistance: pendingRun.runDistance,
-            runPace: pendingRun.runPace,
-            runCaloriesBurnt: pendingRun.runCaloriesBurnt,
-            runCredits: '0',
-            runStartDateTime: pendingRun.runStartDateTime,
-            runDate: pendingRun.runDate,
-            runDay: pendingRun.runDay,
+      // Insert New Run
+      insertRun(runId, runTotalTime.toString(), runDistance.toString(), runPace.toString(), runCaloriesBurnt.toString(), 0, runStartDateTime.toString(), runDate.toString(), runDay.toString(), pathString, runTrackSnapUrl.toString(), "0").then(
+        (response) => {
+          var updatedRuns = [];
+          var run = {
+            runId: runId,
+            userId: userId,
+            runTotalTime: runTotalTime,
+            runDistance: runDistance,
+            runPace: runPace,
+            runCaloriesBurnt: runCaloriesBurnt,
+            runCredits: runCredits,
+            runStartDateTime: runStartDateTime,
+            runDate: runDate,
+            runDay: runDay,
             runPath: pathString,
-            runTrackSnapUrl: pendingRun.runTrackSnapUrl
+            runTrackSnapUrl: runTrackSnapUrl,
+            isSyncDone: "0"
           };
-          runDataArr = runDataArr.concat(runData);
-         });
-
-    //console.log('Run Request');
-    //console.log(runDataArr);
-    const addRunsRequest={
-      runDetailsList: runDataArr
-    };
-    
-    fetch("http://192.168.1.66:7001/run-details/addRuns/piyush123", { 
-    method: 'POST', 
-    headers: header, 
-    body: JSON.stringify({ 
-      runDetailsList: runDataArr
-   }) 
-  }).then(response => response.json())
-    .then((response)=> {
-      updateSyncStateInDB(pendingRunsForSync);
-      dispatch({type: UPDATE_RUN_SYNC_STATE, pendingRunsForSync});
-      resolve();
-    }).catch(err=>{
-      reject(err);
-    });   
-  }); 
-}
-};
-
-const addRunToServer=(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,pathString,runTrackSnapUrl)=>{
-    const runData={
-      runId: runId,
-      userId: 'piyush123',
-      runTotalTime: runTotalTime,
-      runDistance: runDistance,
-      runPace: runPace,
-      runCaloriesBurnt: runCaloriesBurnt,
-      runCredits: '0',
-      runStartDateTime: runStartDateTime,
-      runDate: runDate,
-      runDay: runDay,
-      runPath: pathString,
-      runTrackSnapUrl: runTrackSnapUrl
-    };
-
-    let runDataArr=[];
-    runDataArr = runDataArr.concat(runData);
-    syncPendingRuns(runDataArr);
-
-    /*const addRunsRequest={
-      runDetailsList: runDataArr
-    };
-    
-    fetch("http://192.168.1.66:7001/run-details/addRuns", { 
-    method: 'POST', 
-    headers: { 
-    'Content-Type':'application/json' 
-    }, 
-    body: JSON.stringify({ 
-      runDetailsList: runDataArr
-   }) 
-  }).then(response={ 
-    
-  });*/
-};
-
-const updateSyncStateInDB=(pendingRunsForSync)=>{
-  let pendingRunIds="";
-  pendingRunsForSync.map(pendingRun=>{
-    pendingRunIds=pendingRunIds+pendingRunsForSync.runId+",";
-  });
-  pendingRunIds= pendingRunIds.replace(/(^[,\s]+)|([,\s]+$)/g, '');
-  try{
-  const dbResult=  updateRunsSyncState(pendingRunIds);
-  }
-  catch(err){
-     
-  }
-};
-
-//Utility Method to Check and Delete Runs from Local Database
-const checkAndDeleteRunsIfNeeded=()=>{
- return async()=>{
-        const existingRuns= await fetchRuns();
-      // Configure here for maximum runs to be saved in local
-       if(existingRuns&&existingRuns.rows._array.length>2){
-         var runsToBeDeleted;
-         let runIdsToBeDeleted="";
-
-         existingRuns.rows._array.sort(function(a,b){
-           return b.RUN_ID-a.RUN_ID;
+          updatedRuns = updatedRuns.concat(run);
+          //Dispatch Update Runs State
+          dispatch({
+            type: UPDATE_RUN_DETAILS,
+            runs: updatedRuns
           });
-         
-          for(runsToBeDeleted=existingRuns.rows._array.length-2; runsToBeDeleted>0;runsToBeDeleted--){
-              runIdsToBeDeleted=runIdsToBeDeleted+existingRuns.rows._array[existingRuns.rows._array.length-runsToBeDeleted].RUN_ID+",";
+          //Dispatch Add Run Summary
+          dispatch(addRunSummary(run));
+          //Dispatch Sync New Run to Server
+          dispatch(syncPendingRuns(updatedRuns));
+          resolve();
+        }
+      ).catch(err => {
+        reject(err);
+      });
+    });
+  }
+};
+
+//Method to Add Run Summary in Local DB
+export const addRunSummary = (run) => {
+  return async dispatch => {
+    return new Promise((resolve, reject) => {
+      fetchRunSummary().then((response) => {
+
+        //Insert New Run Summary
+        if (response.rows._array.length === 0) {
+          insertRunSummary(run.runDistance, "1", run.runPace, run.runDistance).then((response) => {
+            //Dispatch Update Run Summary State
+            dispatch({
+              type: UPDATE_RUN_SUMMARY,
+              runSummary: {
+                totalDistance: response.TOTAL_DISTANCE,
+                totalRuns: response.TOTAL_RUNS,
+                averagePace: response.AVERAGE_PACE,
+                averageDistance: response.AVERAGE_DISTANCE
+              }
+            });
+          });
+        } 
+        // Update Existing Run Summary
+        else {
+          var updatedRunSummary = {
+            totalDistance: parseFloat(response.rows._array[0].TOTAL_DISTANCE) + parseFloat(run.runDistance),
+            totalRuns: parseInt(response.rows._array[0].TOTAL_RUNS) + 1,
+            averagePace: ((parseFloat(response.rows._array[0].AVERAGE_PACE) * parseInt(response.rows._array[0].TOTAL_RUNS)) + run.runPace) / (parseInt(response.rows._array[0].TOTAL_RUNS) + 1),
+            averageDistance: response.rows._array[0].TOTAL_DISTANCE / response.rows._array[0].TOTAL_RUNS
+          };
+          //Dispatch Update Run Summary State
+          updateRunSummary(updatedRunSummary.totalDistance, updatedRunSummary.totalRuns, updatedRunSummary.averagePace, updatedRunSummary.averageDistance).then((response) => {
+            dispatch({
+              type: UPDATE_RUN_SUMMARY,
+              runSummary: {
+                totalDistance: updatedRunSummary.totalDistance,
+                totalRuns: updatedRunSummary.totalRuns,
+                averagePace: updatedRunSummary.averagePace,
+                averageDistance: updatedRunSummary.averageDistance
+              }
+            });
+          });
+        }
+        resolve();
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+};
+
+//Method to Load Runs first from local DB, and then from server in case needed and hydrate local DB
+export const loadRuns = () => {
+  return async dispatch => {
+    return new Promise((resolve, reject) => {
+      //Fetch Runs from Local DB
+      fetchRuns().then(response => {
+          if (response.rows._array.length > 0) {
+            var updatedRuns = response.rows._array.map((run) => {
+              var updatedRun = {
+                runId: run.RUN_ID,
+                runTotalTime: run.RUN_TOTAL_TIME,
+                runDistance: run.RUN_DISTANCE,
+                runPace: run.RUN_PACE,
+                runCaloriesBurnt: run.RUN_CALORIES_BURNT,
+                runCredits: run.RUN_CREDITS,
+                runStartDateTime: run.RUN_START_DATE_TIME,
+                runDate: run.RUN_DATE,
+                runDay: run.RUN_DAY,
+                runPath: run.RUN_PATH,
+                runTrackSnapUrl: run.RUN_TRACK_SNAP_URL,
+                runSyncDone: run.IS_SYNC_DONE
+              };
+              return updatedRun;
+            });
+            //Dispatch Runs Update State
+            dispatch({
+              type: UPDATE_RUN_DETAILS,
+              runs: updatedRuns
+            });
+          } else {
+            //Dispatch Load Runs from Server Action
+            dispatch(loadRunsFromServer(0)).then((response) => {
+              if (response.runDetailsList.length > 0) {
+                response.runDetailsList.map((run) => {
+                  //Hydrate Local DB
+                  insertRun(run.runId, run.runTotalTime.toString(), run.runDistance.toString(), run.runPace.toString(), run.runCaloriesBurnt.toString(), 0, run.runStartDateTime.toString(), run.runDate.toString(), run.runDay.toString(), run.runPath.toString(), run.runTrackSnapUrl.toString(), "1");
+                });
+              }
+            });
           }
-          runIdsToBeDeleted= runIdsToBeDeleted.replace(/(^[,\s]+)|([,\s]+$)/g, '');
-          deleteRuns(runIdsToBeDeleted);
-       }
-     };
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+};
+
+//Method to Load Runs from server based on pageNumber provided
+export const loadRunsFromServer = (pageNumber) => {
+  return async dispatch => {
+    var header = await dispatch(getUserAuthenticationToken());
+    var userId = await AsyncStorage.getItem('USER_ID');
+    return new Promise((resolve, reject) => {
+      NetInfo.fetch().then(state => {
+        if (!state.isConnected) {
+          reject(201);
+        }
+      });
+      var URL = configData.SERVER_URL + "run-details/getRuns/" + userId + "?page=";
+      URL = URL + pageNumber;
+      fetch(URL, {
+          method: 'GET',
+          headers: header
+        }).then(response => response.json())
+        .then((response) => {
+          if (response.runDetailsList.length > 0) {
+            //Dispatch Runs Update State
+            dispatch({
+              type: UPDATE_RUN_DETAILS,
+              runs: response.runDetailsList
+            })
+          }
+          resolve(response);
+        }).catch(err => {
+          reject(err);
+        });
+    });
+  }
+};
+
+//Method to load Run Summary first from local DB, and then from server in case needed
+export const loadRunSummary = () => {
+  return async dispatch => {
+    return new Promise((resolve, reject) => {
+      //Fetch Run Summary from Local DB
+      fetchRunSummary().then(response => {
+          if (response.rows._array.length > 0) {
+            var dbResultSummary = response.rows._array[0];
+            //Dispatch Run Summary State Update
+            dispatch({
+              type: UPDATE_RUN_SUMMARY,
+              runSummary: {
+                id: dbResultSummary.id,
+                totalDistance: dbResultSummary.TOTAL_DISTANCE,
+                totalRuns: dbResultSummary.TOTAL_RUNS,
+                averagePace: dbResultSummary.AVERAGE_PACE,
+                averageDistance: dbResultSummary.AVERAGE_DISTANCE
+              }
+            });
+          } else {
+            //Dispatch Load Run Summary from Server
+            dispatch(loadRunSummaryFromServer());
+          }
+          resolve();
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+};
+
+//Load Run Summary from Server and hydrate local DB
+export const loadRunSummaryFromServer = () => {
+  return async dispatch => {
+    var header = await dispatch(getUserAuthenticationToken());
+    var userId = await AsyncStorage.getItem('USER_ID');
+    return new Promise((resolve, reject) => {
+      NetInfo.fetch().then(state => {
+        if (!state.isConnected) {
+          reject(201);
+        }
+      });
+      var URL = configData.SERVER_URL + "run-details/getRunSummary/" + userId;
+      fetch(URL, {
+          method: 'GET',
+          headers: header
+        }).then(response => response.json())
+        .then((response) => {
+          if (response && response.runSummary !== null) {
+            //Dispatch Run Summary State Update
+            dispatch({
+              type: UPDATE_RUN_SUMMARY,
+              runSummary: response.runSummary
+            });
+            //Hydrate the database
+            insertRunSummary(response.runSummary.totalDistance, response.runSummary.totalRuns, response.runSummary.averagePace, response.runSummary.averageDistance);
+          }
+          resolve();
+        }).catch(err => {
+          reject(err);
+        });
+    });
+  }
+};
+
+export const syncPendingRuns = (pendingRunsForSync) => {
+
+  console.log('Inside Sync Pending Runs');
+  console.log(pendingRunsForSync);
+
+  return async dispatch => {
+
+    var header = await dispatch(getUserAuthenticationToken());
+    var userId = await AsyncStorage.getItem('USER_ID');
+    return new Promise((resolve, reject) => {
+      //console.log('Inside dispatch');
+      //console.log(pendingRunsForSync);
+
+      /* let runDataArr=[];
+       pendingRunsForSync.map(pendingRun=>{
+        var pathString=pendingRun.runPath.map((path)=>""+path.latitude+","+path.longitude).join(';');
+        const runData={
+          runId: pendingRun.runId,
+          userId: userId,
+          runTotalTime: pendingRun.runTotalTime,
+          runDistance: pendingRun.runDistance,
+          runPace: pendingRun.runPace,
+          runCaloriesBurnt: pendingRun.runCaloriesBurnt,
+          runCredits: '0',
+          runStartDateTime: pendingRun.runStartDateTime,
+          runDate: pendingRun.runDate,
+          runDay: pendingRun.runDay,
+          runPath: pathString,
+          runTrackSnapUrl: pendingRun.runTrackSnapUrl
+        };
+        runDataArr = runDataArr.concat(runData);
+       });*/
+
+      //console.log('Run Request');
+      //console.log(runDataArr);
+      /*const addRunsRequest={
+        runDetailsList: pendingRunsForSync
+      };*/
+      var URL = configData.SERVER_URL + "run-details/addRuns/" + userId;
+      fetch(URL, {
+          method: 'POST',
+          headers: header,
+          body: JSON.stringify({
+            runDetailsList: pendingRunsForSync
+          })
+        }).then(response => response.json())
+        .then((response) => {
+          updateSyncStateInDB(pendingRunsForSync);
+          dispatch({
+            type: UPDATE_RUN_SYNC_STATE,
+            pendingRunsForSync
+          });
+          resolve();
+        }).catch(err => {
+          reject(err);
+        });
+    });
+  }
+};
+
+const updateSyncStateInDB = (pendingRunsForSync) => {
+  let pendingRunIds = "";
+  pendingRunsForSync.map(pendingRun => {
+    pendingRunIds = pendingRunIds + pendingRunsForSync.runId + ",";
+  });
+  pendingRunIds = pendingRunIds.replace(/(^[,\s]+)|([,\s]+$)/g, '');
+  try {
+    const dbResult = updateRunsSyncState(pendingRunIds);
+  } catch (err) {
+
+  }
+};
+
+//Utility Method to Check and Delete Synced Runs from Local Database
+const checkAndDeleteRunsIfNeeded = () => {
+  return async dispatch => {
+    return new Promise((resolve, reject) => {
+      fetchRuns().then((response) => {
+        if (response && response.rows._array.length > 2) {
+          var runsToBeDeleted;
+          let runIdsToBeDeleted = "";
+          existingRuns.rows._array.sort(function(a, b) {
+            return new Date(b.RUN_START_DATE_TIME) - new Date(a.RUN_START_DATE_TIME);
+          });
+
+          for (runsToBeDeleted = existingRuns.rows._array.length - 2; runsToBeDeleted > 0; runsToBeDeleted--) {
+            //Delete Only if the Run has already been synced to server
+            if (runsToBeDeleted.IS_SYNC_DONE === '1') {
+              runIdsToBeDeleted = runIdsToBeDeleted + existingRuns.rows._array[existingRuns.rows._array.length - runsToBeDeleted].RUN_ID + ",";
+            }
+          }
+          if (runIdsToBeDeleted !== "") {
+            runIdsToBeDeleted = runIdsToBeDeleted.replace(/(^[,\s]+)|([,\s]+$)/g, '');
+            deleteRuns(runIdsToBeDeleted).then((response) => {
+              resolve();
+            }).catch(err => {
+              //No Need to throw exception
+              resolve();
+            });
+          }
+        }
+      }).catch(err => {
+        //No Need to throw exception
+        resolve();
+      });
+    });
+  };
 };
