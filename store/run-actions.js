@@ -84,14 +84,14 @@ export const addRunSummary = (run) => {
             dispatch({
               type: UPDATE_RUN_SUMMARY,
               runSummary: {
-                totalDistance: response.TOTAL_DISTANCE,
-                totalRuns: response.TOTAL_RUNS,
-                averagePace: response.AVERAGE_PACE,
-                averageDistance: response.AVERAGE_DISTANCE
+                totalDistance: run.runDistance,
+                totalRuns: "1",
+                averagePace: run.runPace,
+                averageDistance: run.runDistance
               }
             });
           });
-        } 
+        }
         // Update Existing Run Summary
         else {
           var updatedRunSummary = {
@@ -141,10 +141,11 @@ export const loadRuns = () => {
                 runDay: run.RUN_DAY,
                 runPath: run.RUN_PATH,
                 runTrackSnapUrl: run.RUN_TRACK_SNAP_URL,
-                runSyncDone: run.IS_SYNC_DONE
+                isSyncDone: run.IS_SYNC_DONE
               };
               return updatedRun;
             });
+
             //Dispatch Runs Update State
             dispatch({
               type: UPDATE_RUN_DETAILS,
@@ -271,42 +272,16 @@ export const loadRunSummaryFromServer = () => {
 
 export const syncPendingRuns = (pendingRunsForSync) => {
 
-  console.log('Inside Sync Pending Runs');
-  console.log(pendingRunsForSync);
-
   return async dispatch => {
-
     var header = await dispatch(getUserAuthenticationToken());
     var userId = await AsyncStorage.getItem('USER_ID');
+
     return new Promise((resolve, reject) => {
-      //console.log('Inside dispatch');
-      //console.log(pendingRunsForSync);
 
-      /* let runDataArr=[];
-       pendingRunsForSync.map(pendingRun=>{
-        var pathString=pendingRun.runPath.map((path)=>""+path.latitude+","+path.longitude).join(';');
-        const runData={
-          runId: pendingRun.runId,
-          userId: userId,
-          runTotalTime: pendingRun.runTotalTime,
-          runDistance: pendingRun.runDistance,
-          runPace: pendingRun.runPace,
-          runCaloriesBurnt: pendingRun.runCaloriesBurnt,
-          runCredits: '0',
-          runStartDateTime: pendingRun.runStartDateTime,
-          runDate: pendingRun.runDate,
-          runDay: pendingRun.runDay,
-          runPath: pathString,
-          runTrackSnapUrl: pendingRun.runTrackSnapUrl
-        };
-        runDataArr = runDataArr.concat(runData);
-       });*/
+      pendingRunsForSync.map(pendingRun => {
+        pendingRun.userId = userId;
+      });
 
-      //console.log('Run Request');
-      //console.log(runDataArr);
-      /*const addRunsRequest={
-        runDetailsList: pendingRunsForSync
-      };*/
       var URL = configData.SERVER_URL + "run-details/addRuns/" + userId;
       fetch(URL, {
           method: 'POST',
@@ -316,11 +291,13 @@ export const syncPendingRuns = (pendingRunsForSync) => {
           })
         }).then(response => response.json())
         .then((response) => {
-          updateSyncStateInDB(pendingRunsForSync);
-          dispatch({
-            type: UPDATE_RUN_SYNC_STATE,
-            pendingRunsForSync
-          });
+          if (response === true) {
+            updateSyncStateInDB(pendingRunsForSync);
+            dispatch({
+              type: UPDATE_RUN_SYNC_STATE,
+              pendingRunsForSync
+            });
+          }
           resolve();
         }).catch(err => {
           reject(err);
@@ -332,14 +309,10 @@ export const syncPendingRuns = (pendingRunsForSync) => {
 const updateSyncStateInDB = (pendingRunsForSync) => {
   let pendingRunIds = "";
   pendingRunsForSync.map(pendingRun => {
-    pendingRunIds = pendingRunIds + pendingRunsForSync.runId + ",";
+    pendingRunIds = pendingRunIds + pendingRun.runId + ",";
   });
   pendingRunIds = pendingRunIds.replace(/(^[,\s]+)|([,\s]+$)/g, '');
-  try {
-    const dbResult = updateRunsSyncState(pendingRunIds);
-  } catch (err) {
-
-  }
+  updateRunsSyncState(pendingRunIds);
 };
 
 //Utility Method to Check and Delete Synced Runs from Local Database
@@ -347,17 +320,18 @@ const checkAndDeleteRunsIfNeeded = () => {
   return async dispatch => {
     return new Promise((resolve, reject) => {
       fetchRuns().then((response) => {
+
         if (response && response.rows._array.length > 2) {
           var runsToBeDeleted;
           let runIdsToBeDeleted = "";
-          existingRuns.rows._array.sort(function(a, b) {
+          response.rows._array.sort(function(a, b) {
             return new Date(b.RUN_START_DATE_TIME) - new Date(a.RUN_START_DATE_TIME);
           });
 
-          for (runsToBeDeleted = existingRuns.rows._array.length - 2; runsToBeDeleted > 0; runsToBeDeleted--) {
+          for (runsToBeDeleted = response.rows._array.length - 1; runsToBeDeleted > 2; runsToBeDeleted--) {
             //Delete Only if the Run has already been synced to server
-            if (runsToBeDeleted.IS_SYNC_DONE === '1') {
-              runIdsToBeDeleted = runIdsToBeDeleted + existingRuns.rows._array[existingRuns.rows._array.length - runsToBeDeleted].RUN_ID + ",";
+            if (response.rows._array[runsToBeDeleted].IS_SYNC_DONE === "1") {
+              runIdsToBeDeleted = runIdsToBeDeleted + response.rows._array[runsToBeDeleted].RUN_ID + ",";
             }
           }
           if (runIdsToBeDeleted !== "") {

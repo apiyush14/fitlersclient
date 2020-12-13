@@ -1,13 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Button, Dimensions,Animated,Alert,Modal} from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import React, {
+  useState,
+  useEffect
+} from 'react';
+import {
+  View,
+  StyleSheet,
+  Button,
+  Dimensions,
+  Animated,
+  Alert,
+  Modal
+} from 'react-native';
+import MapView, {
+  Marker
+} from 'react-native-maps';
 import * as Location from 'expo-location';
 import RoundButton from '../components/RoundButton';
-import {useDispatch,useSelector} from 'react-redux';
+import {
+  useDispatch,
+  useSelector
+} from 'react-redux';
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import * as Permissions from 'expo-permissions';
-import { AsyncStorage } from 'react-native';
+import {
+  AsyncStorage
+} from 'react-native';
 
 import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
@@ -15,83 +33,81 @@ import EventView from '../components/EventView';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const RunTrackerHomeScreen = (props)=>{
+const RunTrackerHomeScreen = (props) => {
 
-  const dispatch=useDispatch();
-  
-  // State Selectors
-  const eventDetails = useSelector(state => state.events.eventDetails);
+    const dispatch = useDispatch();
+
+    // State Selectors
+    const eventDetails = useSelector(state => state.events.eventDetails);
 
 
-// State Variables
-  const [mapRegion, setMapRegion] = useState({
-    latitude: 31,
-    longitude: 74,
-    latitudeDelta: 0.000757,
-    longitudeDelta: 0.0008
-  });
-  const [modalVisible,setModalVisible]=useState(false);
-  const [modalEventDetails,setModalEventDetails]=useState(null);
-
-//Load Run History Data upon initialization
-useEffect(()=>{
-  const fetchData=async ()=>{
-    dispatch(runActions.loadRuns());
-    dispatch(runActions.loadRunSummary());
-    dispatch(eventActions.loadEventsFromServer());
-  };
-  fetchData();
-}, []);
-
-//Load Location Details
-useEffect(()=>{
-  (async ()=>{
-
-    Location.requestPermissionsAsync().then(response=>{
-      if(response.status!=='granted'){
-        //TODO : To handle alert to change settings
-        Alert.alert("Location Alert","Location Permission is required!!!");
-      }
-      else{
-        Location.getCurrentPositionAsync({}).then(response=>{
-          setMapRegion({
-           latitude: response.coords.latitude,
-           longitude: response.coords.longitude,
-           latitudeDelta: 0.000757,
-           longitudeDelta: 0.0008
-       });
-        });
-      }
+    // State Variables
+    const [mapRegion, setMapRegion] = useState({
+      latitude: 31,
+      longitude: 74,
+      latitudeDelta: 0.000757,
+      longitudeDelta: 0.0008
     });
-    
-   Permissions.askAsync(Permissions.MOTION).then(response=>{
-     //TODO : To handle alert to change settings
-     //Motion Sensor Permission Handling
-    if(response.status!=='granted'){
-     Alert.alert("Location Alert","Motion Sensor Permission is required!!!");
-     }
-   });
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalEventDetails, setModalEventDetails] = useState(null);
 
-})();
-},[]);
+    //Load Run History Data upon initialization
+    useEffect(() => {
+      const fetchData = async () => {
+        dispatch(runActions.loadRuns());
+        dispatch(runActions.loadRunSummary());
+        dispatch(eventActions.loadEventsFromServer());
+      };
+      fetchData();
+    }, []);
+
+    //Load Location Details
+    useEffect(() => {
+      (async () => {
+
+        Location.requestPermissionsAsync().then(response => {
+          if (response.status !== 'granted') {
+            //TODO : To handle alert to change settings
+            Alert.alert("Location Alert", "Location Permission is required!!!");
+          } else {
+            Location.getCurrentPositionAsync({}).then(response => {
+              setMapRegion({
+                latitude: response.coords.latitude,
+                longitude: response.coords.longitude,
+                latitudeDelta: 0.000757,
+                longitudeDelta: 0.0008
+              });
+            });
+          }
+        });
+
+        Permissions.askAsync(Permissions.MOTION).then(response => {
+          //TODO : To handle alert to change settings
+          //Motion Sensor Permission Handling
+          if (response.status !== 'granted') {
+            Alert.alert("Location Alert", "Motion Sensor Permission is required!!!");
+          }
+        });
+
+      })();
+    }, []);
 
 
-const onClickEventItem=(eventItem)=>{
- setModalEventDetails(eventItem);
- setModalVisible(true);
-};
+    const onClickEventItem = (eventItem) => {
+      setModalEventDetails(eventItem);
+      setModalVisible(true);
+    };
 
-const onCloseEventItem=(eventItem)=>{
- setModalVisible(false);
-};
+    const onCloseEventItem = (eventItem) => {
+      setModalVisible(false);
+    };
 
-const onRegisterEventItem=(eventItem)=>{
-  AsyncStorage.getItem('USER_ID').then(response=>{
-    dispatch(eventActions.registerUserForEvent(modalEventDetails.eventId,response));
-  });
- setModalVisible(false);
-};
-
+    const onRegisterEventItem = (eventItem) => {
+      AsyncStorage.getItem('USER_ID').then(response => {
+        dispatch(eventActions.registerUserForEvent(modalEventDetails.eventId, response));
+      });
+      setModalVisible(false);
+    };
 //Logic to handle shutter tab for challenges
 
 /*

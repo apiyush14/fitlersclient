@@ -17,12 +17,14 @@ import {
 import {
   Ionicons
 } from '@expo/vector-icons';
-import NetInfo from '@react-native-community/netinfo';
 import {
   useIsFocused
 } from "@react-navigation/native";
 import DashboardItem from '../components/DashboardItem';
 import * as runActions from '../store/run-actions';
+import {
+  AsyncStorage
+} from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -33,9 +35,6 @@ const RunHistoryScreen = props => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  /*const unsubscribe = props.navigation.addListener('didFocus', () => {
-      toggleCircle();
-    });*/
 
   // State Selectors
   const runsHistory = useSelector(state => state.runs.runs);
@@ -44,68 +43,27 @@ const RunHistoryScreen = props => {
 
   // Use Effect Hook to be loaded everytime the screen loads
   useEffect(() => {
-    let networkSubscriber;
-    if (isFocused) {
-      //console.log('Run History');
-      //console.log(pendingRunsForSync);
-      syncPendingRuns();
-      networkSubscriber = NetInfo.addEventListener(state => {
-        handleNetworkStateChanges(state.type);
+    //console.log('=========Run History Sync============');
+    //console.log(runsHistory);
+    if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
+      pendingRunsForSync.map(pendingRun=>{
+        if(Array.isArray(pendingRun.runPath)){
+         var pathString=pendingRun.runPath.map((path)=>""+path.latitude+","+path.longitude).join(';');
+         pendingRun.runPath=pathString;
+        }
       });
-    }
-    //Unsubscribe the event listener
-    else if (networkSubscriber) {
-      networkSubscriber();
+      dispatch(runActions.syncPendingRuns(pendingRunsForSync));
     }
   }, [props, isFocused]);
-
-  //Event Listener to sync the run history from server once the network state changes to connected
-  const handleNetworkStateChanges = (type) => {
-    switch (type) {
-      case 'none':
-      case 'unknown':
-        // offline statuses, so do nothing
-        return
-        //TODO To be tested
-      default:
-        syncPendingRuns();
-    }
-  };
-
-  // Method to Upload New Runs to Server
-  const syncPendingRuns = () => {
-    NetInfo.fetch().then(state => {
-      //console.log('Network State');
-      //console.log(state);
-      //console.log(runsHistory);
-      if (state.isConnected && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
-        dispatch(runActions.syncPendingRuns(pendingRunsForSync)).then(() => {
-
-        }).catch(err => {
-
-        });
-      }
-    });
-  };
 
   //Method to lazy load Runs from server 
   const loadMoreDataFromServer = () => {
     setIsLoading(true);
     let pageNumber = Math.floor(runsHistory.length / 3);
-    //console.log('Going with page number');
-    //console.log(pageNumber);
-    NetInfo.fetch().then(state => {
-      if (state.isConnected && runsHistory.length > 0 && (runsHistory[runsHistory.length - 1].runId > 1)) {
-        dispatch(runActions.loadRunsFromServer(pageNumber)).then(() => {
-          //console.log('Load from Server Completed');
-          setIsLoading(false);
-        }).catch(err => {
-          //console.log('In error block');
-          setIsLoading(false);
-        });
-      } else {
-        setIsLoading(false);
-      }
+    dispatch(runActions.loadRunsFromServer(pageNumber)).then(() => {
+      setIsLoading(false);
+    }).catch(err => {
+      setIsLoading(false);
     });
   };
 
@@ -126,141 +84,70 @@ const RunHistoryScreen = props => {
 
   // Run History Footer for Activity Loader
   const renderRunSummaryFooter = () => {
-    return ( <
-      View > {
-        isLoading ?
-        ( <
-          ActivityIndicator size = "large"
-          color = "green" / >
-        ) :
-          ( <
-            View > < /View>
-          )
-      } <
-      /View>
+    return (
+      <View>
+    {isLoading?
+    (
+     <ActivityIndicator size="large" color="green"/>
+     ):
+    (
+     <View></View>
+     )
+   }
+   </View>
     );
   };
 
   // Run Summary Header View Renderer
   const renderRunSummaryHeader = () => {
-    return ( <
-      View style = {
-        styles.runsHistoryDetailsPanel
-      } >
-      <
-      DashboardItem text = {
-        runSummary != null ? parseFloat(runSummary.totalDistance / 1000).toFixed(2) + " KM" : 0 + " KM"
-      }
-      footerText = "Total Distance"
-      style = {
-        styles.totalDistanceDashboardItem
-      }
-      icon = "ios-walk" / >
-      <
-      DashboardItem text = {
-        runSummary != null ? parseFloat(runSummary.averageDistance / 1000).toFixed(2) + " KM" : 0 + " KM"
-      }
-      footerText = "Avg Distance"
-      style = {
-        styles.averageDistanceDashboardItem
-      }
-      icon = "ios-stats" / >
-      <
-      DashboardItem text = {
-        runSummary != null ? parseFloat(runSummary.averagePace).toFixed(2) : 0.00
-      }
-      footerText = "Avg Pace"
-      style = {
-        styles.averagePaceDashboardItem
-      }
-      icon = "ios-stopwatch" / >
+    return ( <View style={styles.runsHistoryDetailsPanel}>
+    <DashboardItem
+    text={runSummary!=null?parseFloat(runSummary.totalDistance/1000).toFixed(2)+" KM":0+" KM"}
+    footerText="Total Distance"
+    style={styles.totalDistanceDashboardItem} 
+    icon="ios-walk"/>
+    <DashboardItem 
+    text={runSummary!=null?parseFloat(runSummary.averageDistance/1000).toFixed(2)+" KM":0+" KM"}
+    footerText="Avg Distance"
+    style={styles.averageDistanceDashboardItem} 
+    icon="ios-stats"/>
+    <DashboardItem 
+    text={runSummary!=null?parseFloat(runSummary.averagePace).toFixed(2):0.00}
+    footerText="Avg Pace"
+    style={styles.averagePaceDashboardItem} 
+    icon="ios-stopwatch"/>
 
-      <
-      View style = {
-        styles.footerContainer
-      } >
-      <
-      View style = {
-        styles.footer1
-      } >
-      <
-      View style = {
-        styles.footer1ValueContainer
-      } >
-      <
-      Ionicons name = "ios-ribbon"
-      size = {
-        30
-      }
-      color = 'springgreen' / >
-      <
-      Text style = {
-        styles.footer1Value
-      } > {
-        runSummary != null ? parseInt(runSummary.totalRuns) : 0
-      } < /Text> <
-      /View> <
-      Text style = {
-        styles.footer1Text
-      } > Total Runs < /Text> <
-      /View> <
-      View style = {
-        styles.footer2
-      } >
-      <
-      View style = {
-        styles.footer2ValueContainer
-      } >
-      <
-      Ionicons name = "ios-flame"
-      size = {
-        30
-      }
-      color = 'springgreen' / >
-      <
-      Text style = {
-        styles.footer2Value
-      } > 0 < /Text>  <
-      /View> <
-      Text style = {
-        styles.footer2Text
-      } > Calories < /Text> <
-      /View> <
-      /View> <
-      /View>
+    <View style={styles.footerContainer}>
+    <View style={styles.footer1}>
+    <View style={styles.footer1ValueContainer}> 
+    <Ionicons name="ios-ribbon" size={30} color='springgreen'/>
+    <Text style={styles.footer1Value}> {runSummary!=null?parseInt(runSummary.totalRuns):0}</Text>
+    </View>
+    <Text style={styles.footer1Text}>Total Runs</Text>
+    </View>
+    <View style={styles.footer2}>
+    <View style={styles.footer2ValueContainer}>
+    <Ionicons name="ios-flame" size={30} color='springgreen'/>
+    <Text style={styles.footer2Value}> 0</Text> 
+    </View>
+    <Text style={styles.footer2Text}>Calories</Text>
+    </View>
+    </View>
+    </View>
     );
   };
 
-  return ( <
-    View style = {
-      styles.runHistoryContainer
-    } >
-    <
-    View style = {
-      styles.runsScrollPanel
-    } >
-    <
-    RunHistoryList onSelectRunItem = {
-      onSelectRunHistoryItem
-    }
-    onEndReached = {
-      loadMoreDataFromServer
-    }
-    isLoading = {
-      isLoading
-    }
-    header = {
-      renderRunSummaryHeader()
-    }
-    footer = {
-      renderRunSummaryFooter()
-    }
-    listData = {
-      runsHistory
-    }
-    /> <
-    /View> <
-    /View>
+  return ( <View style={styles.runHistoryContainer}>
+   <View style={styles.runsScrollPanel}>
+   <RunHistoryList
+   onSelectRunItem={onSelectRunHistoryItem}
+   onEndReached={loadMoreDataFromServer}
+   isLoading={isLoading}
+   header={renderRunSummaryHeader()}
+   footer={renderRunSummaryFooter()}
+   listData={runsHistory}/>
+   </View>
+   </View>
   );
 };
 
