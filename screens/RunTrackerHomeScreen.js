@@ -38,7 +38,8 @@ const RunTrackerHomeScreen = (props) => {
     const dispatch = useDispatch();
 
     // State Selectors
-    const eventDetails = useSelector(state => state.events.eventDetails);
+    const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
+    const eventDetails = useSelector(state => state.events.eventDetails).filter((event)=>eventRegistrationDetails.findIndex(eventState=>eventState.eventId===event.eventId)<0);
 
 
     // State Variables
@@ -57,6 +58,7 @@ const RunTrackerHomeScreen = (props) => {
         dispatch(runActions.loadRuns());
         dispatch(runActions.loadRunSummary());
         dispatch(eventActions.loadEventsFromServer());
+        dispatch(eventActions.loadEventRegistrationDetails());
       };
       fetchData();
     }, []);
@@ -103,9 +105,7 @@ const RunTrackerHomeScreen = (props) => {
     };
 
     const onRegisterEventItem = (eventItem) => {
-      AsyncStorage.getItem('USER_ID').then(response => {
-        dispatch(eventActions.registerUserForEvent(modalEventDetails.eventId, response));
-      });
+      dispatch(eventActions.registerUserForEvent(modalEventDetails));
       setModalVisible(false);
     };
 //Logic to handle shutter tab for challenges

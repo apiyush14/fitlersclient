@@ -175,7 +175,7 @@ export const loadRuns = () => {
 export const loadRunsFromServer = (pageNumber) => {
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
-    var userId = await AsyncStorage.getItem('USER_ID');
+    var userId = header.USER_ID;
     return new Promise((resolve, reject) => {
       NetInfo.fetch().then(state => {
         if (!state.isConnected) {
@@ -240,7 +240,7 @@ export const loadRunSummary = () => {
 export const loadRunSummaryFromServer = () => {
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
-    var userId = await AsyncStorage.getItem('USER_ID');
+    var userId = header.USER_ID;
     return new Promise((resolve, reject) => {
       NetInfo.fetch().then(state => {
         if (!state.isConnected) {
@@ -274,7 +274,7 @@ export const syncPendingRuns = (pendingRunsForSync) => {
 
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
-    var userId = await AsyncStorage.getItem('USER_ID');
+    var userId = header.USER_ID;
 
     return new Promise((resolve, reject) => {
 
