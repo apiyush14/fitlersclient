@@ -9,7 +9,9 @@ import {
   Dimensions,
   Animated,
   Alert,
-  Modal
+  Modal,
+  ImageBackground,
+  Text
 } from 'react-native';
 import MapView, {
   Marker
@@ -51,6 +53,7 @@ const RunTrackerHomeScreen = (props) => {
     });
     const [modalVisible, setModalVisible] = useState(false);
     const [modalEventDetails, setModalEventDetails] = useState(null);
+    const [ongoingEventDetails,setOngoingEventDetails]=useState(null);
 
     //Load Run History Data upon initialization
     useEffect(() => {
@@ -66,7 +69,6 @@ const RunTrackerHomeScreen = (props) => {
     //Load Location Details
     useEffect(() => {
       (async () => {
-
         Location.requestPermissionsAsync().then(response => {
           if (response.status !== 'granted') {
             //TODO : To handle alert to change settings
@@ -90,9 +92,28 @@ const RunTrackerHomeScreen = (props) => {
             Alert.alert("Location Alert", "Motion Sensor Permission is required!!!");
           }
         });
-
       })();
     }, []);
+
+    useEffect(() => {
+      (async () => {
+       checkAndUpdateOngoingEvent();
+      })();
+    }, [eventRegistrationDetails]);
+
+    const checkAndUpdateOngoingEvent=()=>{
+      let currentTime=new Date().getTime();
+      if(eventRegistrationDetails!==null&&eventRegistrationDetails.length>0){
+           eventRegistrationDetails.map((event)=>{
+              var eventStartDateTime=new Date(event.eventStartDate);
+              var eventEndDateTime=new Date(event.eventEndDate);
+              if(currentTime>=eventStartDateTime.getTime()
+                &&currentTime<eventEndDateTime.getTime()){
+                 setOngoingEventDetails(event);
+              }
+           });
+      }
+    };
 
 
     const onClickEventItem = (eventItem) => {
@@ -143,15 +164,24 @@ return (
    eventDetails={modalEventDetails}/>
   </Modal>
 
+  {ongoingEventDetails===null?(
   <MapView style={styles.mapContainer} region={mapRegion}
   pitchEnabled={false} rotateEnabled={false} zoomEnabled={true} scrollEnabled={false}>
   <Marker coordinate={mapRegion}/>
-  </MapView>
+  </MapView>)
+  :(
+   <View style={styles.mapContainer}>
+    <ImageBackground
+      source={{uri:"http://192.168.1.66:7001/event-details/getDisplayImage/"+ongoingEventDetails.eventId}}
+      style={styles.bgImage}>
+    </ImageBackground>
+   </View>
+  )}
 
   <View style={styles.runButton}>
   <RoundButton
   title="Run"
-  onPress={()=>{props.navigation.navigate('LiveRunTracker')}}/>
+  onPress={()=>{props.navigation.navigate('LiveRunTracker',{eventId: ongoingEventDetails!==null?ongoingEventDetails.eventId:0})}}/>
   </View>
 
   <View style={styles.challengeList}>
@@ -183,6 +213,13 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 20
   },
+
+  bgImage: {
+     flex: 1,
+     position: 'absolute',
+     width: '100%',
+     height: '100%'
+    },
 
   runButton: {
     position: 'absolute',

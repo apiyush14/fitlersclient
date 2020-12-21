@@ -22,7 +22,7 @@ export const UPDATE_RUN_SUMMARY = 'UPDATE_RUN_SUMMARY';
 export const UPDATE_RUN_SYNC_STATE = 'UPDATE_RUN_SYNC_STATE';
 
 //Method to add a new Run to Local DB and to server
-export const addRun = (runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, runCredits, runStartDateTime, runDate, runDay, runPath, runTrackSnapUrl) => {
+export const addRun = (runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, runCredits, runStartDateTime, runDate, runDay, runPath, runTrackSnapUrl, eventId) => {
   return async dispatch => {
     var userId = await AsyncStorage.getItem('USER_ID');
     return new Promise((resolve, reject) => {
@@ -34,7 +34,7 @@ export const addRun = (runId, runTotalTime, runDistance, runPace, runCaloriesBur
       var filePath = filePathPrefix.concat(runTrackSnapUrl.toString());
 
       // Insert New Run
-      insertRun(runId, runTotalTime.toString(), runDistance.toString(), runPace.toString(), runCaloriesBurnt.toString(), 0, runStartDateTime.toString(), runDate.toString(), runDay.toString(), pathString, runTrackSnapUrl.toString(), "0").then(
+      insertRun(runId, runTotalTime.toString(), runDistance.toString(), runPace.toString(), runCaloriesBurnt.toString(), 0, runStartDateTime.toString(), runDate.toString(), runDay.toString(), pathString, runTrackSnapUrl.toString(), eventId,"0").then(
         (response) => {
           var updatedRuns = [];
           var run = {
@@ -50,6 +50,7 @@ export const addRun = (runId, runTotalTime, runDistance, runPace, runCaloriesBur
             runDay: runDay,
             runPath: pathString,
             runTrackSnapUrl: runTrackSnapUrl,
+            eventId: eventId,
             isSyncDone: "0"
           };
           updatedRuns = updatedRuns.concat(run);
@@ -141,6 +142,7 @@ export const loadRuns = () => {
                 runDay: run.RUN_DAY,
                 runPath: run.RUN_PATH,
                 runTrackSnapUrl: run.RUN_TRACK_SNAP_URL,
+                eventId: run.EVENT_ID,
                 isSyncDone: run.IS_SYNC_DONE
               };
               return updatedRun;
@@ -157,7 +159,7 @@ export const loadRuns = () => {
               if (response.runDetailsList.length > 0) {
                 response.runDetailsList.map((run) => {
                   //Hydrate Local DB
-                  insertRun(run.runId, run.runTotalTime.toString(), run.runDistance.toString(), run.runPace.toString(), run.runCaloriesBurnt.toString(), 0, run.runStartDateTime.toString(), run.runDate.toString(), run.runDay.toString(), run.runPath.toString(), run.runTrackSnapUrl.toString(), "1");
+                  insertRun(run.runId, run.runTotalTime.toString(), run.runDistance.toString(), run.runPace.toString(), run.runCaloriesBurnt.toString(), 0, run.runStartDateTime.toString(), run.runDate.toString(), run.runDay.toString(), run.runPath.toString(), run.runTrackSnapUrl.toString(),run.eventId ,"1");
                 });
               }
             });

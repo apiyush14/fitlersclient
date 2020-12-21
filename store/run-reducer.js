@@ -27,7 +27,7 @@ export default (state = initialState, action) => {
                         };
                         return location;
                     });
-                    return new RunDetails(run.runId, run.runTotalTime, run.runDistance, run.runPace, run.runCaloriesBurnt, run.runCredits, run.runStartDateTime, run.runDate, run.runDay, path, run.runTrackSnapUrl, run.isSyncDone);
+                    return new RunDetails(run.runId, run.runTotalTime, run.runDistance, run.runPace, run.runCaloriesBurnt, run.runCredits, run.runStartDateTime, run.runDate, run.runDay, path, run.runTrackSnapUrl,run.eventId,run.isSyncDone);
                 }
             }).filter(updatedRun => updatedRun !== undefined);
             state.runs = state.runs.concat(updatedRuns);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import { StyleSheet,Button ,Text, View, TouchableOpacity,ImageBackground, Dimensions, ScrollView} from 'react-native';
 import RoundButton from '../components/RoundButton';
 
@@ -10,6 +10,29 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const EventView=props=>{
+
+  var weekday = new Array(7);
+  weekday[0] = "Sunday";
+  weekday[1] = "Monday";
+  weekday[2] = "Tuesday";
+  weekday[3] = "Wednesday";
+  weekday[4] = "Thursday";
+  weekday[5] = "Friday";
+  weekday[6] = "Saturday";
+
+const [eventStartDay,setEventStartDay]=useState("");
+const [eventStartDate,setEventStartDate]=useState(new Date());
+const [eventEndDate,setEventEndDate]=useState(new Date());
+
+useEffect(() => {
+     var eventStartDate = new Date(props.eventDetails.eventStartDate);
+     var eventEndDate = new Date(props.eventDetails.eventEndDate);
+     setEventStartDate(eventStartDate);
+     setEventEndDate(eventEndDate);
+
+     //setEventStartDay(weekday[eventStartDate.getDay()]);
+    }, []);
+
 return(
  	 <View style={styles.eventViewContainer}>
      <View style={styles.imageContainer}>
@@ -23,13 +46,13 @@ return(
           <View style={styles.eventCalendarContainer}>
            <View style={styles.eventDateContainer}>
             <View style={styles.eventDateDigit}>
-             <Text style={styles.eventDateStyle}>13</Text>
+             <Text style={styles.eventDateStyle}>{parseInt(eventStartDate.getDate())}</Text>
             </View>
             <View style={styles.eventDateDigit}>
-             <Text style={styles.eventDateStyle}>11</Text>
+             <Text style={styles.eventDateStyle}>{parseInt(eventStartDate.getMonth()+1)}</Text>
             </View>
             <View style={styles.eventDateDigit}>
-             <Text style={styles.eventDateStyle}>20</Text>
+             <Text style={styles.eventDateStyle}>{parseInt(eventStartDate.getFullYear()%100)}</Text>
             </View>
            </View>
 
@@ -46,13 +69,12 @@ return(
            </View>
           
             <View style={styles.eventDay}>
-             <Text style={styles.eventDayText}>Monday</Text>
+             <Text style={styles.eventDayText}>{weekday[eventStartDate.getDay()]}</Text>
             </View>
- 
            
            <View style={styles.eventTimeContainer}>
             <View style={styles.eventTime}>
-             <Text style={styles.eventTimeText}>05:00 AM - 10:00 AM</Text>
+             <Text style={styles.eventTimeText}>{parseInt(eventStartDate.getHours())}:{parseInt(eventStartDate.getMinutes())} - {parseInt(eventEndDate.getHours())}:{parseInt(eventEndDate.getMinutes())}</Text>
             </View>
            </View>
 

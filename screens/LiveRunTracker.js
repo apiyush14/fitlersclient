@@ -15,6 +15,7 @@ let temporaryDistance=0;
 let runDate=null;
 let runDay=null;
 let runStartDateTime=null;
+let eventId=0;
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -53,7 +54,7 @@ useEffect(() => {
   runTotalTime=0;
   runPath=[];
   startTime=Date.now();
-
+  eventId=props.route.params.eventId;
   subscribeAccelerometer();
         /*let timer = setInterval(() => updateUI() , 1000);
         return () => clearInterval(timer)*/
@@ -192,7 +193,8 @@ props.navigation.navigate('RunDetailsScreen', {
   runDistance:runDistance,
   runPace:runPace,
   runCaloriesBurnt: runCaloriesBurnt,
-  runStartDateTime: runStartDateTime
+  runStartDateTime: runStartDateTime,
+  eventId: eventId
 });
 };
 

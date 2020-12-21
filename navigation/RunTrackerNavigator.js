@@ -13,6 +13,7 @@ import RunHistoryScreen from '../screens/RunHistoryScreen';
 import LogInScreen from '../screens/LogInScreen';
 import LogOutScreen from '../screens/LogOutScreen';
 import SplashScreen from '../screens/SplashScreen';
+import EventsListSummaryScreen from '../screens/EventsListSummaryScreen';
 import TestScreen from '../screens/TestScreen';
 import {useDispatch,useSelector} from 'react-redux';
 
@@ -73,6 +74,11 @@ const RunTrackerTabNavigator=({navigation, route})=>{
         ? Platform.OS === 'android'?'md-stats':'ios-stats' 
         : Platform.OS === 'android'?'md-stats':'ios-stats';
       }
+        else if (screenRoute.route.name === 'Events') {
+        iconName = focused 
+        ? Platform.OS === 'android'?'md-trophy':'ios-trophy' 
+        : Platform.OS === 'android'?'md-trophy':'ios-trophy';
+      }
       return <Ionicons name={iconName} size={25} color={color} />;
     },
   })}
@@ -95,6 +101,7 @@ const RunTrackerTabNavigator=({navigation, route})=>{
     }*/
     }
   }}/>
+  <tabNavigator.Screen name="Events" component={EventsStackNavigator} />
   <tabNavigator.Screen name="History" component={RunTrackerHistoryStackNavigator} />
   </tabNavigator.Navigator>
   );
@@ -186,6 +193,22 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       <stackNavigator.Screen name="LogInScreen" component={LogInScreen} 
       options={{
         headerShown: false
+      }}/>
+      </stackNavigator.Navigator>
+      );
+    };
+
+  //Events Stack Navigator
+  const EventsStackNavigator=({navigation, route})=>{
+    return (
+      <stackNavigator.Navigator 
+      screenOptions={
+        {gestureEnabled: false}
+       }>
+      <stackNavigator.Screen name="EventsListSummaryScreen" component={EventsListSummaryScreen} 
+      options={{
+        headerShown: false,
+        tabBarVisible: false
       }}/>
       </stackNavigator.Navigator>
       );

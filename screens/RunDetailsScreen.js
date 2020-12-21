@@ -12,6 +12,7 @@ const windowHeight = Dimensions.get('window').height;
 var isCalledFromHistoryScreen=false;
 let runStartDateTime=null;
 let runId=0;
+let eventId=0;
 
 let mapRef=null;
 
@@ -93,6 +94,7 @@ useEffect(() => {
     
     runStartDateTime=props.route.params.runStartDateTime;
     runId=props.route.params.runId;
+    eventId=props.route.params.eventId;
     var runTotalTimeVar=props.route.params.runTotalTime;
     let secondsVar = ("0" + (Math.floor(runTotalTimeVar / 1000) % 60)).slice(-2);
     let minutesVar = ("0" + (Math.floor(runTotalTimeVar / 60000) % 60)).slice(-2);
@@ -133,13 +135,13 @@ const takeSnapshot=()=>{
   snapshot.then((uri) => {
     //setMapState(uri);
     //savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path);
-    savePlaceHandler(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,null,runStartDateTime,runDate,runDay,runPath,uri);
+    savePlaceHandler(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,null,runStartDateTime,runDate,runDay,runPath,uri,eventId);
   });
 };
 
 //Method to dispatch Add Run
-const savePlaceHandler = (runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl) => {
-  dispatch(runActions.addRun(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl));
+const savePlaceHandler = (runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl,eventId) => {
+  dispatch(runActions.addRun(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl,eventId));
 };
 
 return (
