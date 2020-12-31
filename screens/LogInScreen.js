@@ -86,7 +86,7 @@
         var isLoginPassed = response.isValid;
         if (isLoginPassed === true) {
           clearInterval(retryTimerId);
-          props.navigation.navigate('Home');
+          props.navigation.navigate('UserDetailsScreen');
         } else {
           setOtpCode("");
           clearInterval(retryTimerId);
@@ -102,6 +102,7 @@
         }
       }).catch(err => {
         setOtpCode("");
+        AsyncStorage.removeItem('USER_ID');
         clearInterval(retryTimerId);
         if (err === 201) {
           Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
@@ -133,132 +134,61 @@
       setRetryOtpTimer(30);
     };
 
-    return ( <
-      View style = {
-        styles.logInScreenContainer
-      } >
-      <
-      TouchableWithoutFeedback onPress = {
-        Keyboard.dismiss
-      }
-      accessible = {
-        false
-      } >
-      <
-      ImageBackground source = {
-        require('../assets/images/login.jpg')
-      }
-      style = {
-        styles.bgImage
-      } >
-      <
-      TextInput style = {
-        styles.contactNumberInput
-      }
-      textContentType = "telephoneNumber"
-      keyboardType = "phone-pad"
-      placeholder = " Enter Your Mobile Number"
-      textAlign = "center"
-      textContentType = "telephoneNumber"
-      maxLength = {
-        10
-      }
-      onChangeText = {
-        onChangeMSISDNHandler
-      } >
-      <
-      /TextInput> {
-        !isValidMSISDN ? ( <
-          Text style = {
-            styles.errorTextMSISDN
-          } > Please enter valid phone number < /Text>):(<Text/ > )
-      } <
-      RoundButton style = {
-        styles.buttonGetOTP
-      }
+    return ( 
+      <View style = {styles.logInScreenContainer}>
+       <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false} >
+       <ImageBackground source = {require('../assets/images/login.jpg')} 
+       style = {styles.bgImage}>
+      <TextInput style = {styles.contactNumberInput}
+       textContentType = "telephoneNumber"
+       keyboardType = "phone-pad"
+       placeholder = " Enter Your Mobile Number"
+       textAlign = "center"
+       textContentType = "telephoneNumber"
+       maxLength = {10}
+       onChangeText = {onChangeMSISDNHandler}>
+      </TextInput> 
+      {
+        !isValidMSISDN ? ( 
+        <Text style = {styles.errorTextMSISDN} > Please enter valid phone number < /Text>):
+        (<Text/>)
+      } 
+      <RoundButton style = {styles.buttonGetOTP}
       title = "Get OTP"
-      disabled = {
-        (!isValidMSISDN || (MSISDN.length === 0))
-      }
-      onPress = {
-        onClickGetOTP
-      }
-      /> <
-      /ImageBackground> <
-      /TouchableWithoutFeedback>
-
-      <
-      Modal animationType = "slide"
-      transparent = {
-        false
-      }
-      visible = {
-        modalVisible
-      }
-      onDismiss = {
-        onModalClosed
-      }
-      onRequestClose = {
-        () => {
-          console.log('==========Modal closed================')
-        }
-      } >
-      <
-      TouchableWithoutFeedback onPress = {
-        Keyboard.dismiss
-      }
-      accessible = {
-        false
-      } >
-      <
-      ImageBackground source = {
-        require('../assets/images/login.jpg')
-      }
-      style = {
-        styles.bgImage
-      } >
-      <
-      View style = {
-        styles.otpModalContainer
-      } >
-      <
-      TextInput style = {
-        styles.otpInput
-      }
+      disabled = {(!isValidMSISDN || (MSISDN.length === 0))}
+      onPress = {onClickGetOTP}
+      /> 
+      </ImageBackground> 
+      </TouchableWithoutFeedback>
+      <Modal animationType = "slide"
+      transparent = {false}
+      visible = {modalVisible}
+      onDismiss = {onModalClosed}
+      onRequestClose = {() => {console.log('==========Modal closed================')}
+      }>
+      <TouchableWithoutFeedback onPress = {Keyboard.dismiss}
+      accessible = {false}>
+      <ImageBackground source = {require('../assets/images/login.jpg')}
+      style = {styles.bgImage}>
+      <View style = {styles.otpModalContainer}>
+      <TextInput style = {styles.otpInput}
       keyboardType = "number-pad"
       placeholder = "Enter OTP"
       textAlign = "center"
       textContentType = "oneTimeCode"
-      maxLength = {
-        4
-      }
-      onChangeText = {
-        (text) => setOtpCode(text)
-      } >
-      <
-      /TextInput> <
-      Text style = {
-        styles.retryOtpTimerText
-      } > Resend OTP in {
-        retryOtpTimer
-      }
-      seconds < /Text> <
-      RoundButton style = {
-        styles.buttonSubmit
-      }
+      maxLength = {4}
+      onChangeText = {(text) => setOtpCode(text)} >
+      </TextInput> 
+      <Text style = {styles.retryOtpTimerText}>Resend OTP in {retryOtpTimer}seconds < /Text> 
+      <RoundButton style = {styles.buttonSubmit}
       title = "Submit"
-      disabled = {
-        otpCode.length === 0
-      }
-      onPress = {
-        onClickSubmitOTP
-      }
-      /> <
-      /View> <
-      /ImageBackground> <
-      /TouchableWithoutFeedback> <
-      /Modal> <
-      /View>
+      disabled = {otpCode.length === 0}
+      onPress = {onClickSubmitOTP}/> 
+      </View> 
+      </ImageBackground> 
+      </TouchableWithoutFeedback> 
+      </Modal> 
+      </View>
     );
   };
 

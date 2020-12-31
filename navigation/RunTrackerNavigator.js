@@ -13,6 +13,7 @@ import RunHistoryScreen from '../screens/RunHistoryScreen';
 import LogInScreen from '../screens/LogInScreen';
 import LogOutScreen from '../screens/LogOutScreen';
 import SplashScreen from '../screens/SplashScreen';
+import UserDetailsScreen from '../screens/UserDetailsScreen';
 import EventsListSummaryScreen from '../screens/EventsListSummaryScreen';
 import TestScreen from '../screens/TestScreen';
 import {useDispatch,useSelector} from 'react-redux';
@@ -51,10 +52,14 @@ const RunTrackerNavigator=()=>{
 
 // Tab Navigator
 const RunTrackerTabNavigator=({navigation, route})=>{
-  //console.log('=============Route====================');
-  //console.log(route.state);
-   
-  var isTabNavigationVisible=(route.state&&route.state.index===1)
+  console.log('=============Route====================');
+  console.log(route);
+  //var isTabNavigationVisible=true;
+  var isTabNavigationVisible=
+  (!route.state&&route.name==='Home')
+  ||(route.state&&route.state.index===1)
+  ||(route.state&&route.state.index===2)
+  ||(route.state&&route.state.index===0&&route.state.routes[route.state.index].name==='Home')
   ||(route.state&&route.state.index!==1&&route.state.routes[route.state.index].state
     &&(route.state.routes[route.state.index].state.routeNames[0]!=='LoginStackNavigator'
       &&route.state.routes[route.state.index].state.index!==1))?true:false;
@@ -111,10 +116,11 @@ const RunTrackerTabNavigator=({navigation, route})=>{
 const RunTrackerStackNavigator=({navigation, route})=>{
 
   const authDetails = useSelector(state => state.authDetails);
+  const userDetails = useSelector(state => state.userDetails);
 
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
-    {authDetails.userId==null ? (
+    {authDetails===undefined || authDetails.userId===null || userDetails===undefined || userDetails.userFirstName===null ? (
     <stackNavigator.Screen name="LoginStackNavigator" component={LoginStackNavigator}
      options={{
       headerShown: false
@@ -191,6 +197,10 @@ const RunTrackerStackNavigator=({navigation, route})=>{
         tabBarVisible: false
       }}/>
       <stackNavigator.Screen name="LogInScreen" component={LogInScreen} 
+      options={{
+        headerShown: false
+      }}/>
+      <stackNavigator.Screen name="UserDetailsScreen" component={UserDetailsScreen} 
       options={{
         headerShown: false
       }}/>

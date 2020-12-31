@@ -76,6 +76,8 @@ export const insertRun = (runId, runTotalTime, runDistance, runPace, runCalories
 };
 
 export const deleteRuns = (runIds) => {
+  console.log('=======Delete Runs===============');
+  console.log(runIds);
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql('DELETE FROM RUN_DETAILS where RUN_ID in (' + runIds + ');', [],
@@ -83,6 +85,8 @@ export const deleteRuns = (runIds) => {
           resolve(result);
         },
         (_, err) => {
+          console.log('==================Failed======================');
+          console.log(err);
           reject(err);
         });
     });

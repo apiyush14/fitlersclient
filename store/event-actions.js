@@ -5,10 +5,12 @@ import configData from "../config/config.json";
 
 export const UPDATE_EVENTS_FROM_SERVER='UPDATE_EVENTS_FROM_SERVER';
 export const UPDATE_EVENT_REGISTRATION_DETAILS='UPDATE_EVENT_REGISTRATION_DETAILS';
+export const UPDATE_EVENT_RESULT_DETAILS='UPDATE_EVENT_RESULT_DETAILS';
 
-export const loadEventsFromServer=()=>{
+export const loadEventsFromServer=(pageNumber)=>{
  return async dispatch=>{
     var header= await dispatch(getUserAuthenticationToken());
+    var userId = header.USER_ID;
  return new Promise((resolve,reject)=>{
     NetInfo.fetch().then(state => {
         if (!state.isConnected) {
@@ -16,7 +18,8 @@ export const loadEventsFromServer=()=>{
         }
       });
 
-    var URL=configData.SERVER_URL +"event-details/getEvents";
+    var URL=configData.SERVER_URL +"event-details/getEvents/"+ userId + "?page=";
+    URL = URL + pageNumber;;
     fetch(URL, { 
     method: 'GET',
     headers: header
@@ -104,7 +107,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
               };
               return updatedEventRegisration;
             });
-            //Dispatch Runs Update State
+            //Dispatch Event Registration Update State
             dispatch({
               type: UPDATE_EVENT_REGISTRATION_DETAILS,
               eventRegistrationDetails: updatedEventRegistrationDetails
@@ -162,4 +165,44 @@ export const updateEventRegistrationDetails=(eventDetails)=>{
      insertEventRegistrationDetails(eventDetails.eventId,eventDetails.eventName,eventDetails.eventDescription,eventDetails.eventStartDate,eventDetails.eventEndDate);
 });
 }
+};
+
+//Method to Load Event Result Details from server
+export const loadEventResultDetailsFromServer = () => {
+  return async dispatch => {
+    var header = await dispatch(getUserAuthenticationToken());
+    var userId = header.USER_ID;
+    return new Promise((resolve, reject) => {
+      NetInfo.fetch().then(state => {
+        if (!state.isConnected) {
+          reject(201);
+        }
+      });
+      var URL = configData.SERVER_URL + "event-results/" + userId;
+      fetch(URL, {
+          method: 'GET',
+          headers: header
+        }).then(response => response.json())
+        .then((response) => {
+          if (response.eventResultDetails&&response.eventResultDetails.length > 0) {
+            var updatedEventResultDetails = response.eventResultDetails.map((eventResultDetails) => {
+              var updatedEventResult = {
+                  eventId: eventResultDetails.eventId,
+                  runId: eventResultDetails.runId,
+                  userRank: eventResultDetails.userRank
+              };
+              return updatedEventResult;
+            });
+            //Dispatch Event Result Update State
+            dispatch({
+              type: UPDATE_EVENT_RESULT_DETAILS,
+              eventResultDetails: updatedEventResultDetails
+            })
+          }
+          resolve(response);
+        }).catch(err => {
+          reject(err);
+        });
+    });
+  }
 };

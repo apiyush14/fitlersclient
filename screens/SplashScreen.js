@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 
 export const UPDATE_USER_AUTH_DETAILS = 'UPDATE_USER_AUTH_DETAILS';
+export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
 
 //Splash Screen to load Application pre-requisites
 const SplashScreen = props => {
@@ -27,6 +28,8 @@ const SplashScreen = props => {
       setTimeout(() => {
         setAnimating(false);
         AsyncStorage.getItem('USER_ID').then((userId) => {
+          console.log('===========Splash Screen=================');
+          console.log(userId);
           dispatch({
             type: UPDATE_USER_AUTH_DETAILS,
             authDetails: {
@@ -34,10 +37,26 @@ const SplashScreen = props => {
               secret: null
             }
           });
-          userId === null ? props.navigation.navigate('LogInScreen') : props.navigation.navigate('Home');
+          userId === null ? props.navigation.navigate('LogInScreen') : validateUserName();
         }).catch(err => props.navigation.navigate('LogInScreen'))
       }, 5000);
     }, []);
+
+const validateUserName=()=>{
+ AsyncStorage.getItem('USER_NAME').then((userName) => {
+  if(userName!==null){
+    var userNameArr=userName.split(" ");
+    dispatch({
+            type: UPDATE_USER_DETAILS,
+            userDetails: {
+              userFirstName: userNameArr[0],
+              userLastName: userNameArr[1]
+            }
+          });
+  }
+    userName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
+ }).catch(err => props.navigation.navigate('UserDetailsScreen'));
+};   
 
 return (
   <View style={styles.splashScreenContainer}>

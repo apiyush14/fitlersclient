@@ -41,7 +41,8 @@ const RunTrackerHomeScreen = (props) => {
 
     // State Selectors
     const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
-    const eventDetails = useSelector(state => state.events.eventDetails).filter((event)=>eventRegistrationDetails.findIndex(eventState=>eventState.eventId===event.eventId)<0);
+    const eventDetails = useSelector(state => state.events.eventDetails);
+    const [isLoading, setIsLoading] = useState(false);
 
 
     // State Variables
@@ -60,8 +61,9 @@ const RunTrackerHomeScreen = (props) => {
       const fetchData = async () => {
         dispatch(runActions.loadRuns());
         dispatch(runActions.loadRunSummary());
-        dispatch(eventActions.loadEventsFromServer());
+        dispatch(eventActions.loadEventsFromServer(0));
         dispatch(eventActions.loadEventRegistrationDetails());
+        dispatch(eventActions.loadEventResultDetailsFromServer());
       };
       fetchData();
     }, []);
@@ -129,6 +131,17 @@ const RunTrackerHomeScreen = (props) => {
       dispatch(eventActions.registerUserForEvent(modalEventDetails));
       setModalVisible(false);
     };
+
+  //Method to lazy load Runs from server 
+  const loadMoreDataFromServer = () => {
+    setIsLoading(true);
+    let pageNumber = Math.floor(eventDetails.length / 3);
+    dispatch(eventActions.loadEventsFromServer(pageNumber)).then(() => {
+      setIsLoading(false);
+    }).catch(err => {
+      setIsLoading(false);
+    });
+  }; 
 //Logic to handle shutter tab for challenges
 
 /*
@@ -184,9 +197,14 @@ return (
   onPress={()=>{props.navigation.navigate('LiveRunTracker',{eventId: ongoingEventDetails!==null?ongoingEventDetails.eventId:0})}}/>
   </View>
 
+  {ongoingEventDetails===null?(
   <View style={styles.challengeList}>
-  <ChallengeList listData={eventDetails} onClickEventItem={onClickEventItem}/>
-  </View>
+  <ChallengeList 
+  listData={eventDetails}
+  onEndReached={loadMoreDataFromServer}
+  isLoading={isLoading}
+  onClickEventItem={onClickEventItem}/>
+  </View>):(<View></View>)}
 
   {/* Commented for now as Challenge is out of scope for now
   <Animated.View style={[styles.subView,{transform: [{translateY:bounceValue}]}]}>

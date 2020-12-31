@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions,ScrollView} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import { useDispatch } from 'react-redux';
 import * as runActions from '../store/run-actions';
 import Card from '../components/Card';
 import { Ionicons } from '@expo/vector-icons';
+import {useSelector} from 'react-redux';
+import {useIsFocused} from "@react-navigation/native";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -46,6 +48,9 @@ const TESTPOINTS = [
 
 const RunDetailsScreen = props=>{
 
+// State Selectors
+const eventResultDetails = useSelector(state => state.events.eventResultDetails); 
+
 const dispatch = useDispatch();
 
 //State Variables
@@ -58,6 +63,8 @@ const [runDistance,setRunDistance]=useState(0);
 const [runTotalTime, setRunTotalTime]=useState(0);
 const [runCaloriesBurnt,setRunCaloriesBurnt]=useState(0);
 const [runPace, setRunPace]=useState(0.00);
+const [userRank, setUserRank]=useState(0);
+const [isEvent, setIsEvent]=useState(false);
 const [trackTimer, setTrackTimer]=useState({
   seconds: "00",
   minutes: "00",
@@ -73,6 +80,12 @@ useEffect(() => {
     if(props.route.params.sourceScreen==='RunHistoryScreen'){
       isCalledFromHistoryScreen=true;
     }
+  }
+
+  if(props.route.params.eventId){
+    var eventResult=eventResultDetails.find(eventResult=>eventResult.runId===props.route.params.runId);
+    setUserRank(eventResult!==undefined?eventResult.userRank:0);
+    setIsEvent(true);
   }
 
   if(props.route.params.runPath)
@@ -114,7 +127,7 @@ useEffect(() => {
          setRunPath(TESTPOINTS);
        }
        
-     }, []);
+     }, [props.route.params]);
 
 //Use effect hook for taking a snapshot of the map
 useEffect(() => {
@@ -159,7 +172,19 @@ return (
  <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
  </MapView>
 
- <View style={styles.runMetricsContainer}>
+ <ScrollView style={styles.runMetricsContainer}>
+
+ {isEvent&&userRank>0?(
+ <View style={styles.row0}>
+ <Card style={styles.userRankCard}>
+ <View style={styles.rankIcon}>
+ <Ionicons name="ios-trophy" size={30} color='springgreen'/>
+ </View>
+ <Text style={styles.userRankText}>{userRank}</Text>
+ <Text style={styles.userRankStaticText}>Rank</Text>
+ </Card>
+ </View>):(<View></View>)}
+
  <View style={styles.row1}>
  <Card style={styles.runDistanceCard}>
  <View style={styles.walkIcon}>
@@ -204,7 +229,7 @@ return (
  </Card>
 
  </View>
- </View>
+ </ScrollView>
 </View>
 );
 };
@@ -228,7 +253,39 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'column'
   },
+
+  row0: {
+    flex: 1,
+    height: '30%',
+    flexDirection: 'row'
+  },
+  userRankCard: {
+    marginVertical: '2%',
+    marginHorizontal: '2%',
+    backgroundColor: 'black',
+    width: '95%',
+    height: windowHeight/6
+  },
+  rankIcon: {
+    alignSelf: 'center'
+  },
+  userRankText: {
+    position: 'absolute',
+    top: '35%',
+    fontSize: 50,
+    alignSelf: 'center',
+    color: 'springgreen'
+  },
+  userRankStaticText: {
+    position: 'absolute',
+    top: '90%',
+    fontSize: 20,
+    alignSelf: 'center',
+    color: 'springgreen'
+  },
+
   row1: {
+    flex: 1,
     height: '30%',
     flexDirection: 'row'
   },
@@ -274,7 +331,7 @@ const styles = StyleSheet.create({
   },
 
   row2: {
-    marginVertical: '5%',
+    flex: 1,
     height: '30%',
     flexDirection: 'row'
   },

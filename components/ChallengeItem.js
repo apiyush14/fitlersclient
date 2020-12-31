@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity,ImageBackground, Dimensions} from 'react-native';
 
 /*
@@ -9,6 +9,17 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 const ChallengeItem=props=>{
+
+const [daysLeft, setDaysLeft] = useState(0);
+
+    useEffect(() => {
+      (async () => {
+       let currentDate=new Date();
+       let eventStartDate=new Date(props.eventStartDate);
+       setDaysLeft((currentDate.getTime()-eventStartDate.getTime())/(1000*3600*24));
+      })();
+    }, []);
+
 return(
  	<View style={styles.challengeItem}>
  	<TouchableOpacity onPress={props.onClickEventItem}>
@@ -16,6 +27,10 @@ return(
  	<ImageBackground 
  	source={{uri:props.image}} 
  	style={styles.bgImage}>
+    {props.isRegistered===true?(
+     <Text style={styles.registeredIndicatorText}>Registered : {Math.floor(daysLeft)} days to go</Text>):
+     (<Text></Text>)
+    }
  	<Text style={styles.title}>{props.title}</Text>
  	</ImageBackground>
  	</View>
@@ -34,6 +49,16 @@ const styles = StyleSheet.create({
      paddingHorizontal: 12,
      textAlign: 'center'
 	},
+    registeredIndicatorText: {
+     fontSize: windowWidth/30,
+     color: 'white',
+     backgroundColor: 'rgba(0,0,0,0.5)',
+     paddingVertical:1,
+     paddingHorizontal: 10,
+     textAlign: 'left',
+     bottom: 30,
+     justifyContent: 'space-between'
+    },
  challengeRow: {
  	flexDirection: 'row',
  },
