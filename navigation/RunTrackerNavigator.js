@@ -217,8 +217,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
        }>
       <stackNavigator.Screen name="EventsListSummaryScreen" component={EventsListSummaryScreen} 
       options={{
-        headerShown: false,
-        tabBarVisible: false
+        title: 'Events'
       }}/>
       </stackNavigator.Navigator>
       );

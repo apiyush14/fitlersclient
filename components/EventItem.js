@@ -1,5 +1,5 @@
 import React, {useState,useEffect} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity,ImageBackground, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity,ImageBackground, Dimensions, Image} from 'react-native';
 
 /*
 Event Item Card with shadow effects
@@ -23,27 +23,47 @@ const [daysLeft, setDaysLeft] = useState(0);
 
 return(
  	<View style={styles.eventItemContainer}>
- 	<TouchableOpacity onPress={props.onClickEventItem}>
- 	<View style={styles.imageContainer}>
- 	<ImageBackground 
- 	source={{uri:props.image}} 
- 	style={styles.bgImage}>
-    {props.isRegistered===true?(
-     <Text style={styles.registeredIndicatorText}>Registered : {Math.floor(daysLeft)} days to go</Text>):
-     (<Text></Text>)
-    }
- 	<Text style={styles.title}>{props.title}</Text>
- 	</ImageBackground>
- 	</View>
- 	</TouchableOpacity>
+ 	 <TouchableOpacity onPress={props.onClickEventItem}>
+      <View style={styles.imageContainer}>
+       <Image 
+        source={{uri:props.image}} 
+        style={styles.bgImage}>
+       </Image>
+       <View style={styles.textViewHeader}>
+       {props.isRegistered===true?(
+        <Text style={styles.registeredIndicatorText}>Registered : {Math.floor(daysLeft)} days to go</Text>):
+       (<Text></Text>)
+      }
+      </View>
+      <View style={styles.textViewFooter}>
+       <Text style={styles.title}>{props.title}</Text>
+      </View>
+      </View>
+     </TouchableOpacity>
  	</View>
  	);
 };
 
 
 const styles = StyleSheet.create({
+    textViewHeader: {
+      width: '100%',
+      borderRadius: 20,
+      overflow: 'hidden',
+      position: 'absolute',
+      alignSelf: 'center',
+      top: 0
+    },
+    textViewFooter: {
+      width: '100%',
+      borderRadius: 20,
+      overflow: 'hidden',
+      position: 'absolute',
+      alignSelf: 'center',
+      bottom: 0
+    },
 	title: {
-     fontSize: windowWidth/21,
+     fontSize: windowWidth/22,
      color: 'white',
      backgroundColor: 'rgba(0,0,0,0.5)',
      paddingVertical: 5,
@@ -54,17 +74,13 @@ const styles = StyleSheet.create({
      fontSize: windowWidth/30,
      color: 'white',
      backgroundColor: 'rgba(0,0,0,0.5)',
-     paddingVertical:1,
-     paddingHorizontal: 10,
-     textAlign: 'left',
-     bottom: '70%',
-     justifyContent: 'space-between'
+     alignSelf: 'center'
     },
  eventItemContainer: {
  	height: windowHeight/4,
  	width: windowWidth/1.1,
  	backgroundColor: 'white',
- 	borderRadius: 10,
+ 	borderRadius: 20,
  	marginHorizontal: 10,
  	marginBottom: 15,
  	opacity: 0.7,
@@ -72,19 +88,23 @@ const styles = StyleSheet.create({
     shadowColor: 'black',  
     shadowOpacity: 0.7,
     shadowRadius: 2,
-    elevation: 10
+    elevation: 7
  },
  imageContainer:{
     width: '100%',
     height: '100%',
-    borderRadius: 10,
+    borderRadius: 20,
+    backgroundColor: 'white',
+    shadowOffset: { width: 4, height: 4 },  
+    shadowColor: 'black',
+    shadowOpacity: 0.7,
+    shadowRadius: 2,
+    elevation: 7
  },
  bgImage: {
- 	width: '100%',
- 	height: '100%',
-    overflow: 'hidden',
-    borderRadius: 10,
- 	justifyContent: 'flex-end'
+ 	flex: 1,
+  overflow: 'hidden',
+  borderRadius: 20,
  }
 });
 

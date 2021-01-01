@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions,Modal,RefreshControl,ActivityIndicator} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,Modal,ActivityIndicator} from 'react-native';
 import {useDispatch,useSelector} from 'react-redux';
 import EventItemsList from '../components/EventItemsList';
 import EventHistoryList from '../components/EventHistoryList';
@@ -7,9 +7,7 @@ import EventView from '../components/EventView';
 import { Ionicons } from '@expo/vector-icons';
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+import { scale, moderateScale, verticalScale} from '../utils/Utils';
 
 const EventsListSummaryScreen = props=>{
 
@@ -72,7 +70,6 @@ const onToggleSelection=(selectedOption)=>{
     };
 
     const onRefresh=()=>{
-     console.log('==============Refresh Called==================');
      setRefreshing(true);
      dispatch(eventActions.loadEventResultDetailsFromServer()).then(() => {
       setRefreshing(false);
@@ -147,26 +144,48 @@ return (
    eventDetails={modalEventDetails}/>
   </Modal>
 
-   <View style={styles.eventsListSummaryScreenHeaderContainer}>
-    <TouchableOpacity style={styles.upcomingTouchableStyle} onPress={()=>onToggleSelection('upcomingEvents')}>
+   <View style={styles.eventsListSummaryScreenHeaderOptionsStyle}>
+    <TouchableOpacity style={styles.touchableOptionStyle} onPress={()=>onToggleSelection('upcomingEvents')}>
      <Text style={{...styles.textHeaderStyle, color:upcomingEventsSelected?'black':'lightgrey'}}>Upcoming</Text>
     </TouchableOpacity>
-    <TouchableOpacity style={styles.registeredTouchableStyle} onPress={()=>onToggleSelection('registeredEvents')}>
+    <TouchableOpacity style={styles.touchableOptionStyle} onPress={()=>onToggleSelection('registeredEvents')}>
      <Text style={{...styles.textHeaderStyle, color:registeredEventsSelected?'black':'lightgrey'}}>Registered</Text>
     </TouchableOpacity>
-    <TouchableOpacity style={styles.completedTouchableStyle} onPress={()=>onToggleSelection('completedEvents')}>
+    <TouchableOpacity style={styles.touchableOptionStyle} onPress={()=>onToggleSelection('completedEvents')}>
      <Text style={{...styles.textHeaderStyle, color:completedEventsSelected?'black':'lightgrey'}}>Completed</Text>
     </TouchableOpacity>
    </View>
 
-   {completedEventsSelected===false?
+   {upcomingEventsSelected===true?
+   eventDetails.length===0?
+   (<View style={styles.eventItemsListStyle}>
+     <Text style={styles.defaultTextStyle}>No Upcoming Events</Text>
+    </View>):
    (<View style={styles.eventItemsListStyle}>
     <EventItemsList
     onClickEventItem={onClickEventItem}
     onEndReached={loadMoreEventsFromServer}
     isLoading={isLoading}
-    listData={upcomingEventsSelected?eventDetails:eventRegistrationDetails}/>
+    listData={eventDetails}/>
    </View>):
+
+   registeredEventsSelected===true?
+   eventRegistrationDetails.length===0?
+   (<View style={styles.eventItemsListStyle}>
+     <Text style={styles.defaultTextStyle}>No Registered Events</Text>
+    </View>):
+   (<View style={styles.eventItemsListStyle}>
+    <EventItemsList
+    onClickEventItem={onClickEventItem}
+    onEndReached={loadMoreEventsFromServer}
+    isLoading={isLoading}
+    listData={eventRegistrationDetails}/>
+   </View>):
+   
+   runsHistory.length===0?
+   (<View style={styles.eventItemsListStyle}>
+     <Text style={styles.defaultTextStyle}>No Completed Events</Text>
+    </View>):
    (<View style={styles.eventItemsListStyle}>
     <EventHistoryList
    onSelectRunItem={onSelectRunHistoryItem}
@@ -186,28 +205,31 @@ const styles = StyleSheet.create({
  eventsListSummaryScreenContainer: {
   flex: 1
  },
- eventsListSummaryScreenHeaderContainer: {
-  height: '30%',
+ eventsListSummaryScreenHeaderOptionsStyle: {
+  height: '20%',
+  backgroundColor: 'white',
   flexDirection: 'row'
  },
   eventItemsListStyle: {
-  height: '70%'
+  height: '80%',
+  backgroundColor: 'white'
  },
- upcomingTouchableStyle: {
+ touchableOptionStyle: {
   width: '30%',
-  top: '20%',
-  marginLeft: '2%'
- },
- registeredTouchableStyle:{
-  width: '30%',
-  top: '20%'
- },
- completedTouchableStyle:{
-  width: '30%',
-  top: '20%'
+  height: '20%',
+  top: '10%',
+  borderRightWidth: 1,
+  borderColor: 'lightgrey'
  },
  textHeaderStyle: {
-  fontSize: 20
+  fontSize: moderateScale(15,0.9),
+  alignSelf: 'center'
+ },
+ defaultTextStyle: {
+  fontSize: moderateScale(15,0.9),
+  alignSelf: 'center',
+  top: '50%',
+  color: 'grey'
  }
 });
 
