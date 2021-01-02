@@ -2,9 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, View,FlatList} from 'react-native';
 import EventItem from '../components/EventItem';
 import {useSelector} from 'react-redux';
+import configData from "../config/config.json";
 
 /*
-List Of Event Cards
+List Of Event Cards (Used for Upcoming and Registered Events)
 */
 
 const EventItemsList=props=>{
@@ -14,7 +15,7 @@ const eventRegistrationDetails = useSelector(state => state.events.eventRegistra
 
 const renderEventItem=itemData=>{
  return <EventItem
- image={"http://192.168.1.66:7001/event-details/getDisplayImage/"+itemData.item.eventId}
+ image={configData.SERVER_URL+"event-details/getDisplayImage/"+itemData.item.eventId}
  title={itemData.item.eventName}
  eventStartDate={itemData.item.eventStartDate}
  isRegistered={eventRegistrationDetails.findIndex((event)=>event.eventId===itemData.item.eventId)>=0}
@@ -23,8 +24,9 @@ const renderEventItem=itemData=>{
  }}/>;
 };
 
+//View
 return(
-<View>
+<View style={styles.eventItemsListContainerStyle}>
   <FlatList
    horizontal={false}
    data={props.listData}
@@ -39,11 +41,10 @@ return(
 };
 
 const styles = StyleSheet.create({
-screen: {
-	flex: 1,
-	justifyContent: 'center',
-	alignItems: 'center'
-}
+  eventItemsListContainerStyle: {
+  	flex: 1,
+  	alignItems: 'center'
+  }
 });
 
 export default EventItemsList;
