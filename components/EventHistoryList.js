@@ -1,7 +1,8 @@
-import React,{useState} from 'react';
-import { StyleSheet,View,FlatList,ActivityIndicator} from 'react-native';
+import React from 'react';
+import {StyleSheet,View,FlatList,ActivityIndicator} from 'react-native';
 import EventHistoryItem from '../components/EventHistoryItem';
 import {useSelector} from 'react-redux';
+
 /*
 List of Event History Cards
 */
@@ -10,11 +11,12 @@ const EventHistoryList=props=>{
 // State Selectors
 const eventResultDetails = useSelector(state => state.events.eventResultDetails);
 
-const renderEventHistoryItem=itemData=>{   
+const renderEventHistoryItem=itemData=>{
  let eventResult=eventResultDetails.find(eventResult=>eventResult.runId===itemData.item.runId);
    
  return <EventHistoryItem
  runTrackSnapUrl={itemData.item.runTrackSnapUrl}
+ runPath={itemData.item.runPath}
  runDate={itemData.item.runDate}
  runDay={itemData.item.runDay}
  runTotalTime={itemData.item.runTotalTime}
@@ -26,7 +28,7 @@ const renderEventHistoryItem=itemData=>{
 };
 
 return(
-<View>
+<View style={styles.eventHistoryListContainerStyle}>
   <FlatList
    ListHeaderComponent={props.header}
    ListFooterComponent={props.footer}
@@ -44,11 +46,10 @@ return(
 };
 
 const styles = StyleSheet.create({
-screen: {
-	flex: 1,
-	justifyContent: 'center',
-	alignItems: 'center'
-}
+   eventHistoryListContainerStyle: {
+      flex: 1,
+      alignItems: 'center'
+   }
 });
 
 export default EventHistoryList;

@@ -52,8 +52,8 @@ const RunTrackerNavigator=()=>{
 
 // Tab Navigator
 const RunTrackerTabNavigator=({navigation, route})=>{
-  console.log('=============Route====================');
-  console.log(route);
+  //console.log('=============Route====================');
+  //console.log(route);
   //var isTabNavigationVisible=true;
   var isTabNavigationVisible=
   (!route.state&&route.name==='Home')

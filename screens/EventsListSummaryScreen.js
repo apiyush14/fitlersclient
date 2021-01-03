@@ -10,18 +10,18 @@ import { scale, moderateScale, verticalScale} from '../utils/Utils';
 
 const EventsListSummaryScreen = props => {
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    // State Selectors
-    const eventDetails = useSelector(state => state.events.eventDetails);
-    const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails).filter((event) => {
-      let currentDate = new Date();
-      let eventStartDate = new Date(event.eventStartDate);
-      let numberOfDaysLeft = Math.floor((currentDate.getTime() - eventStartDate.getTime()) / (1000 * 3600 * 24));
-      return numberOfDaysLeft <= 0;
-    });
-    const runsHistoryDetails = useSelector(state => state.runs.runs);
-    const eventRunsHistoryDetails = useSelector(state => state.runs.runs).filter((run) => run.eventId > 0);
+  // State Selectors
+  const eventDetails = useSelector(state => state.events.eventDetails);
+  const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails).filter((event) => {
+  let currentDate = new Date();
+  let eventStartDate = new Date(event.eventStartDate);
+  let numberOfDaysLeft = Math.floor((currentDate.getTime() - eventStartDate.getTime()) / (1000 * 3600 * 24));
+    return numberOfDaysLeft <= 0;
+  });
+  const runsHistoryDetails = useSelector(state => state.runs.runs);
+  const eventRunsHistoryDetails = useSelector(state => state.runs.runs).filter((run) => run.eventId > 0);
 
     //State Variables
     const [upcomingEventsSelected, setUpcomingEventsSelected] = useState(false);
@@ -156,6 +156,12 @@ return (
     </TouchableOpacity>
    </View>
 
+   {completedEventsSelected&&eventRunsHistoryDetails.length>0?(
+   <View style={styles.headerTextViewStyle}>
+     <Text style={styles.textHeaderStyle}>Pull to Refresh Rank</Text>
+   </View>):
+   (<View></View>)}
+
    {upcomingEventsSelected===true?
    eventDetails.length===0?
    (<View style={styles.eventItemsListStyle}>
@@ -220,6 +226,10 @@ const styles = StyleSheet.create({
     top: '10%',
     borderRightWidth: 1,
     borderColor: 'lightgrey'
+  },
+  headerTextViewStyle: {
+    alignItems: 'center',
+    backgroundColor: 'white'
   },
   textHeaderStyle: {
     fontSize: moderateScale(15, 0.5),

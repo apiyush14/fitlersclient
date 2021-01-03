@@ -1,15 +1,18 @@
 import React, { useState, useEffect} from 'react';
-import { StyleSheet,Button ,Text, View, TouchableOpacity,ImageBackground, Dimensions, ScrollView} from 'react-native';
+import { StyleSheet,Text, View, TouchableOpacity,ImageBackground, ScrollView} from 'react-native';
 import RoundButton from '../components/RoundButton';
+import configData from "../config/config.json";
+import { scale, moderateScale, verticalScale} from '../utils/Utils';
+import {useSelector} from 'react-redux';
 
 /*
 Event View, Best Resolution found using 1080*1920 image
 */
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
-
 const EventView=props=>{
+
+  // State Selectors
+  const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
 
   var weekday = new Array(7);
   weekday[0] = "Sunday";
@@ -20,71 +23,70 @@ const EventView=props=>{
   weekday[5] = "Friday";
   weekday[6] = "Saturday";
 
-const [eventStartDay,setEventStartDay]=useState("");
-const [eventStartDate,setEventStartDate]=useState(new Date());
-const [eventEndDate,setEventEndDate]=useState(new Date());
+  //State Variables
+  const [eventStartDay, setEventStartDay] = useState("");
+  const [eventStartDate, setEventStartDate] = useState(new Date());
+  const [eventEndDate, setEventEndDate] = useState(new Date());
+  const [isRegistered, setIsRegistered] = useState(false);
 
-useEffect(() => {
-     var eventStartDate = new Date(props.eventDetails.eventStartDate);
-     var eventEndDate = new Date(props.eventDetails.eventEndDate);
-     setEventStartDate(eventStartDate);
-     setEventEndDate(eventEndDate);
+  //Use Effect Load Time Hook
+  useEffect(() => {
+    var eventStartDate = new Date(props.eventDetails.eventStartDate);
+    var eventEndDate = new Date(props.eventDetails.eventEndDate);
+    setEventStartDate(eventStartDate);
+    setEventEndDate(eventEndDate);
+    setIsRegistered(eventRegistrationDetails.findIndex((event)=>event.eventId===props.eventDetails.eventId)>=0);
+  }, []);
 
-     //setEventStartDay(weekday[eventStartDate.getDay()]);
-    }, []);
-
+//View
 return(
- 	 <View style={styles.eventViewContainer}>
-     <View style={styles.imageContainer}>
+ 	 <View style={styles.eventViewContainerStyle}>
+     <View style={styles.imageContainerStyle}>
      <ImageBackground
-      source={{uri:"http://192.168.1.66:7001/event-details/getDisplayImage/"+props.eventDetails.eventId}} 
-      style={styles.bgImage}>
-      <View style={styles.actionPanelContainer}>
-        <ScrollView style={styles.scrollViewContainer}>
-         <Text style={styles.eventHeader}>{props.eventDetails.eventName}</Text>
+      source={{uri:configData.SERVER_URL+"event-details/getDisplayImage/"+props.eventDetails.eventId}} 
+      style={styles.imageStyle}>
 
-          <View style={styles.eventCalendarContainer}>
-           <View style={styles.eventDateContainer}>
-            <View style={styles.eventDateDigit}>
-             <Text style={styles.eventDateStyle}>{parseInt(eventStartDate.getDate())}</Text>
+      <View style={styles.actionPanelContainerStyle}>
+        <ScrollView style={styles.scrollViewContainerStyle}>
+         <Text style={styles.eventHeaderTextStyle}>{props.eventDetails.eventName}</Text>
+
+          <View style={styles.eventCalendarContainerStyle}>
+           <View style={styles.eventDateContainerStyle}>
+            <View style={styles.eventDateDigitViewStyle}>
+             <Text style={styles.eventDateTextStyle}>{("0"+parseInt(eventStartDate.getDate())).slice(-2)}</Text>
             </View>
-            <View style={styles.eventDateDigit}>
-             <Text style={styles.eventDateStyle}>{parseInt(eventStartDate.getMonth()+1)}</Text>
+            <View style={styles.eventDateDigitViewStyle}>
+             <Text style={styles.eventDateTextStyle}>{("0"+parseInt(eventStartDate.getMonth()+1)).slice(-2)}</Text>
             </View>
-            <View style={styles.eventDateDigit}>
-             <Text style={styles.eventDateStyle}>{parseInt(eventStartDate.getFullYear()%100)}</Text>
+            <View style={styles.eventDateDigitViewStyle}>
+             <Text style={styles.eventDateTextStyle}>{("0"+parseInt(eventStartDate.getFullYear()%100)).slice(-2)}</Text>
             </View>
            </View>
 
-           <View style={styles.eventDateFormatContainer}>
-            <View style={styles.eventDateFormat}>
-             <Text style={styles.eventDateFormatText}>DD</Text>
-            </View>
-            <View style={styles.eventDateFormat}>
-             <Text style={styles.eventDateFormatText}>MM</Text>
-            </View>
-            <View style={styles.eventDateFormat}>
-             <Text style={styles.eventDateFormatText}>YY</Text>
-            </View>
+           <View style={styles.eventDateContainerStyle}>
+             <Text style={styles.eventDateFormatTextStyle}>DD</Text>
+             <Text style={styles.eventDateFormatTextStyle}>MM</Text>
+             <Text style={styles.eventDateFormatTextStyle}>YY</Text>
            </View>
           
-            <View style={styles.eventDay}>
-             <Text style={styles.eventDayText}>{weekday[eventStartDate.getDay()]}</Text>
+            <View style={styles.eventDayContainerStyle}>
+             <Text style={styles.eventDayTextStyle}>{weekday[eventStartDate.getDay()]}</Text>
             </View>
            
-           <View style={styles.eventTimeContainer}>
-            <View style={styles.eventTime}>
-             <Text style={styles.eventTimeText}>{parseInt(eventStartDate.getHours())}:{parseInt(eventStartDate.getMinutes())} - {parseInt(eventEndDate.getHours())}:{parseInt(eventEndDate.getMinutes())}</Text>
-            </View>
+           <View style={styles.eventTimeContainerStyle}>
+             <Text style={styles.eventTimeTextStyle}>{parseInt(eventStartDate.getHours())}:{parseInt(eventStartDate.getMinutes())} - {parseInt(eventEndDate.getHours())}:{parseInt(eventEndDate.getMinutes())}</Text>
            </View>
 
           </View>
-        
         </ScrollView>
-      <View style={styles.buttonContainer}>
-       <RoundButton title="Register" style={styles.registerButton} onPress={props.onRegisterEventItem}/>
-       <RoundButton title="Close" style={styles.closeButton} onPress={props.onCloseEventItem}/>
+
+      <View style={styles.buttonContainerStyle}>
+      {!isRegistered?(
+       <RoundButton title="Register" style={styles.buttonStyle} onPress={props.onRegisterEventItem}/>)
+      :(<View></View>)}
+       <RoundButton title="Close" style={styles.buttonStyle} onPress={props.onCloseEventItem}/>
       </View>
+
       </View>
      </ImageBackground>
      </View>
@@ -92,110 +94,94 @@ return(
  	);
 };
 
-
 const styles = StyleSheet.create({
-	eventViewContainer: {
+  eventViewContainerStyle: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-    backgroundColor: 'white',
-    opacity: 1,
-    borderRadius: 10
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-   imageContainer:{
+  imageContainerStyle: {
     flex: 1,
-    borderRadius: 10,
     width: '100%'
-   },
-    bgImage: {
-     flex: 1,
-     position: 'absolute',
-     width: '100%',
-     height: '100%'
-    },
-    actionPanelContainer: {
-      position: 'absolute',
-      top: '60%',
-      height: '40%',
-      width: '100%',
-      backgroundColor: 'white',
-      borderRadius: 25,
-      opacity: 0.7,
-      flexDirection: 'column'
-    },
-    scrollViewContainer: {
-      flex: 1,
-      width: '100%',
-      marginTop: '5%',
-      marginLeft: '7%',
-      marginRight: '5%',
-      alignSelf: 'center'
-    },
-    eventHeader: {
-      fontSize: windowWidth/21,
-      alignSelf: 'center'
-    },
-    eventCalendarContainer: {
-      marginTop: '2%',
-      marginLeft: '35%'
-    },
-    eventDateContainer: {
-      flexDirection: 'row',
-      flex: 1
-    },
-    eventDateDigit: {
-      marginLeft: 1,
-      backgroundColor: 'black',
-      alignSelf:'center',
-      borderRadius: 8
-    },
-    eventDateStyle: {
-      fontSize: windowWidth/12,
-      color: 'white'
-    },
-    eventDateFormatContainer: {
-      flexDirection: 'row',
-      flex: 1
-    },
-    eventDateFormat: {
-      marginLeft: 5
-    },
-    eventDateFormatText: {
-      fontSize: windowWidth/21
-    },
-    eventDay: {
-      width: 100,
-      marginLeft: '8%'
-    },
-    eventDayText: {
-      fontSize: windowWidth/18
-    },
-    eventTimeContainer: {
-      flexDirection: 'row'
-    },
-    eventTime: {
-     
-    },
-    eventTimeText: {
+  },
+  imageStyle: {
+    width: '100%',
+    height: '100%'
+  },
 
-    },
-    
-    buttonContainer: {
-      width: '100%',
-      flexDirection: 'row',
-    },
-    registerButton: {
-        marginLeft: '5%',
-        borderRadius: 25,
-        width: '45%',
-        height: '50%'
-    },
-    closeButton: {
-        borderRadius: 25,
-        width: '45%',
-        height: '50%'
-    }
+  actionPanelContainerStyle: {
+    flex: 0.4,
+    top: '60%',
+    backgroundColor: 'white',
+    borderRadius: 25,
+    opacity: 0.7,
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  scrollViewContainerStyle: {
+    flex: 1,
+    marginTop: '5%'
+  },
+
+  eventCalendarContainerStyle: {
+    marginVertical: '5%',
+    alignItems: 'center'
+  },
+  eventDateContainerStyle: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center'
+  },
+  eventDateDigitViewStyle: {
+    marginHorizontal: '1%',
+    backgroundColor: 'black',
+    alignSelf: 'center',
+    borderRadius: 8
+  },
+  eventDateTextStyle: {
+    fontSize: moderateScale(22, 1),
+    color: 'white'
+  },
+
+  eventDateFormatTextStyle: {
+    fontSize: moderateScale(16, 0.5),
+    marginHorizontal: '2%'
+  },
+
+  eventDayContainerStyle: {
+    flex: 1,
+    alignItems: 'center'
+  },
+  eventDayTextStyle: {
+    fontSize: moderateScale(16, 0.5),
+  },
+
+  eventTimeContainerStyle: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  eventTimeTextStyle: {
+    fontSize: moderateScale(16, 0.5),
+  },
+
+  eventHeaderTextStyle: {
+    fontSize: moderateScale(20, 0.5),
+    alignSelf: 'center'
+  },
+
+  buttonContainerStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  buttonStyle: {
+    flex: 1,
+    marginHorizontal: '2%',
+    borderRadius: 25,
+    height: '50%',
+    bottom: '2%'
+  }
 });
 
 export default EventView;
