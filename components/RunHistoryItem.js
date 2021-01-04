@@ -1,22 +1,23 @@
 import React,{ useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity,ImageBackground,Dimensions} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import MapView, {Marker, Polyline} from 'react-native-maps';
+import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import { Ionicons } from '@expo/vector-icons';
-
 
 /*
 Run History Card Item with shadow effects
 */
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
-
 const RunHistoryItem=props=>{
+
+//State Variables
 const [trackTimer, setTrackTimer]=useState({
 	seconds: "00",
 	minutes: "00",
 	hours: "00"
 });
+const [mapRegion, setMapRegion] = useState(null);
 
+//Load Time Use effect hook
 useEffect(() => {
          let secondsVar = ("0" + (Math.floor(props.runTotalTime / 1000) % 60)).slice(-2);
          let minutesVar = ("0" + (Math.floor(props.runTotalTime / 60000) % 60)).slice(-2);
@@ -27,47 +28,57 @@ useEffect(() => {
             minutes: minutesVar,
             hours: hoursVar
         });
+
+      setMapRegion({
+        latitude: props.runPath[Math.floor(props.runPath.length / 2)].latitude,
+        longitude: props.runPath[Math.floor(props.runPath.length / 2)].longitude,
+        latitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].latitude - props.runPath[0].latitude) + 0.002,
+        longitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].longitude - props.runPath[0].longitude) + 0.002
+      });   
      },[]);
 
 return(
- 	<View style={styles.runHistoryItemContainer}>
+ 	<View style={styles.runHistoryItemContainerStyle}>
  	<TouchableOpacity onPress={props.onSelectRunItem}>
- 	<View style={styles.trackImage}>
- 	<ImageBackground
- 	source={{uri:props.runTrackSnapUrl}} 
- 	style={styles.bgImage}>
- 	</ImageBackground>
- 	</View>
- 	<View style={styles.calendar}>
- 	 <Text style={styles.dayText}>{props.runDay}</Text>
- 	 <View style={styles.calendarLine}>
- 	 </View>
- 	 <Text style={styles.dateText}>{props.runDate}</Text>
- 	</View>
- 	<View style={styles.runDetails}>
- 	 
-   <View style={styles.distanceView}>
- 	 <View style={styles.walkIcon}>
-   <Ionicons name="ios-walk" size={24} color='grey'/>
-   </View>
-   <Text style={styles.distanceText}>{parseFloat(props.runDistance/1000).toFixed(2)} KM</Text>
+ 	 <View style={styles.mapContainerViewStyle}>
+   <MapView style={styles.mapContainerStyle} region={mapRegion}
+    pitchEnabled={false} rotateEnabled={false} zoomEnabled={false} scrollEnabled={false}>
+    {props.runPath?(
+     <Polyline
+     strokeWidth={3}
+     strokeColor='red'
+     coordinates={props.runPath}/>):(<View></View>)}
+     {props.runPath[0]!==undefined?(
+     <Marker pinColor='green' coordinate={props.runPath[0]}/>):(<View></View>)}
+      {props.runPath[props.runPath.length-1]!==undefined?(
+     <Marker pinColor='red' coordinate={props.runPath[props.runPath.length-1]}/>):(<View></View>)}
+   </MapView>
    </View>
 
-   <View style={styles.lapsedTimeView}>
- 	 <View style={styles.timerIcon}>
- 	 <Ionicons name="ios-stopwatch" size={24} color='grey'/>
- 	 </View>
- 	 <Text style={styles.lapsedTimeText}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
- 	 </View>
+   <View style={styles.runDetailsContainerStyle}>
+    <View style={styles.runDetailsRowStyle}>
+     <Ionicons name="ios-walk" size={24} color='grey'/>
+     <Text style={styles.runDetailsTextStyle}>{parseFloat(props.runDistance/1000).toFixed(2)} KM</Text>
+    </View>
 
-   <View style={styles.paceView}>
-   <View style={styles.paceIcon}>
-   <Ionicons name="ios-speedometer" size={24} color='grey'/>
-   </View>
-   <Text style={styles.paceText}>{parseFloat(props.runPace).toFixed(2)}</Text>
+    <View style={styles.runDetailsRowStyle}>
+     <Ionicons name="ios-stopwatch" size={24} color='grey'/>
+     <Text style={styles.runDetailsTextStyle}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
+    </View>
+
+    <View style={styles.runDetailsRowStyle}>
+     <Ionicons name="ios-speedometer" size={24} color='grey'/>
+     <Text style={styles.runDetailsTextStyle}>{parseFloat(props.runPace).toFixed(2)}</Text>
+    </View>
    </View>
 
- 	</View>
+  <View style={styles.calendarContainerViewStyle}>
+   <Text style={styles.calendarTextStyle}>{props.runDay}</Text>
+   <View style={styles.calendarLineStyle}>
+   </View>
+   <Text style={styles.calendarTextStyle}>{props.runDate}</Text>
+  </View>
+ 	
  	</TouchableOpacity>
  	</View>
  	);
@@ -75,104 +86,73 @@ return(
 
 
 const styles = StyleSheet.create({
- runHistoryItemContainer: {
- 	height: windowHeight/6,
- 	width: windowWidth/1.1,
- 	backgroundColor: 'white',
- 	borderRadius: 10,
- 	marginHorizontal: 10,
- 	marginBottom: 15,
- 	opacity: 0.7,
- 	shadowOffset: { width: 4, height: 4 },  
-  shadowColor: 'black',  
-  shadowOpacity: 0.7,
-  shadowRadius: 2
- },
- trackImage: {
-    width: '30%',
- },
- bgImage: {
- 	width: '100%',
- 	height: '100%',
-    overflow: 'hidden',
-    borderRadius: 10
- },
-  runDetails: {
-  	position: "absolute",
-  	flexDirection: 'column',
-  	alignSelf: 'center',
-    width: '40%',
-    height: '100%'
- },
- calendar: {
-    width: '30%',
- 	  height: '100%',
-    borderRadius: 10,
+  runHistoryItemContainerStyle: {
+    height: verticalScale(125),
+    width: scale(330),
     backgroundColor: 'white',
+    borderRadius: 20,
+    marginVertical: verticalScale(8),
+    shadowOffset: {
+      width: 4,
+      height: 4
+    },
+    shadowColor: 'black',
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  mapContainerViewStyle: {
+    height: '100%',
+    width: '30%',
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  mapContainerStyle: {
+    flex: 1
+  },
+
+  runDetailsContainerStyle: {
+    position: "absolute",
+    flexDirection: 'column',
+    alignSelf: 'center',
+    width: '40%',
+    height: '100%',
+    alignItems: 'center'
+  },
+  runDetailsRowStyle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: '3%'
+  },
+
+  calendarContainerViewStyle: {
+    width: '30%',
+    height: '100%',
+    borderRadius: 20,
     position: "absolute",
     alignSelf: 'flex-end',
+    alignItems: 'center',
+    bottom: 0,
     borderWidth: 1,
     borderColor: 'lightgrey'
- },
- calendarLine: {
+  },
+  calendarLineStyle: {
+    width: '100%',
     borderWidth: 0.4,
     borderColor: 'lightgrey'
- },
- dateText: {
- 	fontSize: 20,
- 	alignSelf: 'center',
- 	marginVertical: '15%',
-  color: 'black'
- },
- dayText: {
- 	fontSize: 18,
- 	marginVertical: '5%',
- 	alignSelf: 'center',
-  color: 'black'
- },
- lapsedTimeView: {
-   flex: 1,
-   flexDirection: 'row',
- },
-  distanceText: {
-    marginVertical: '7%',
-  	marginHorizontal: '7%',
- 	  fontSize: 15,
-    color: 'black'
- },
- timerIcon: {
-   marginHorizontal: '5%',
-   marginVertical: '5%'
- },
- distanceView: {
-   flex: 1,
-   flexDirection: 'row'
- },
- walkIcon: {
-   marginHorizontal: '5%',
-   marginVertical: '5%'
- },
- lapsedTimeText: {
- 	fontSize: 17,
- 	marginVertical: '7%',
- 	marginHorizontal: '5%',
-  color: 'black'
- },
+  },
 
- paceView: {
-   flex: 1,
-   flexDirection: 'row'
- },
- paceIcon: {
-   marginHorizontal: '5%',
-   marginVertical: '5%'
- },
- paceText: {
-  fontSize: 17,
-  marginVertical: '7%',
-  marginHorizontal: '5%',
-  color: 'black'
- }
+  runDetailsTextStyle: {
+    fontSize: moderateScale(16, 0.8),
+    color: 'black',
+    paddingHorizontal: '7%'
+  },
+  calendarTextStyle: {
+    fontSize: moderateScale(14, 0.8),
+    color: 'black',
+    paddingVertical: '2%',
+    alignSelf: 'center'
+  }
 });
 
 export default RunHistoryItem;

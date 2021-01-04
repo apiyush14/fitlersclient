@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View,FlatList} from 'react-native';
 import ChallengeItem from '../components/ChallengeItem';
 import {useSelector} from 'react-redux';
+import configData from "../config/config.json";
 
 /*
 List Of Challenge Cards
@@ -12,9 +13,10 @@ const ChallengeList=props=>{
 // State Selectors
 const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
 
+//Render Challenge Item View
 const renderChallengeItem=itemData=>{
  return <ChallengeItem
- image={"http://192.168.1.66:7001/event-details/getDisplayImage/"+itemData.item.eventId}
+ image={configData.SERVER_URL+"event-details/getDisplayImage/"+itemData.item.eventId}
  title={itemData.item.eventName}
  eventStartDate={itemData.item.eventStartDate}
  isRegistered={eventRegistrationDetails.findIndex((event)=>event.eventId===itemData.item.eventId)>=0}
@@ -23,8 +25,9 @@ const renderChallengeItem=itemData=>{
  }}/>;
 };
 
+//View
 return(
-<View>
+<View style={styles.challengeListContainerStyle}>
   <FlatList
    horizontal={true}
    data={props.listData}
@@ -40,11 +43,11 @@ return(
 };
 
 const styles = StyleSheet.create({
-screen: {
-	flex: 1,
-	justifyContent: 'center',
-	alignItems: 'center'
-}
+   challengeListContainerStyle: {
+      flex: 1,
+      alignItems: 'center',
+      paddingHorizontal: '2%'
+   }
 });
 
 export default ChallengeList;

@@ -9,6 +9,7 @@ const RunHistoryList=props=>{
 const renderRunHistoryItem=itemData=>{
  return <RunHistoryItem
  runTrackSnapUrl={itemData.item.runTrackSnapUrl}
+ runPath={itemData.item.runPath}
  runDate={itemData.item.runDate}
  runDay={itemData.item.runDay}
  runTotalTime={itemData.item.runTotalTime}
@@ -19,7 +20,7 @@ const renderRunHistoryItem=itemData=>{
 };
 
 return(
-<View>
+<View style={styles.runHistoryListContainerStyle}>
   <FlatList
    ListHeaderComponent={props.header}
    ListFooterComponent={props.footer}
@@ -35,11 +36,10 @@ return(
 };
 
 const styles = StyleSheet.create({
-screen: {
-	flex: 1,
-	justifyContent: 'center',
-	alignItems: 'center'
-}
+   runHistoryListContainerStyle: {
+      flex: 1,
+      alignItems: 'center'
+   }
 });
 
 export default RunHistoryList;

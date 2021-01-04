@@ -14,7 +14,7 @@ const DashboardItem=props=>{
 return(
  	      <View style={{...props.style,...styles.circleDashboardBorder}}>
           <LinearGradient style={styles.circleDashboardContainer}
-          colors={['#303030', 'grey']}>
+           colors={['black', 'grey']}>
           </LinearGradient>
            <Text style={styles.text}>{props.text}</Text>
            <Text style={styles.footerText}>{props.footerText}</Text>
@@ -28,30 +28,20 @@ return(
 
 
 const styles = StyleSheet.create({
-    circleDashboardContainer:{
-        width: windowWidth/2.5,
-        height: windowWidth/2.5,
-        borderRadius: windowWidth/5,
-        shadowColor: 'white',
-        shadowOffset: {width:2,height:2},
-        shadowOpacity:1,
-        shadowRadius:6,
-        elevation: 4,
+    circleDashboardContainer: {
+        width: 140,
+        height: 140,
+        borderRadius: 70,
         alignItems: 'center'
     },
     circleDashboardBorder: {
-        width: (windowWidth+12)/2.5,
-        height: (windowWidth+12)/2.5,
-        borderRadius: (windowWidth+12)/5,
-        borderWidth: 3,
+        width: 145,
+        height: 145,
+        backgroundColor: 'black',
+        borderRadius: 72,
+        borderWidth: 5,
         borderColor: 'springgreen',
         alignItems: 'center',
-        shadowColor: 'springgreen',
-        shadowOffset: {width:3,height:4},
-        shadowOpacity:1,
-        shadowRadius:6,
-        opacity: 0.6,
-        elevation: 4
     },
     icon: {
         position: 'absolute',

@@ -11,6 +11,7 @@ const EventItem = props => {
   //State Variables
   const [daysLeft, setDaysLeft] = useState(0);
 
+  //Load Time Useeffect hook
   useEffect(() => {
     (async () => {
       let currentDate = new Date();

@@ -1,30 +1,12 @@
-import React, {
-  useState,
-  useEffect
-} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  ActivityIndicator
-} from 'react-native';
+import React, {useState,useEffect} from 'react';
+import {View,Text,StyleSheet,Dimensions,ActivityIndicator} from 'react-native';
 import RunHistoryList from '../components/RunHistoryList';
-import {
-  useSelector,
-  useDispatch
-} from 'react-redux';
-import {
-  Ionicons
-} from '@expo/vector-icons';
-import {
-  useIsFocused
-} from "@react-navigation/native";
+import {useSelector,useDispatch} from 'react-redux';
+import {Ionicons} from '@expo/vector-icons';
+import {useIsFocused} from "@react-navigation/native";
 import DashboardItem from '../components/DashboardItem';
 import * as runActions from '../store/run-actions';
-import {
-  AsyncStorage
-} from 'react-native';
+import {AsyncStorage} from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -86,98 +68,102 @@ const RunHistoryScreen = props => {
   const renderRunSummaryFooter = () => {
     return (
       <View>
-    {isLoading?
-    (
-     <ActivityIndicator size="large" color="green"/>
-     ):
-    (
-     <View></View>
-     )
-   }
-   </View>
+      {isLoading?
+       (
+        <ActivityIndicator size="large" color="green"/>
+       ):
+       (
+       <View></View>
+       )
+      }
+      </View>
     );
   };
 
-  // Run Summary Header View Renderer
+  // Run Summary Header View
   const renderRunSummaryHeader = () => {
-    return ( <View style={styles.runsHistoryDetailsPanel}>
-    <DashboardItem
-    text={runSummary!=null?parseFloat(runSummary.totalDistance/1000).toFixed(2)+" KM":0+" KM"}
-    footerText="Total Distance"
-    style={styles.totalDistanceDashboardItem} 
-    icon="ios-walk"/>
-    <DashboardItem 
-    text={runSummary!=null?parseFloat(runSummary.averageDistance/1000).toFixed(2)+" KM":0+" KM"}
-    footerText="Avg Distance"
-    style={styles.averageDistanceDashboardItem} 
-    icon="ios-stats"/>
-    <DashboardItem 
-    text={runSummary!=null?parseFloat(runSummary.averagePace).toFixed(2):0.00}
-    footerText="Avg Pace"
-    style={styles.averagePaceDashboardItem} 
-    icon="ios-stopwatch"/>
+    return ( 
+    <View style={styles.runsHistoryDashboardContainerStyle}>
+
+     <DashboardItem
+      text={runSummary!=null?parseFloat(runSummary.totalDistance/1000).toFixed(2)+" KM":0+" KM"}
+      footerText="Total Distance"
+      style={styles.totalDistanceDashboardItemStyle} 
+      icon="ios-walk"/>
+
+     <DashboardItem 
+      text={runSummary!=null?parseFloat(runSummary.averageDistance/1000).toFixed(2)+" KM":0+" KM"}
+      footerText="Avg Distance"
+      style={styles.averageDistanceDashboardItemStyle} 
+      icon="ios-stats"/>
+
+     <DashboardItem 
+      text={runSummary!=null?parseFloat(runSummary.averagePace).toFixed(2):0.00}
+      footerText="Avg Pace"
+      style={styles.averagePaceDashboardItemStyle} 
+      icon="ios-stopwatch"/>
 
     <View style={styles.footerContainer}>
-    <View style={styles.footer1}>
-    <View style={styles.footer1ValueContainer}> 
-    <Ionicons name="ios-ribbon" size={30} color='springgreen'/>
-    <Text style={styles.footer1Value}> {runSummary!=null?parseInt(runSummary.totalRuns):0}</Text>
-    </View>
-    <Text style={styles.footer1Text}>Total Runs</Text>
-    </View>
-    <View style={styles.footer2}>
-    <View style={styles.footer2ValueContainer}>
-    <Ionicons name="ios-flame" size={30} color='springgreen'/>
-    <Text style={styles.footer2Value}> 0</Text> 
-    </View>
-    <Text style={styles.footer2Text}>Calories</Text>
-    </View>
+     <View style={styles.footer1}>
+      <View style={styles.footer1ValueContainer}> 
+       <Ionicons name="ios-ribbon" size={30} color='springgreen'/>
+       <Text style={styles.footer1Value}> {runSummary!=null?parseInt(runSummary.totalRuns):0}</Text>
+      </View>
+      <Text style={styles.footer1Text}>Total Runs</Text>
+     </View>
+     <View style={styles.footer2}>
+      <View style={styles.footer2ValueContainer}>
+       <Ionicons name="ios-flame" size={30} color='springgreen'/>
+       <Text style={styles.footer2Value}> 0</Text> 
+      </View>
+      <Text style={styles.footer2Text}>Calories</Text>
+     </View>
     </View>
     </View>
     );
   };
 
-  return ( <View style={styles.runHistoryContainer}>
-   <View style={styles.runsScrollPanel}>
-   <RunHistoryList
-   onSelectRunItem={onSelectRunHistoryItem}
-   onEndReached={loadMoreDataFromServer}
-   isLoading={isLoading}
-   header={renderRunSummaryHeader()}
-   footer={renderRunSummaryFooter()}
-   listData={runsHistory}/>
-   </View>
+  return ( 
+  <View style={styles.runHistoryContainerStyle}>
+    <RunHistoryList
+     onSelectRunItem={onSelectRunHistoryItem}
+     onEndReached={loadMoreDataFromServer}
+     isLoading={isLoading}
+     header={renderRunSummaryHeader()}
+     footer={renderRunSummaryFooter()}
+     listData={runsHistory}/>
    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  runHistoryContainer: {
+  runHistoryContainerStyle: {
     flex: 1,
     backgroundColor: 'lightgrey',
     flexDirection: 'column'
   },
-  runsHistoryDetailsPanel: {
+
+  runsHistoryDashboardContainerStyle: {
     paddingVertical: '20%',
-    backgroundColor: '#303030'
+    backgroundColor: 'black',
+    borderRadius: 25
   },
-  runsScrollPanel: {
-    flex: 1
-  },
-  totalDistanceDashboardItem: {
-    alignSelf: 'center',
-    top: '25%'
-  },
-  averagePaceDashboardItem: {
+
+  averagePaceDashboardItemStyle: {
     position: 'absolute',
     top: '10%',
     alignSelf: 'flex-start'
   },
-  averageDistanceDashboardItem: {
+  totalDistanceDashboardItemStyle: {
+    alignSelf: 'center',
+    top: '30%'
+  },
+  averageDistanceDashboardItemStyle: {
     position: 'absolute',
     top: '10%',
     alignSelf: 'flex-end'
   },
+
   footerContainer: {
     flex: 1,
     top: '20%',
