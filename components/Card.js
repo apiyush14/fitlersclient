@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { scale, moderateScale, verticalScale} from '../utils/Utils';
 
 /*
 Card component with shadow effects
@@ -10,13 +11,16 @@ const Card=props=>{
 
 const styles = StyleSheet.create({
   card: {
-     padding:10,
-     shadowColor: 'grey',
-     shadowOffset: {width:0,height:2},
-     shadowOpacity:1,
-     shadowRadius:6,
-     backgroundColor: 'white',
-     borderRadius: 10
+     marginTop: '1%',
+     marginBottom: '1%',
+     marginLeft: '1%',
+     marginRight: '1%',
+     backgroundColor: 'black',
+     borderRadius: 10,
+     height: verticalScale(125),
+     width: scale(150),
+     alignItems: 'center',
+     flexDirection: 'column'
   },
 });
 

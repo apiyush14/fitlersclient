@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions,ScrollView} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,ScrollView} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
+import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import { useDispatch } from 'react-redux';
 import * as runActions from '../store/run-actions';
 import Card from '../components/Card';
-import { Ionicons } from '@expo/vector-icons';
+import {Ionicons} from '@expo/vector-icons';
 import {useSelector} from 'react-redux';
 import {useIsFocused} from "@react-navigation/native";
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 
 var isCalledFromHistoryScreen=false;
 let runStartDateTime=null;
@@ -157,279 +155,114 @@ const savePlaceHandler = (runId,runTotalTime,runDistance,runPace,runCaloriesBurn
   dispatch(runActions.addRun(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl,eventId));
 };
 
+//View
 return (
- <View style={styles.runDetailsContainer}>
- <MapView style={styles.mapContainer} region={mapRegion} ref={map => {mapRef = map }}
- pitchEnabled={true} rotateEnabled={true} zoomEnabled={true} scrollEnabled={true}>
- {runPath?(
- <Polyline 
- strokeWidth={5}
- strokeColor='red'
- coordinates={runPath}/>):(<View></View>)}
- {runPath[0]!==undefined?(
- <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
- {runPath[runPath.length-1]!==undefined?(
- <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
- </MapView>
+ <View style={styles.runDetailsContainerStyle}>
 
- <ScrollView style={styles.runMetricsContainer}>
+  <MapView style={styles.mapContainerStyle} region={mapRegion} ref={map => {mapRef = map }}
+   pitchEnabled={true} rotateEnabled={true} zoomEnabled={true} scrollEnabled={true}>
+   {runPath?(
+   <Polyline 
+   strokeWidth={5}
+   strokeColor='red'
+   coordinates={runPath}/>):(<View></View>)}
+   {runPath[0]!==undefined?(
+   <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
+   {runPath[runPath.length-1]!==undefined?(
+   <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
+  </MapView>
+  
+ <View style={styles.scrollViewContainerStyle}>
+  <ScrollView style={styles.runMetricsContainerStyle}>
+   {isEvent&&userRank>0?(
 
- {isEvent&&userRank>0?(
- <View style={styles.row0}>
- <Card style={styles.userRankCard}>
- <View style={styles.rankIcon}>
- <Ionicons name="ios-trophy" size={30} color='springgreen'/>
+   <View style={styles.rowStyle}>
+    <Card style={{width:'97%'}}>
+      <Ionicons name="ios-trophy" size={25} color='springgreen'/>
+      <Text style={styles.largeTextStyle}>{userRank}</Text>
+      <Text style={styles.mediumTextStyle}>Rank</Text>
+    </Card>
+   </View>):(<View></View>)}
+
+   <View style={styles.rowStyle}>
+    <Card style={{width:'60%'}}>
+     <Ionicons name="ios-walk" size={30} color='springgreen'/>
+     <Text style={styles.largeTextStyle}>{parseFloat(runDistance/1000).toFixed(2)} KM</Text>
+    </Card>
+
+    <Card style={{width:'35%'}}>
+     <Ionicons name="ios-stopwatch" size={20} color='springgreen'/>
+     <Text style={styles.mediumTextStyle}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
+     <Text style={styles.smallTextStyle}>HH:MM:SS</Text>
+    </Card>
+   </View>
+
+   <View style={styles.rowStyle}>
+    <Card style={{width:'35%'}}>
+      <Ionicons name="ios-calendar" size={25} color='springgreen'/>
+      <Text style={styles.mediumTextStyle}>{runDate}</Text>
+      <Text style={styles.mediumTextStyle}>{runDay}</Text>
+    </Card>
+
+    <Card style={{width:'25%'}}>
+      <Ionicons name="ios-flame" size={25} color='springgreen'/>
+      <Text style={styles.mediumTextStyle}>{runCaloriesBurnt}</Text>
+      <Text style={styles.mediumTextStyle}>Calories</Text>
+    </Card>
+
+    <Card style={{width:'33%'}}>
+      <Ionicons name="ios-speedometer" size={25} color='springgreen'/>
+      <Text style={styles.mediumTextStyle}>{parseFloat(runPace).toFixed(2)}</Text>
+      <Text style={styles.mediumTextStyle}>Pace</Text>
+    </Card>
+
+   </View>
+  </ScrollView>
  </View>
- <Text style={styles.userRankText}>{userRank}</Text>
- <Text style={styles.userRankStaticText}>Rank</Text>
- </Card>
- </View>):(<View></View>)}
-
- <View style={styles.row1}>
- <Card style={styles.runDistanceCard}>
- <View style={styles.walkIcon}>
- <Ionicons name="ios-walk" size={30} color='springgreen'/>
  </View>
- <Text style={styles.runDistanceText}>{parseFloat(runDistance/1000).toFixed(2)} KM</Text>
- </Card>
-
- <Card style={styles.runTotalTimeCard}>
- <View style={styles.timerIcon}>
- <Ionicons name="ios-stopwatch" size={20} color='springgreen'/>
- </View>
- <Text style={styles.runTotalTimeText}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
- <Text style={styles.timeMetricsText}>HH:MM:SS</Text>
- </Card>
- </View>
-
- <View style={styles.row2}>
- <Card style={styles.calendarCard}>
- <View style={styles.calendarIcon}>
- <Ionicons name="ios-calendar" size={25} color='springgreen'/>
- </View>
- <Text style={styles.calendarText}>{runDate}</Text>
- <Text style={styles.runDayText}>{runDay}</Text>
- </Card>
-
- <Card style={styles.runCaloriesBurntCard}>
- <View style={styles.caloriesIcon}>
- <Ionicons name="ios-flame" size={25} color='springgreen'/>
- </View>
- <Text style={styles.runCaloriesBurntText}>{runCaloriesBurnt}</Text>
- <Text style={styles.caloriesStaticText}>Calories</Text>
- </Card>
-
-
- <Card style={styles.runPaceCard}>
- <View style={styles.paceIcon}>
- <Ionicons name="ios-speedometer" size={25} color='springgreen'/>
- </View>
- <Text style={styles.runPaceText}>{parseFloat(runPace).toFixed(2)}</Text>
- <Text style={styles.paceStaticText}>Pace</Text>
- </Card>
-
- </View>
- </ScrollView>
-</View>
 );
 };
 
 const styles = StyleSheet.create({
-  runDetailsContainer: {
+  runDetailsContainerStyle: {
     flex: 1,
     backgroundColor: 'lightgrey',
     flexDirection: 'column',
   },
-  mapContainer: {
-    position: 'absolute',
-    height: '40%',
-    width: '100%',
+
+  mapContainerStyle: {
+    flex: 0.4,
     borderRadius: 20
   },
-  runMetricsContainer: {
-    top: '40%',
-    position: 'absolute',
-    height: '60%',
-    width: '100%',
-    flexDirection: 'column'
+  scrollViewContainerStyle: {
+    flex: 0.6
+  },
+  runMetricsContainerStyle: {
+    flexDirection: 'column',
+    alignSelf: 'center'
   },
 
-  row0: {
+  rowStyle: {
     flex: 1,
     height: '30%',
-    flexDirection: 'row'
-  },
-  userRankCard: {
-    marginVertical: '2%',
-    marginHorizontal: '2%',
-    backgroundColor: 'black',
-    width: '95%',
-    height: windowHeight/6
-  },
-  rankIcon: {
-    alignSelf: 'center'
-  },
-  userRankText: {
-    position: 'absolute',
-    top: '35%',
-    fontSize: 50,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-  userRankStaticText: {
-    position: 'absolute',
-    top: '90%',
-    fontSize: 20,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-
-  row1: {
-    flex: 1,
-    height: '30%',
-    flexDirection: 'row'
-  },
-  runDistanceCard: {
-    marginVertical: '2%',
-    marginHorizontal: '2%',
-    backgroundColor: 'black',
-    width: '60%',
-    height: windowHeight/6
-  },
-  walkIcon: {
-    alignSelf: 'center'
-  },
-  runDistanceText: {
-    position: 'absolute',
-    top: '35%',
-    fontSize: 50,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-  runTotalTimeCard: {
-    marginVertical: '2%',
-    backgroundColor: 'black',
-    width: '33%',
-    height: windowHeight/6
-  },
-  timerIcon: {
-    alignSelf: 'center'
-  },
-  runTotalTimeText: {
-    position: 'absolute',
-    top: '45%',
-    fontSize: 20,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-  timeMetricsText: {
-    position: 'absolute',
-    top: '70%',
-    fontSize: 10,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-
-  row2: {
-    flex: 1,
-    height: '30%',
-    flexDirection: 'row'
-  },
-  calendarCard: {
-    marginVertical: '2%',
-    marginHorizontal: '2%',
-    backgroundColor: 'black',
-    width: '33%',
-    height: windowHeight/6
-  },
-  calendarIcon: {
-    alignSelf: 'center'
-  },
-  calendarText: {
-    marginVertical: '5%',
-    position: 'absolute',
-    top: '35%',
-    fontSize: 20,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-  runDayText: {
-    position: 'absolute',
-    top: '70%',
-    fontSize: 20,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-
-  runCaloriesBurntCard: {
-    marginVertical: '2%',
-    backgroundColor: 'black',
-    width: '27%',
-    height: windowHeight/6
-  },
-  caloriesIcon: {
-    alignSelf: 'center'
-  },
-  runCaloriesBurntText: {
-    marginVertical: '5%',
-    position: 'absolute',
-    top: '35%',
-    fontSize: 20,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-  caloriesStaticText: {
-    position: 'absolute',
-    top: '70%',
-    fontSize: 20,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-
-  runPaceCard: {
-    marginVertical: '2%',
-    marginHorizontal: '2%',
-    backgroundColor: 'black',
-    width: '31%',
-    height: windowHeight/6
-  },
-  paceIcon: {
-    alignSelf: 'center'
-  },
-  runPaceText: {
-    marginVertical: '5%',
-    position: 'absolute',
-    top: '35%',
-    fontSize: 20,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-  paceStaticText: {
-    position: 'absolute',
-    top: '70%',
-    fontSize: 20,
-    alignSelf: 'center',
-    color: 'springgreen'
-  },
-
-  footerTabContainer: {
-    backgroundColor: 'white',
-    position: 'absolute',
-    width: '100%',
-    height: 50,
-    bottom: 2,
-    flexDirection: 'row'
-  },
-  footerHome: {
-    width: '50%',
-    alignSelf: 'center',
+    flexDirection: 'row',
     alignItems: 'center'
   },
-  footerRunHistory: {
-    width: '50%',
-    alignSelf: 'center',
-    alignItems: 'center'
+
+  largeTextStyle: {
+    fontSize: moderateScale(50, 0.8),
+    color: 'springgreen'
+  },
+  mediumTextStyle: {
+    fontSize: moderateScale(20, 0.8),
+    color: 'springgreen'
+  },
+  smallTextStyle: {
+    padding: '3%',
+    fontSize: moderateScale(10, 0.8),
+    color: 'springgreen'
   }
+
 });
 
 export default RunDetailsScreen;
