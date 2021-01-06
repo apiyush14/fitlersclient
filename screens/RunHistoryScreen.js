@@ -1,70 +1,67 @@
 import React, {useState,useEffect} from 'react';
-import {View,Text,StyleSheet,Dimensions,ActivityIndicator} from 'react-native';
-import RunHistoryList from '../components/RunHistoryList';
+import {View,Text,StyleSheet,ActivityIndicator} from 'react-native';
+import { scale, moderateScale, verticalScale} from '../utils/Utils';
+import {useIsFocused} from "@react-navigation/native";
 import {useSelector,useDispatch} from 'react-redux';
 import {Ionicons} from '@expo/vector-icons';
-import {useIsFocused} from "@react-navigation/native";
+import RunHistoryList from '../components/RunHistoryList';
 import DashboardItem from '../components/DashboardItem';
 import * as runActions from '../store/run-actions';
-import {AsyncStorage} from 'react-native';
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 
 const RunHistoryScreen = props => {
 
-  //State Variables
-  const isFocused = useIsFocused();
-  const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
+    //State Variables
+    const isFocused = useIsFocused();
+    const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(false);
 
-  // State Selectors
-  const runsHistory = useSelector(state => state.runs.runs);
-  const runSummary = useSelector(state => state.runs.runSummary);
-  const pendingRunsForSync = useSelector(state => state.runs.runs.filter(run => run.isSyncDone === "0"));
+    // State Selectors
+    const runsHistory = useSelector(state => state.runs.runs);
+    const runSummary = useSelector(state => state.runs.runSummary);
+    const pendingRunsForSync = useSelector(state => state.runs.runs.filter(run => run.isSyncDone === "0"));
 
-  // Use Effect Hook to be loaded everytime the screen loads
-  useEffect(() => {
-    //console.log('=========Run History Sync============');
-    //console.log(runsHistory);
-    if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
-      pendingRunsForSync.map(pendingRun=>{
-        if(Array.isArray(pendingRun.runPath)){
-         var pathString=pendingRun.runPath.map((path)=>""+path.latitude+","+path.longitude).join(';');
-         pendingRun.runPath=pathString;
-        }
+    // Use Effect Hook to be loaded everytime the screen loads
+    useEffect(() => {
+      //console.log('=========Run History Sync============');
+      //console.log(runsHistory);
+      if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
+        pendingRunsForSync.map(pendingRun => {
+          if (Array.isArray(pendingRun.runPath)) {
+            var pathString = pendingRun.runPath.map((path) => "" + path.latitude + "," + path.longitude).join(';');
+            pendingRun.runPath = pathString;
+          }
+        });
+        dispatch(runActions.syncPendingRuns(pendingRunsForSync));
+      }
+    }, [props, isFocused]);
+
+    //Method to lazy load Runs from server 
+    const loadMoreDataFromServer = () => {
+      setIsLoading(true);
+      let pageNumber = Math.floor(runsHistory.length / 3);
+      dispatch(runActions.loadRunsFromServer(pageNumber)).then(() => {
+        setIsLoading(false);
+      }).catch(err => {
+        setIsLoading(false);
       });
-      dispatch(runActions.syncPendingRuns(pendingRunsForSync));
-    }
-  }, [props, isFocused]);
+    };
 
-  //Method to lazy load Runs from server 
-  const loadMoreDataFromServer = () => {
-    setIsLoading(true);
-    let pageNumber = Math.floor(runsHistory.length / 3);
-    dispatch(runActions.loadRunsFromServer(pageNumber)).then(() => {
-      setIsLoading(false);
-    }).catch(err => {
-      setIsLoading(false);
-    });
-  };
+    //Event Listener to be called on selecting Run and to navigate to Run History Screen
+    const onSelectRunHistoryItem = (itemdata) => {
+      props.navigation.navigate('RunDetailsScreen', {
+        runTrackSnapUrl: itemdata.item.runTrackSnapUrl,
+        runDate: itemdata.item.runDate,
+        runDay: itemdata.item.runDay,
+        runTotalTime: itemdata.item.runTotalTime,
+        runDistance: itemdata.item.runDistance,
+        runPace: itemdata.item.runPace,
+        runCaloriesBurnt: itemdata.item.runCaloriesBurnt,
+        runPath: itemdata.item.runPath,
+        sourceScreen: 'RunHistoryScreen'
+      });
+    };
 
-  //Event Listener to be called on selecting Run and to navigate to Run History Screen
-  const onSelectRunHistoryItem = (itemdata) => {
-    props.navigation.navigate('RunDetailsScreen', {
-      runTrackSnapUrl: itemdata.item.runTrackSnapUrl,
-      runDate: itemdata.item.runDate,
-      runDay: itemdata.item.runDay,
-      runTotalTime: itemdata.item.runTotalTime,
-      runDistance: itemdata.item.runDistance,
-      runPace: itemdata.item.runPace,
-      runCaloriesBurnt: itemdata.item.runCaloriesBurnt,
-      runPath: itemdata.item.runPath,
-      sourceScreen: 'RunHistoryScreen'
-    });
-  };
-
-  // Run History Footer for Activity Loader
+  // Run History Footer View
   const renderRunSummaryFooter = () => {
     return (
       <View>
@@ -103,26 +100,32 @@ const RunHistoryScreen = props => {
       style={styles.averagePaceDashboardItemStyle} 
       icon="ios-stopwatch"/>
 
-    <View style={styles.footerContainer}>
-     <View style={styles.footer1}>
-      <View style={styles.footer1ValueContainer}> 
+    <View style={styles.footerContainerStyle}>
+     <View style={styles.footerViewContainerStyle}>
+      <View style={styles.footerValueContainerStyle}> 
        <Ionicons name="ios-ribbon" size={30} color='springgreen'/>
-       <Text style={styles.footer1Value}> {runSummary!=null?parseInt(runSummary.totalRuns):0}</Text>
+       <Text style={styles.footerTextStyle}>{runSummary!=null?parseInt(runSummary.totalRuns):0}</Text>
       </View>
-      <Text style={styles.footer1Text}>Total Runs</Text>
+      <Text style={styles.footerTextStyle}>Total Runs</Text>
      </View>
-     <View style={styles.footer2}>
-      <View style={styles.footer2ValueContainer}>
+
+     <View style={styles.divisorStyle}>
+     </View>
+
+     <View style={styles.footerViewContainerStyle}>
+      <View style={styles.footerValueContainerStyle}>
        <Ionicons name="ios-flame" size={30} color='springgreen'/>
-       <Text style={styles.footer2Value}> 0</Text> 
+       <Text style={styles.footerTextStyle}>0</Text> 
       </View>
-      <Text style={styles.footer2Text}>Calories</Text>
+      <Text style={styles.footerTextStyle}>Calories</Text>
      </View>
+
     </View>
     </View>
     );
   };
 
+//View
   return ( 
   <View style={styles.runHistoryContainerStyle}>
     <RunHistoryList
@@ -139,7 +142,7 @@ const RunHistoryScreen = props => {
 const styles = StyleSheet.create({
   runHistoryContainerStyle: {
     flex: 1,
-    backgroundColor: 'lightgrey',
+    backgroundColor: 'white',
     flexDirection: 'column'
   },
 
@@ -151,6 +154,7 @@ const styles = StyleSheet.create({
 
   averagePaceDashboardItemStyle: {
     position: 'absolute',
+    left: '2%',
     top: '10%',
     alignSelf: 'flex-start'
   },
@@ -160,54 +164,37 @@ const styles = StyleSheet.create({
   },
   averageDistanceDashboardItemStyle: {
     position: 'absolute',
+    right: '2%',
     top: '10%',
     alignSelf: 'flex-end'
   },
 
-  footerContainer: {
+  footerContainerStyle: {
     flex: 1,
     top: '20%',
-    height: 70,
-    borderColor: 'grey',
+    height: verticalScale(70),
+    borderColor: 'springgreen',
     borderWidth: 1,
+    borderRadius: 25,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  footerViewContainerStyle: {
+    flex: 0.5,
+    alignItems: 'center'
+  },
+  footerValueContainerStyle: {
     flexDirection: 'row'
   },
-  footer1ValueContainer: {
-    flexDirection: 'row',
-    alignSelf: 'center'
+  divisorStyle: {
+    borderWidth: 0.5,
+    borderColor: 'springgreen',
+    height: '100%'
   },
-  footer2ValueContainer: {
-    flexDirection: 'row',
-    alignSelf: 'center'
-  },
-  footer1: {
-    flex: 1,
-    width: '50%',
-    borderRightWidth: 1,
-    borderColor: 'grey'
-  },
-  footer2: {
-    flex: 1,
-    width: '50%',
-  },
-  footer1Text: {
+  footerTextStyle: {
+    paddingHorizontal: '3%',
     color: 'springgreen',
-    fontSize: 15,
-    alignSelf: 'center'
-  },
-  footer2Text: {
-    color: 'springgreen',
-    fontSize: 15,
-    alignSelf: 'center'
-  },
-  footer1Value: {
-    color: 'springgreen',
-    fontSize: 25,
-    alignSelf: 'center'
-  },
-  footer2Value: {
-    color: 'springgreen',
-    fontSize: 25,
+    fontSize: moderateScale(18, 0.8),
     alignSelf: 'center'
   }
 

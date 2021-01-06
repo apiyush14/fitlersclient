@@ -1,77 +1,66 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity,ImageBackground, Dimensions} from 'react-native';
+import { StyleSheet, Text, View} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import { Ionicons } from '@expo/vector-icons';
 
 /*
 Dashboard item
 */
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
-
+//View
 const DashboardItem=props=>{
 return(
- 	      <View style={{...props.style,...styles.circleDashboardBorder}}>
-          <LinearGradient style={styles.circleDashboardContainer}
-           colors={['black', 'grey']}>
-          </LinearGradient>
-           <Text style={styles.text}>{props.text}</Text>
-           <Text style={styles.footerText}>{props.footerText}</Text>
-          <View style={styles.icon}>
-            <Ionicons name={props.icon} size={50} color='springgreen'/>
-          </View>
-          
-          </View>
+ 	  <View style={{...props.style,...styles.circleDashboardBorderStyle}}>
+        <LinearGradient style={styles.circleDashboardContainerStyle}
+          colors={['black', 'brown']}>
+        </LinearGradient>
+
+        <View style={styles.iconStyle}>
+          <Ionicons name={props.icon} size={50} color='springgreen'/>
+        </View>
+        
+        <View style={styles.textContainerStyle}>
+         <Text style={styles.textStyle}>{props.text}</Text>
+         <Text style={styles.textStyle}>{props.footerText}</Text>
+        </View>
+
+       </View>
  	);
 };
 
 
 const styles = StyleSheet.create({
-    circleDashboardContainer: {
-        width: 140,
-        height: 140,
-        borderRadius: 70,
+    circleDashboardBorderStyle: {
+        width: verticalScale(140),
+        height: verticalScale(140),
+        borderRadius: verticalScale(70),
+        borderWidth: 3,
+        borderColor: 'lightgreen',
         alignItems: 'center'
     },
-    circleDashboardBorder: {
-        width: 145,
-        height: 145,
-        backgroundColor: 'black',
-        borderRadius: 72,
-        borderWidth: 5,
-        borderColor: 'springgreen',
+    circleDashboardContainerStyle: {
+        width: verticalScale(140),
+        height: verticalScale(140),
+        borderRadius: verticalScale(70),
+        alignItems: 'center'
+    },
+    iconStyle: {
+        position: 'absolute',
+        alignSelf: 'center'
+    },
+    textContainerStyle: {
+        flex: 1,
         alignItems: 'center',
-    },
-    icon: {
-        position: 'absolute',
         alignSelf: 'center',
-        shadowColor: 'black',
-        shadowOffset: {width:2,height:2},
-        shadowOpacity:1,
-        shadowRadius:2,
-    },
-    text: {
+        flexDirection: 'column',
         position: 'absolute',
-        top: '40%',
-        color: 'springgreen',
-        shadowColor: 'black',
-        shadowOffset: {width:2,height:2},
-        shadowOpacity:1,
-        shadowRadius:2,
-        fontSize: windowWidth/21,
-        alignSelf: 'center'
+        marginTop: '35%'
     },
-    footerText: {
-        position: 'absolute',
-        top: '70%',
+    textStyle: {
+        paddingVertical: '5%',
         color: 'springgreen',
-        shadowColor: 'black',
-        shadowOffset: {width:2,height:2},
-        shadowOpacity:1,
-        shadowRadius:2,
-        fontSize: windowWidth/27,
-        alignSelf: 'center'
+        fontSize: moderateScale(16, 0.8)
     }
 });
 
