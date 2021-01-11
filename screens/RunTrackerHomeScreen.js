@@ -1,138 +1,115 @@
-import React, {
-  useState,
-  useEffect
-} from 'react';
-import {
-  View,
-  StyleSheet,
-  Button,
-  Dimensions,
-  Animated,
-  Alert,
-  Modal,
-  ImageBackground,
-  Text
-} from 'react-native';
-import MapView, {
-  Marker
-} from 'react-native-maps';
+import React, {useState,useEffect} from 'react';
+import {View,StyleSheet,Alert,Modal,ImageBackground,Text} from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import RoundButton from '../components/RoundButton';
-import {
-  useDispatch,
-  useSelector
-} from 'react-redux';
+import {useDispatch,useSelector} from 'react-redux';
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import * as Permissions from 'expo-permissions';
-import {
-  AsyncStorage
-} from 'react-native';
 
 import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
-
 const RunTrackerHomeScreen = (props) => {
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    // State Selectors
-    const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
-    const eventDetails = useSelector(state => state.events.eventDetails);
-    const [isLoading, setIsLoading] = useState(false);
+  // State Selectors
+  const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
+  const eventDetails = useSelector(state => state.events.eventDetails);
+  const [isLoading, setIsLoading] = useState(false);
 
 
-    // State Variables
-    const [mapRegion, setMapRegion] = useState({
-      latitude: 31,
-      longitude: 74,
-      latitudeDelta: 0.000757,
-      longitudeDelta: 0.0008
-    });
-    const [modalVisible, setModalVisible] = useState(false);
-    const [modalEventDetails, setModalEventDetails] = useState(null);
-    const [ongoingEventDetails,setOngoingEventDetails]=useState(null);
+  // State Variables
+  const [mapRegion, setMapRegion] = useState({
+    latitude: 31,
+    longitude: 74,
+    latitudeDelta: 0.000757,
+    longitudeDelta: 0.0008
+  });
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalEventDetails, setModalEventDetails] = useState(null);
+  const [ongoingEventDetails, setOngoingEventDetails] = useState(null);
 
-    //Load Run History Data upon initialization
-    useEffect(() => {
-      const fetchData = async () => {
-        dispatch(runActions.loadRuns());
-        dispatch(runActions.loadRunSummary());
-        dispatch(eventActions.loadEventsFromServer(0));
-        dispatch(eventActions.loadEventRegistrationDetails());
-        dispatch(eventActions.loadEventResultDetailsFromServer());
-      };
-      fetchData();
-    }, []);
+  //Load Run History Data upon initialization
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(runActions.loadRuns());
+      dispatch(runActions.loadRunSummary());
+      dispatch(eventActions.loadEventsFromServer(0));
+      dispatch(eventActions.loadEventRegistrationDetails());
+      dispatch(eventActions.loadEventResultDetailsFromServer());
+    };
+    fetchData();
+  }, []);
 
-    //Load Location Details
-    useEffect(() => {
-      (async () => {
-        Location.requestPermissionsAsync().then(response => {
-          if (response.status !== 'granted') {
-            //TODO : To handle alert to change settings
-            Alert.alert("Location Alert", "Location Permission is required!!!");
-          } else {
-            Location.getCurrentPositionAsync({}).then(response => {
-              setMapRegion({
-                latitude: response.coords.latitude,
-                longitude: response.coords.longitude,
-                latitudeDelta: 0.000757,
-                longitudeDelta: 0.0008
-              });
-            });
-          }
-        });
-
-        Permissions.askAsync(Permissions.MOTION).then(response => {
+  //Load Location Details
+  useEffect(() => {
+    (async () => {
+      Location.requestPermissionsAsync().then(response => {
+        if (response.status !== 'granted') {
           //TODO : To handle alert to change settings
-          //Motion Sensor Permission Handling
-          if (response.status !== 'granted') {
-            Alert.alert("Location Alert", "Motion Sensor Permission is required!!!");
-          }
-        });
-      })();
-    }, []);
+          Alert.alert("Location Alert", "Location Permission is required!!!");
+        } else {
+          Location.getCurrentPositionAsync({}).then(response => {
+            setMapRegion({
+              latitude: response.coords.latitude,
+              longitude: response.coords.longitude,
+              latitudeDelta: 0.000757,
+              longitudeDelta: 0.0008
+            });
+          });
+        }
+      });
 
-    useEffect(() => {
-      (async () => {
-       checkAndUpdateOngoingEvent();
-      })();
-    }, [eventRegistrationDetails]);
+      Permissions.askAsync(Permissions.MOTION).then(response => {
+        //TODO : To handle alert to change settings
+        //Motion Sensor Permission Handling
+        if (response.status !== 'granted') {
+          Alert.alert("Location Alert", "Motion Sensor Permission is required!!!");
+        }
+      });
+    })();
+  }, []);
+  
+  //Use effect for Event Registration Changes
+  useEffect(() => {
+    (async () => {
+      checkAndUpdateOngoingEvent();
+    })();
+  }, [eventRegistrationDetails]);
 
-    const checkAndUpdateOngoingEvent=()=>{
-      let currentTime=new Date().getTime();
-      if(eventRegistrationDetails!==null&&eventRegistrationDetails.length>0){
-           eventRegistrationDetails.map((event)=>{
-              var eventStartDateTime=new Date(event.eventStartDate);
-              var eventEndDateTime=new Date(event.eventEndDate);
-              if(currentTime>=eventStartDateTime.getTime()
-                &&currentTime<eventEndDateTime.getTime()){
-                 setOngoingEventDetails(event);
-              }
-           });
-      }
-    };
+  //Method to check if there is an Ongoing Event
+  const checkAndUpdateOngoingEvent = () => {
+    let currentTime = new Date().getTime();
+    if (eventRegistrationDetails !== null && eventRegistrationDetails.length > 0) {
+      eventRegistrationDetails.map((event) => {
+        var eventStartDateTime = new Date(event.eventStartDate);
+        var eventEndDateTime = new Date(event.eventEndDate);
+        if (currentTime >= eventStartDateTime.getTime() &&
+          currentTime < eventEndDateTime.getTime()) {
+          setOngoingEventDetails(event);
+        }
+      });
+    }
+  };
 
+  const onClickEventItem = (eventItem) => {
+    setModalEventDetails(eventItem);
+    setModalVisible(true);
+  };
 
-    const onClickEventItem = (eventItem) => {
-      setModalEventDetails(eventItem);
-      setModalVisible(true);
-    };
+  const onCloseEventItem = (eventItem) => {
+    setModalVisible(false);
+  };
 
-    const onCloseEventItem = (eventItem) => {
-      setModalVisible(false);
-    };
+  const onRegisterEventItem = (eventItem) => {
+    dispatch(eventActions.registerUserForEvent(modalEventDetails));
+    setModalVisible(false);
+  };
 
-    const onRegisterEventItem = (eventItem) => {
-      dispatch(eventActions.registerUserForEvent(modalEventDetails));
-      setModalVisible(false);
-    };
-
-  //Method to lazy load Runs from server 
+  //Method to lazy load Events from server 
   const loadMoreDataFromServer = () => {
     setIsLoading(true);
     let pageNumber = Math.floor(eventDetails.length / 3);
@@ -141,7 +118,7 @@ const RunTrackerHomeScreen = (props) => {
     }).catch(err => {
       setIsLoading(false);
     });
-  }; 
+  };
 //Logic to handle shutter tab for challenges
 
 /*
@@ -166,8 +143,9 @@ Animated.spring(
 isHidden = !isHidden;
 };*/
 
+//View
 return (
-  <View style={styles.runTrackerHomeContainer}>
+  <View style={styles.runTrackerHomeContainerStyle}>
    
   <Modal animationType="slide" transparent={true} visible={modalVisible}
   onRequestClose={()=>{}}>
@@ -178,27 +156,27 @@ return (
   </Modal>
 
   {ongoingEventDetails===null?(
-  <MapView style={styles.mapContainer} region={mapRegion}
+  <MapView style={styles.mapContainerStyle} region={mapRegion}
   pitchEnabled={false} rotateEnabled={false} zoomEnabled={true} scrollEnabled={false}>
   <Marker coordinate={mapRegion}/>
   </MapView>)
   :(
-   <View style={styles.mapContainer}>
+   <View style={styles.mapContainerStyle}>
     <ImageBackground
       source={{uri:"http://192.168.1.66:7001/event-details/getDisplayImage/"+ongoingEventDetails.eventId}}
-      style={styles.bgImage}>
+      style={styles.bgImageStyle}>
     </ImageBackground>
    </View>
   )}
 
-  <View style={styles.runButton}>
-  <RoundButton
-  title="Run"
-  onPress={()=>{props.navigation.navigate('LiveRunTracker',{eventId: ongoingEventDetails!==null?ongoingEventDetails.eventId:0})}}/>
+  <View style={styles.runButtonStyle}>
+   <RoundButton
+   title="Run"
+   onPress={()=>{props.navigation.navigate('LiveRunTracker',{eventId: ongoingEventDetails!==null?ongoingEventDetails.eventId:0})}}/>
   </View>
 
   {ongoingEventDetails===null?(
-  <View style={styles.challengeList}>
+  <View style={styles.challengeListStyle}>
   <ChallengeList 
   listData={eventDetails}
   onEndReached={loadMoreDataFromServer}
@@ -220,38 +198,37 @@ return (
 
 const styles = StyleSheet.create({
 
-	runTrackerHomeContainer: {
+  runTrackerHomeContainerStyle: {
     flex: 1,
     backgroundColor: 'lightgrey',
     flexDirection: 'column',
   },
 
-  mapContainer: {
-    height: '100%',
-    width: '100%',
+  mapContainerStyle: {
+    flex: 1,
     borderRadius: 20
   },
 
-  bgImage: {
-     flex: 1,
-     position: 'absolute',
-     width: '100%',
-     height: '100%'
-    },
+  bgImageStyle: {
+    flex: 1,
+    position: 'absolute',
+    width: '100%',
+    height: '100%'
+  },
 
-  runButton: {
+  runButtonStyle: {
     position: 'absolute',
     top: '70%',
     alignSelf: 'center',
     opacity: 0.9
   },
 
-  challengeList: {
+  challengeListStyle: {
     position: 'absolute',
     top: '2%'
   },
 
-  tabListView: {
+  /*tabListView: {
     position: 'absolute',
     top: '20%'
   },
@@ -263,7 +240,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     bottom: 0
-  }
+  }*/
 });
 
 export default RunTrackerHomeScreen;

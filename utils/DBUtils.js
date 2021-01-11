@@ -127,7 +127,7 @@ export const fetchRunsToSync = () => {
 export const updateRunsSyncState = (pendingRunsForSync) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
-      tx.executeSql('UPDATE RUN_DETAILS SET IS_SYNC_DONE="1" where RUN_ID in (' + pendingRunsForSync + ');', [pendingRunsForSync],
+      tx.executeSql('UPDATE RUN_DETAILS SET IS_SYNC_DONE="1" where RUN_ID in (' + pendingRunsForSync + ');', [],
         (_, result) => {
           resolve(result);
         },

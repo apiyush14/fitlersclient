@@ -16,9 +16,13 @@ const EventHistoryItem = props => {
       hours: "00"
     });
     const [mapRegion, setMapRegion] = useState(null);
+    const [runPath, setRunPath] = useState([]);
 
     //UseEffect Load Time Hook
     useEffect(() => {
+
+      setRunPath(props.runPath);
+
       let secondsVar = ("0" + (Math.floor(props.runTotalTime / 1000) % 60)).slice(-2);
       let minutesVar = ("0" + (Math.floor(props.runTotalTime / 60000) % 60)).slice(-2);
       let hoursVar = ("0" + Math.floor(props.runTotalTime / 3600000)).slice(-2);
@@ -44,15 +48,15 @@ return(
    <View style={styles.mapContainerViewStyle}>
    <MapView style={styles.mapContainerStyle} region={mapRegion}
     pitchEnabled={false} rotateEnabled={false} zoomEnabled={false} scrollEnabled={false}>
-    {props.runPath?(
+    {runPath?(
      <Polyline
      strokeWidth={3}
      strokeColor='red'
-     coordinates={props.runPath}/>):(<View></View>)}
-     {props.runPath[0]!==undefined?(
-     <Marker pinColor='green' coordinate={props.runPath[0]}/>):(<View></View>)}
-      {props.runPath[props.runPath.length-1]!==undefined?(
-     <Marker pinColor='red' coordinate={props.runPath[props.runPath.length-1]}/>):(<View></View>)}
+     coordinates={runPath}/>):(<View></View>)}
+     {runPath[0]!==undefined?(
+     <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
+      {runPath[runPath.length-1]!==undefined?(
+     <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
    </MapView>
    </View>
 

@@ -32,17 +32,17 @@ return(
 
 const styles = StyleSheet.create({
     circleDashboardBorderStyle: {
-        width: verticalScale(140),
-        height: verticalScale(140),
-        borderRadius: verticalScale(70),
+        width: verticalScale(130),
+        height: verticalScale(130),
+        borderRadius: verticalScale(65),
         borderWidth: 3,
         borderColor: 'lightgreen',
         alignItems: 'center'
     },
     circleDashboardContainerStyle: {
-        width: verticalScale(140),
-        height: verticalScale(140),
-        borderRadius: verticalScale(70),
+        width: verticalScale(130),
+        height: verticalScale(130),
+        borderRadius: verticalScale(65),
         alignItems: 'center'
     },
     iconStyle: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     textStyle: {
         paddingVertical: '5%',
         color: 'springgreen',
-        fontSize: moderateScale(16, 0.8)
+        fontSize: moderateScale(13, 0.8)
     }
 });
 

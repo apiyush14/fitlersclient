@@ -171,7 +171,7 @@ return (
    {runPath[runPath.length-1]!==undefined?(
    <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
   </MapView>
-  
+
  <View style={styles.scrollViewContainerStyle}>
   <ScrollView style={styles.runMetricsContainerStyle}>
    {isEvent&&userRank>0?(
@@ -250,11 +250,11 @@ const styles = StyleSheet.create({
   },
 
   largeTextStyle: {
-    fontSize: moderateScale(50, 0.8),
+    fontSize: moderateScale(40, 0.8),
     color: 'springgreen'
   },
   mediumTextStyle: {
-    fontSize: moderateScale(20, 0.8),
+    fontSize: moderateScale(17, 0.8),
     color: 'springgreen'
   },
   smallTextStyle: {
