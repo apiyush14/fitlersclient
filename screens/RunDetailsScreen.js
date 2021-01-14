@@ -16,7 +16,7 @@ let eventId=0;
 
 let mapRef=null;
 
-const TESTPOINTS = [
+/*const TESTPOINTS = [
 {latitude: 31.624708978431634, longitude: 74.87492581820307},
 {latitude:31.624808978431635, longitude:74.87502581820307},
 {latitude:31.624908978431636, longitude:74.87512581820307},
@@ -42,7 +42,7 @@ const TESTPOINTS = [
 {latitude:31.625208978431664, longitude:74.87682581820307},
 {latitude:31.625108978431664, longitude:74.87692581820307},
 {latitude:31.625008978431664, longitude:74.87702581820307}
-];
+];*/
 
 const RunDetailsScreen = props=>{
 
@@ -120,22 +120,23 @@ useEffect(() => {
   }
 
        //To be removed
-       if(!isCalledFromHistoryScreen){
+       /*if(!isCalledFromHistoryScreen){
          console.log('Setting Up Run Path');
          setRunPath(TESTPOINTS);
-       }
+       }*/
        
      }, [props.route.params]);
 
 //Use effect hook for taking a snapshot of the map
 useEffect(() => {
  if(runPath.length>0&&(!isCalledFromHistoryScreen)){
-   takeSnapshot();
+   //takeSnapshot();
+   savePlaceHandler(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,null,runStartDateTime,runDate,runDay,runPath,uri,eventId);
  }
 }, [runPath]);
 
 //Method to take a snapshot and call save method
-const takeSnapshot=()=>{
+/*const takeSnapshot=()=>{
   const snapshot = mapRef.takeSnapshot({
    // width: 300,      // optional, when omitted the view-width is used
    // height: 300,     // optional, when omitted the view-height is used
@@ -148,7 +149,7 @@ const takeSnapshot=()=>{
     //savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path);
     savePlaceHandler(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,null,runStartDateTime,runDate,runDay,runPath,uri,eventId);
   });
-};
+};*/
 
 //Method to dispatch Add Run
 const savePlaceHandler = (runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl,eventId) => {
