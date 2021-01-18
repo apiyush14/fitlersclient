@@ -1,191 +1,178 @@
-  import React, {
-    useState
-  } from 'react';
-  import {
-    View,
-    Text,
-    TextInput,
-    Alert,
-    StyleSheet,
-    Dimensions,
-    Modal,
-    TouchableWithoutFeedback,
-    Keyboard,
-    ImageBackground
-  } from 'react-native';
+  import React, {useState} from 'react';
+  import {View,Text,Alert,StyleSheet,Modal,TouchableWithoutFeedback,Keyboard,ImageBackground} from 'react-native';
+  import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import RoundButton from '../components/RoundButton';
+  import TextInputItem from '../components/TextInputItem';
   import * as authActions from '../store/auth-actions';
-  import {
-    useDispatch
-  } from 'react-redux';
-
-  const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
+  import {useDispatch} from 'react-redux';
 
   //Login Screen
   const LogInScreen = props => {
 
-    const dispatch = useDispatch();
+      const dispatch = useDispatch();
 
-    const [MSISDN, setMSISDN] = useState("");
-    const [isValidMSISDN, setIsValidMSISDN] = useState(true);
-    const [otpCode, setOtpCode] = useState("");
-    const [modalVisible, setModalVisible] = useState(false);
-    const [retryOtpTimer, setRetryOtpTimer] = useState(30);
-    const [retryTimerId, setRetryTimerId] = useState(null);
+      //State Variables
+      const [MSISDN, setMSISDN] = useState("");
+      const [isValidMSISDN, setIsValidMSISDN] = useState(true);
+      const [otpCode, setOtpCode] = useState("");
+      const [modalVisible, setModalVisible] = useState(false);
+      const [retryOtpTimer, setRetryOtpTimer] = useState(30);
+      const [retryTimerId, setRetryTimerId] = useState(null);
 
-    const onChangeMSISDNHandler = (text) => {
-      var phoneNumberRegex = /^\d{10}$/;
-      if (text.match(phoneNumberRegex)) {
-        setIsValidMSISDN(true);
-        setMSISDN(text);
-      } else {
-        setIsValidMSISDN(false);
-      }
-    };
-
-    const onClickGetOTP = () => {
-      dispatch(authActions.generateOTPForMSISDN(MSISDN)).then(response => {
-        setModalVisible(true);
-        var intervalId = setInterval(() => updateRetryTimer(), 1000);
-        setRetryTimerId(intervalId);
-        setTimeout(() => {
-          setModalVisible(false);
-          setOtpCode("");
-          setRetryOtpTimer(30);
-          clearInterval(retryTimerId);
-        }, 30000);
-      }).catch(err => {
-        if (err === 201) {
-          Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
-            text: 'OK',
-            onPress: () => {}
-          }], {
-            cancelable: false
-          });
+      const onChangeMSISDNHandler = (text) => {
+        var phoneNumberRegex = /^\d{10}$/;
+        if (text.match(phoneNumberRegex)) {
+          setIsValidMSISDN(true);
+          setMSISDN(text);
         } else {
-          Alert.alert("Try Again", "Please try again later!!!", [{
-            text: 'OK',
-            onPress: () => {}
-          }], {
-            cancelable: false
-          });
+          setIsValidMSISDN(false);
         }
-      });
-    };
+      };
 
-    const updateRetryTimer = () => {
-      setRetryOtpTimer((prevState) => {
-        //console.log('===============Updating Timer===================');
-        return prevState - 1;
-      });
-    };
+      const onClickGetOTP = () => {
+        dispatch(authActions.generateOTPForMSISDN(MSISDN)).then(response => {
+          setModalVisible(true);
+          var intervalId = setInterval(() => updateRetryTimer(), 1000);
+          setRetryTimerId(intervalId);
+          setTimeout(() => {
+            setModalVisible(false);
+            setOtpCode("");
+            setRetryOtpTimer(30);
+            clearInterval(retryTimerId);
+          }, 30000);
+        }).catch(err => {
+          if (err === 201) {
+            Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+              text: 'OK',
+              onPress: () => {}
+            }], {
+              cancelable: false
+            });
+          } else {
+            Alert.alert("Try Again", "Please try again later!!!", [{
+              text: 'OK',
+              onPress: () => {}
+            }], {
+              cancelable: false
+            });
+          }
+        });
+      };
 
-    const onClickSubmitOTP = () => {
-      dispatch(authActions.validateOTPForMSISDN(MSISDN, otpCode)).then((response) => {
-        var isLoginPassed = response.isValid;
-        if (isLoginPassed === true) {
-          clearInterval(retryTimerId);
-          props.navigation.navigate('UserDetailsScreen');
-        } else {
+      const updateRetryTimer = () => {
+        setRetryOtpTimer((prevState) => {
+          return prevState - 1;
+        });
+      };
+
+      const onClickSubmitOTP = () => {
+        dispatch(authActions.validateOTPForMSISDN(MSISDN, otpCode)).then((response) => {
+          var isLoginPassed = response.isValid;
+          if (isLoginPassed === true) {
+            clearInterval(retryTimerId);
+            props.navigation.navigate('UserDetailsScreen');
+          } else {
+            setOtpCode("");
+            clearInterval(retryTimerId);
+            Alert.alert("OTP Alert", "Incorrect OTP please try again!!!", [{
+              text: 'OK',
+              onPress: () => {
+                setModalVisible(false);
+                setRetryOtpTimer(30);
+              }
+            }], {
+              cancelable: false
+            });
+          }
+        }).catch(err => {
           setOtpCode("");
+          AsyncStorage.removeItem('USER_ID');
           clearInterval(retryTimerId);
-          Alert.alert("OTP Alert", "Incorrect OTP please try again!!!", [{
-            text: 'OK',
-            onPress: () => {
-              setModalVisible(false);
-              setRetryOtpTimer(30);
-            }
-          }], {
-            cancelable: false
-          });
-        }
-      }).catch(err => {
-        setOtpCode("");
-        AsyncStorage.removeItem('USER_ID');
+          if (err === 201) {
+            Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+              text: 'OK',
+              onPress: () => {
+                setModalVisible(false);
+                setRetryOtpTimer(30);
+              }
+            }], {
+              cancelable: false
+            });
+          } else {
+            Alert.alert("OTP Alert", "OTP Validation Failed please try again!!!", [{
+              text: 'OK',
+              onPress: () => {
+                setModalVisible(false);
+                setRetryOtpTimer(30);
+              }
+            }], {
+              cancelable: false
+            });
+          }
+        });
+      };
+
+      const onModalClosed = () => {
         clearInterval(retryTimerId);
-        if (err === 201) {
-          Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
-            text: 'OK',
-            onPress: () => {
-              setModalVisible(false);
-              setRetryOtpTimer(30);
-            }
-          }], {
-            cancelable: false
-          });
-        } else {
-          Alert.alert("OTP Alert", "OTP Validation Failed please try again!!!", [{
-            text: 'OK',
-            onPress: () => {
-              setModalVisible(false);
-              setRetryOtpTimer(30);
-            }
-          }], {
-            cancelable: false
-          });
-        }
-      });
-    };
-
-    const onModalClosed = () => {
-      clearInterval(retryTimerId);
-      setOtpCode("");
-      setRetryOtpTimer(30);
-    };
+        setOtpCode("");
+        setRetryOtpTimer(30);
+      };
 
     return ( 
-      <View style = {styles.logInScreenContainer}>
+      <View style = {styles.logInScreenContainerStyle}>
        <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false} >
-       <ImageBackground source = {require('../assets/images/login.jpg')} 
-       style = {styles.bgImage}>
-      <TextInput style = {styles.contactNumberInput}
-       textContentType = "telephoneNumber"
-       keyboardType = "phone-pad"
-       placeholder = " Enter Your Mobile Number"
-       textAlign = "center"
-       textContentType = "telephoneNumber"
-       maxLength = {10}
-       onChangeText = {onChangeMSISDNHandler}>
-      </TextInput> 
-      {
-        !isValidMSISDN ? ( 
-        <Text style = {styles.errorTextMSISDN} > Please enter valid phone number < /Text>):
-        (<Text/>)
-      } 
-      <RoundButton style = {styles.buttonGetOTP}
-      title = "Get OTP"
-      disabled = {(!isValidMSISDN || (MSISDN.length === 0))}
-      onPress = {onClickGetOTP}
-      /> 
-      </ImageBackground> 
+        <ImageBackground source = {require('../assets/images/login.jpg')} 
+        style = {styles.bgImageStyle}>
+        <TextInputItem
+         style = {styles.msisdnInputStyle}
+         textContentType = "telephoneNumber"
+         keyboardType = "phone-pad"
+         placeholder = " Enter Your Mobile Number"
+         textAlign = "center"
+         textContentType = "telephoneNumber"
+         maxLength = {10}
+         onChangeText = {onChangeMSISDNHandler}>
+        </TextInputItem> 
+         {!isValidMSISDN && MSISDN.length>0 ? ( 
+          <Text style = {styles.errorTextStyle} > Please enter valid phone number < /Text>):
+          (<Text/>)
+         }
+
+        <RoundButton style = {styles.otpButtonStyle}
+         title = "Get OTP"
+         disabled = {(!isValidMSISDN || (MSISDN.length === 0))}
+         onPress = {onClickGetOTP}
+        /> 
+       </ImageBackground> 
       </TouchableWithoutFeedback>
+
       <Modal animationType = "slide"
-      transparent = {false}
-      visible = {modalVisible}
-      onDismiss = {onModalClosed}
-      onRequestClose = {() => {console.log('==========Modal closed================')}
+       transparent = {false}
+       visible = {modalVisible}
+       onDismiss = {onModalClosed}
+       onRequestClose = {() => {console.log('==========Modal closed================')}
       }>
+
       <TouchableWithoutFeedback onPress = {Keyboard.dismiss}
-      accessible = {false}>
-      <ImageBackground source = {require('../assets/images/login.jpg')}
-      style = {styles.bgImage}>
-      <View style = {styles.otpModalContainer}>
-      <TextInput style = {styles.otpInput}
-      keyboardType = "number-pad"
-      placeholder = "Enter OTP"
-      textAlign = "center"
-      textContentType = "oneTimeCode"
-      maxLength = {4}
-      onChangeText = {(text) => setOtpCode(text)} >
-      </TextInput> 
-      <Text style = {styles.retryOtpTimerText}>Resend OTP in {retryOtpTimer}seconds < /Text> 
-      <RoundButton style = {styles.buttonSubmit}
-      title = "Submit"
-      disabled = {otpCode.length === 0}
-      onPress = {onClickSubmitOTP}/> 
-      </View> 
-      </ImageBackground> 
+       accessible = {false}>
+       <ImageBackground source = {require('../assets/images/login.jpg')}
+        style = {styles.bgImageStyle}>
+        <View style = {styles.otpModalContainerStyle}>
+         <TextInputItem style = {styles.otpInputStyle}
+          keyboardType = "number-pad"
+          placeholder = "Enter OTP"
+          textAlign = "center"
+          textContentType = "oneTimeCode"
+          maxLength = {4}
+          onChangeText = {(text) => setOtpCode(text)} >
+         </TextInputItem> 
+         <Text style = {styles.retryOtpTimerTextStyle}>Resend OTP in {retryOtpTimer} seconds < /Text> 
+         <RoundButton style = {styles.buttonSubmitOtpStyle}
+          title = "Submit"
+          disabled = {otpCode.length === 0}
+          onPress = {onClickSubmitOTP}/> 
+        </View> 
+       </ImageBackground> 
       </TouchableWithoutFeedback> 
       </Modal> 
       </View>
@@ -193,55 +180,42 @@
   };
 
   const styles = StyleSheet.create({
-    logInScreenContainer: {
+    logInScreenContainerStyle: {
       flex: 1,
       flexDirection: 'column'
     },
-    bgImage: {
+    bgImageStyle: {
       flex: 1
     },
-    contactNumberInput: {
-      backgroundColor: 'white',
-      height: '8%',
-      width: '50%',
-      alignSelf: 'center',
-      borderWidth: 2,
-      borderColor: 'lightblue',
+
+    msisdnInputStyle: {
       top: '40%'
     },
-    errorTextMSISDN: {
+    errorTextStyle: {
       color: 'red',
-      top: '40%',
-      marginTop: '2%',
-      alignSelf: 'center'
-    },
-    buttonGetOTP: {
-      marginTop: '5%',
+      top: '42%',
       alignSelf: 'center',
-      top: '40%'
     },
-    otpModalContainer: {
+    otpButtonStyle: {
+      alignSelf: 'center',
+      top: '45%'
+    },
+
+    otpModalContainerStyle: {
       marginTop: '10%'
     },
-    otpInput: {
-      backgroundColor: 'white',
-      height: '20%',
-      width: '30%',
-      alignSelf: 'center',
-      borderWidth: 2,
-      borderColor: 'lightblue',
-      top: '80%'
+    otpInputStyle: {
+      width: verticalScale(120),
+      top: '90%'
     },
-    retryOtpTimerText: {
+    retryOtpTimerTextStyle: {
       color: 'red',
-      top: '40%',
-      marginTop: '2%',
+      top: '35%',
       alignSelf: 'center'
     },
-    buttonSubmit: {
-      marginTop: '5%',
+    buttonSubmitOtpStyle: {
       alignSelf: 'center',
-      top: '90%'
+      top: '95%'
     }
   });
 

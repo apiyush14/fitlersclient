@@ -1,19 +1,8 @@
-  import React, {
-    useState
-  } from 'react';
-  import {
-    View,
-    Text,
-    TextInput,
-    Alert,
-    StyleSheet,
-    Dimensions,
-    Modal,
-    TouchableWithoutFeedback,
-    Keyboard,
-    ImageBackground
-  } from 'react-native';
+  import React, {useState} from 'react';
+  import {View,Text,TextInput,Alert,StyleSheet,Dimensions,Modal,TouchableWithoutFeedback,Keyboard,ImageBackground} from 'react-native';
+  import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import RoundButton from '../components/RoundButton';
+  import TextInputItem from '../components/TextInputItem';
   import * as userActions from '../store/user-actions';
   import {
     useDispatch
@@ -37,26 +26,26 @@
     };
    
     return (
-     <View style={styles.userDetailsScreenContainer}>
+     <View style={styles.userDetailsScreenContainerStyle}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.userDetailsSubContainer}>
-      <TextInput style = {styles.nameInputStyle}
+      <View style={styles.userDetailsSubContainerStyle}>
+      <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
        keyboardType = "default"
        placeholder = " First Name"
        textAlign = "center"
        maxLength = {20}
        onChangeText = {(text)=>{setFirstName(text)}}>
-       </TextInput>
-       <TextInput style = {styles.nameInputStyle}
+       </TextInputItem>
+       <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
        keyboardType = "default"
        placeholder = " Last Name"
        textAlign = "center"
        maxLength = {20}
        onChangeText = {(text)=>{setLastName(text)}}>
-       </TextInput>
-      <RoundButton style = {styles.buttonSubmit}
+       </TextInputItem>
+      <RoundButton style = {styles.buttonSubmitStyle}
       title = "Submit"
       disabled = {firstName.length === 0}
       onPress = {onClickSubmit}/> 
@@ -67,26 +56,21 @@
   };
 
   const styles = StyleSheet.create({
-    userDetailsScreenContainer: {
+    userDetailsScreenContainerStyle: {
       flex: 1,
-      flexDirection: 'column'
+      flexDirection: 'column',
+      alignItems: 'center'
     },
-    userDetailsSubContainer: {
+    userDetailsSubContainerStyle: {
       flex: 1
     },
     nameInputStyle: {
-      backgroundColor: 'white',
-      height: '8%',
-      width: '50%',
-      alignSelf: 'center',
-      borderWidth: 2,
-      borderColor: 'lightblue',
-      top: '40%'
+      marginTop: '6%',
+      top: '30%'
     },
-    buttonSubmit: {
-      marginTop: '5%',
+    buttonSubmitStyle: {
       alignSelf: 'center',
-      top: '60%'
+      top: '40%'
     }
   });
 

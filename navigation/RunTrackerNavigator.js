@@ -52,17 +52,16 @@ const RunTrackerNavigator=()=>{
 
 // Tab Navigator
 const RunTrackerTabNavigator=({navigation, route})=>{
-  //console.log('=============Route====================');
-  //console.log(route);
+  console.log('=============Route====================');
+  console.log(getActiveScreenName(route));
+  var currentActiveScreenName=getActiveScreenName(route);
   //var isTabNavigationVisible=true;
-  var isTabNavigationVisible=
-  (!route.state&&route.name==='Home')
-  ||(route.state&&route.state.index===1)
-  ||(route.state&&route.state.index===2)
-  ||(route.state&&route.state.index===0&&route.state.routes[route.state.index].name==='Home')
-  ||(route.state&&route.state.index!==1&&route.state.routes[route.state.index].state
-    &&(route.state.routes[route.state.index].state.routeNames[0]!=='LoginStackNavigator'
-      &&route.state.routes[route.state.index].state.index!==1))?true:false;
+  var isTabNavigationVisible= currentActiveScreenName==='HomeScreen'
+  ||currentActiveScreenName==='HomeScreen'
+  ||currentActiveScreenName==='History'
+  ||currentActiveScreenName==='RunHistoryScreen'
+  ||currentActiveScreenName==='Events'
+  ?true:false;
   
   return (
    <tabNavigator.Navigator 
@@ -117,10 +116,14 @@ const RunTrackerStackNavigator=({navigation, route})=>{
 
   const authDetails = useSelector(state => state.authDetails);
   const userDetails = useSelector(state => state.userDetails);
+  /*console.log('==============Auth Details===============');
+  console.log(authDetails);
+  console.log('==============User Details===============');
+  console.log(userDetails);*/
 
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
-    {authDetails===undefined || authDetails.userId===null || userDetails===undefined || userDetails.userFirstName===null ? (
+    {(!authDetails)||(!authDetails.userId) || (!userDetails) || (!userDetails.userFirstName) ? (
     <stackNavigator.Screen name="LoginStackNavigator" component={LoginStackNavigator}
      options={{
       headerShown: false
@@ -171,8 +174,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       }}/>
       <stackNavigator.Screen name="RunDetailsScreen" component={RunDetailsScreen}
     options={{
-      title: 'Run Details',
-      headerLeft: null
+      title: 'Run Details'
     }}/>
       </stackNavigator.Navigator>
       );
@@ -222,5 +224,16 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       </stackNavigator.Navigator>
       );
     };
+
+   const getActiveScreenName=(route)=>{
+     if(route&&route.state){
+       if(route.state.index>=0&&route.state.routes){
+         return getActiveScreenName(route.state.routes[route.state.index]);
+       }
+     }
+     else{
+      return route.name;
+     }
+   };
 
    export default RunTrackerNavigator;
