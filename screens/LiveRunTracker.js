@@ -83,9 +83,11 @@ const LiveRunTrackerScreen = props=>{
       const averagePace = lapsedTimeinMinutes / (runDistance / 1000);
       setRunPace(averagePace);
 
-      //TODO : Update the formula
+      //TODO : Update the formula to get weight from user details
       //Update Total Calories Burnt
-      const caloriesBurnt = parseInt(65 + (16 / averagePace));
+      const lapsedTimeinHours = lapsedTimeinMinutes / 60;
+      const averagePaceKmPerHour = (runDistance / 1000)/lapsedTimeinHours;
+      const caloriesBurnt = parseInt((averagePaceKmPerHour*3.5*68)/200)*lapsedTimeinMinutes;
       setRunCaloriesBurnt(caloriesBurnt);
     }
   }, [runDistance]);
