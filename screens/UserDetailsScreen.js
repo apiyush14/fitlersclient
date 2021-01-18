@@ -1,15 +1,10 @@
   import React, {useState} from 'react';
-  import {View,Text,TextInput,Alert,StyleSheet,Dimensions,Modal,TouchableWithoutFeedback,Keyboard,ImageBackground} from 'react-native';
+  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import RoundButton from '../components/RoundButton';
   import TextInputItem from '../components/TextInputItem';
   import * as userActions from '../store/user-actions';
-  import {
-    useDispatch
-  } from 'react-redux';
-
-  const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
+  import {useDispatch} from 'react-redux';
 
   //User Details Screen
   const UserDetailsScreen = props => {
@@ -21,7 +16,8 @@
 
     const onClickSubmit = () => {
       dispatch(userActions.updateUserDetails(firstName,lastName)).then(response => {
-       props.navigation.navigate('Home');  
+       console.log('===========Dispatch Action of Update finished=================');
+       props.navigation.navigate('Home');
       });
     };
    

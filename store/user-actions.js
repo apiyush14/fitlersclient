@@ -37,7 +37,7 @@ export const updateUserDetails = (firstName,lastName) => {
         }).then(response => response.json())
         .then((response) => {
           if (response === true) {
-            updateUserDetailsInDB(firstName,lastName);
+            dispatch(updateUserDetailsInDB(firstName,lastName));
             dispatch({
               type: UPDATE_USER_DETAILS,
               userDetails: userDetails

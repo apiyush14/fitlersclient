@@ -1,19 +1,7 @@
-import React, {
-  useState,
-  useEffect
-} from 'react';
-import {
-  View,
-  StyleSheet,
-  ActivityIndicator,
-  ImageBackground
-} from 'react-native';
-import {
-  useDispatch
-} from 'react-redux';
-import {
-  AsyncStorage
-} from 'react-native';
+import React, {useState,useEffect} from 'react';
+import {View,StyleSheet,ActivityIndicator,ImageBackground} from 'react-native';
+import {useDispatch} from 'react-redux';
+import {AsyncStorage} from 'react-native';
 
 export const UPDATE_USER_AUTH_DETAILS = 'UPDATE_USER_AUTH_DETAILS';
 export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
@@ -44,6 +32,8 @@ const SplashScreen = props => {
 
 const validateUserName=()=>{
  AsyncStorage.getItem('USER_NAME').then((userName) => {
+  console.log('============Splash Screen==============');
+  console.log(userName);
   if(userName!==null){
     var userNameArr=userName.split(" ");
     dispatch({

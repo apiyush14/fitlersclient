@@ -52,8 +52,8 @@ const RunTrackerNavigator=()=>{
 
 // Tab Navigator
 const RunTrackerTabNavigator=({navigation, route})=>{
-  console.log('=============Route====================');
-  console.log(getActiveScreenName(route));
+  //console.log('=============Route====================');
+  //console.log(getActiveScreenName(route));
   var currentActiveScreenName=getActiveScreenName(route);
   //var isTabNavigationVisible=true;
   var isTabNavigationVisible= currentActiveScreenName==='HomeScreen'
@@ -123,7 +123,12 @@ const RunTrackerStackNavigator=({navigation, route})=>{
 
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
-    {(!authDetails)||(!authDetails.userId) || (!userDetails) || (!userDetails.userFirstName) ? (
+    {(authDetails===null)
+      ||(authDetails.userId===undefined)
+      ||(authDetails.userId===null) 
+      ||(userDetails===null) 
+      ||(userDetails.userFirstName===undefined)
+      ||(userDetails.userFirstName===null) ? (
     <stackNavigator.Screen name="LoginStackNavigator" component={LoginStackNavigator}
      options={{
       headerShown: false
