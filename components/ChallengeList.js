@@ -16,7 +16,7 @@ const eventRegistrationDetails = useSelector(state => state.events.eventRegistra
 //Render Challenge Item View
 const renderChallengeItem=itemData=>{
  return <ChallengeItem
- image={configData.SERVER_URL+"event-details/getDisplayImage/"+itemData.item.eventId}
+ image={configData.SERVER_URL+"event-details/getDisplayImage/"+itemData.item.eventId+"?imageType=COVER"}
  title={itemData.item.eventName}
  eventStartDate={itemData.item.eventStartDate}
  isRegistered={eventRegistrationDetails.findIndex((event)=>event.eventId===itemData.item.eventId)>=0}
@@ -45,8 +45,7 @@ return(
 const styles = StyleSheet.create({
    challengeListContainerStyle: {
       flex: 1,
-      alignItems: 'center',
-      paddingHorizontal: '2%'
+      alignItems: 'center'
    }
 });
 

@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   challengeItemContainerStyle: {
     height: verticalScale(110),
     width: scale(200),
+    marginHorizontal: verticalScale(4),
     backgroundColor: 'white',
     borderRadius: 20,
     marginVertical: verticalScale(8),

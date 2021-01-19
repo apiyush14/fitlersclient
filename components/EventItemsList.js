@@ -15,7 +15,7 @@ const eventRegistrationDetails = useSelector(state => state.events.eventRegistra
 
 const renderEventItem=itemData=>{
  return <EventItem
- image={configData.SERVER_URL+"event-details/getDisplayImage/"+itemData.item.eventId}
+ image={configData.SERVER_URL+"event-details/getDisplayImage/"+itemData.item.eventId+"?imageType=COVER"}
  title={itemData.item.eventName}
  eventStartDate={itemData.item.eventStartDate}
  isRegistered={eventRegistrationDetails.findIndex((event)=>event.eventId===itemData.item.eventId)>=0}

@@ -163,7 +163,7 @@ return (
   :(
    <View style={styles.mapContainerStyle}>
     <ImageBackground
-      source={{uri:"http://192.168.1.66:7001/event-details/getDisplayImage/"+ongoingEventDetails.eventId}}
+      source={{uri:"http://192.168.1.66:7001/event-details/getDisplayImage/"+ongoingEventDetails.eventId+"?imageType=DISPLAY"}}
       style={styles.bgImageStyle}>
     </ImageBackground>
    </View>

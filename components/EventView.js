@@ -43,7 +43,7 @@ return(
  	 <View style={styles.eventViewContainerStyle}>
      <View style={styles.imageContainerStyle}>
      <ImageBackground
-      source={{uri:configData.SERVER_URL+"event-details/getDisplayImage/"+props.eventDetails.eventId}} 
+      source={{uri:configData.SERVER_URL+"event-details/getDisplayImage/"+props.eventDetails.eventId+"?imageType=DISPLAY"}} 
       style={styles.imageStyle}>
 
       <View style={styles.actionPanelContainerStyle}>
