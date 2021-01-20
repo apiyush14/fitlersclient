@@ -131,7 +131,7 @@ useEffect(() => {
 useEffect(() => {
  if(runPath.length>0&&(!isCalledFromHistoryScreen)){
    //takeSnapshot();
-   savePlaceHandler(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,null,runStartDateTime,runDate,runDay,runPath,uri,eventId);
+   savePlaceHandler(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,null,runStartDateTime,runDate,runDay,runPath,"",eventId);
  }
 }, [runPath]);
 

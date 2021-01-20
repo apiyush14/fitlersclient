@@ -14,6 +14,9 @@ const EventItemsList=props=>{
 const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);	
 
 const renderEventItem=itemData=>{
+ console.log('================Event Item Loaded=======================');
+ console.log(itemData.item.eventId);
+ console.log(configData.SERVER_URL+"event-details/getDisplayImage/"+itemData.item.eventId+"?imageType=COVER");
  return <EventItem
  image={configData.SERVER_URL+"event-details/getDisplayImage/"+itemData.item.eventId+"?imageType=COVER"}
  title={itemData.item.eventName}

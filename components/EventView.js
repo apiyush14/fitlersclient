@@ -74,7 +74,7 @@ return(
             </View>
            
            <View style={styles.eventTimeContainerStyle}>
-             <Text style={styles.eventTimeTextStyle}>{parseInt(eventStartDate.getHours())}:{parseInt(eventStartDate.getMinutes())} - {parseInt(eventEndDate.getHours())}:{parseInt(eventEndDate.getMinutes())}</Text>
+             <Text style={styles.eventTimeTextStyle}>{("0"+parseInt(eventStartDate.getHours())).slice(-2)}:{("0"+parseInt(eventStartDate.getMinutes())).slice(-2)} - {("0"+parseInt(eventEndDate.getHours())).slice(-2)}:{("0"+parseInt(eventEndDate.getMinutes())).slice(-2)}</Text>
            </View>
 
           </View>

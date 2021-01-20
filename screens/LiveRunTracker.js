@@ -77,7 +77,6 @@ const LiveRunTrackerScreen = props=>{
   // Update averagePace and Calories once distance gets changed
   useEffect(() => {
     if (runDistance > 0) {
-      runDistanceForAutoPause = runDistanceForAutoPause + 1;
       //Update average pace
       const lapsedTimeinMinutes = runTotalTime / 60000;
       const averagePace = lapsedTimeinMinutes / (runDistance / 1000);
@@ -98,7 +97,7 @@ const LiveRunTrackerScreen = props=>{
     (async () => {
 
       //Automatically pause the run if there is no distance tracked since last configured secs
-      if (timerForAutoPause >= 20 && runDistanceForAutoPause === 0) {
+      if (timerForAutoPause >= 20 && runDistanceForAutoPause < 5) {
         timerForAutoPause = 0;
         runDistanceForAutoPause = 0;
         pauseRun();
@@ -175,6 +174,7 @@ const LiveRunTrackerScreen = props=>{
           temporaryDistance = temporaryDistance + haversine(lastLocationVar, endLocation, {
             unit: 'meter'
           });
+          runDistanceForAutoPause = runDistanceForAutoPause + 1;
           if (temporaryDistance >= 10) {
             isToUpdatePath = true;
             setRunDistance(runDistance => {

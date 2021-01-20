@@ -52,7 +52,7 @@ const RunTrackerNavigator=()=>{
 
 // Tab Navigator
 const RunTrackerTabNavigator=({navigation, route})=>{
-  //console.log('=============Route====================');
+  console.log('=============Route====================');
   //console.log(getActiveScreenName(route));
   var currentActiveScreenName=getActiveScreenName(route);
   //var isTabNavigationVisible=true;
@@ -61,6 +61,7 @@ const RunTrackerTabNavigator=({navigation, route})=>{
   ||currentActiveScreenName==='History'
   ||currentActiveScreenName==='RunHistoryScreen'
   ||currentActiveScreenName==='Events'
+  ||currentActiveScreenName==='RunDetailsScreen'
   ?true:false;
   
   return (

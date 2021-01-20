@@ -16,8 +16,8 @@ const SplashScreen = props => {
       setTimeout(() => {
         setAnimating(false);
         AsyncStorage.getItem('USER_ID').then((userId) => {
-          console.log('===========Splash Screen=================');
-          console.log(userId);
+          /*console.log('===========Splash Screen=================');
+          console.log(userId);*/
           dispatch({
             type: UPDATE_USER_AUTH_DETAILS,
             authDetails: {
