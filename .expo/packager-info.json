@@ -1,9 +1,9 @@
 {
   "packagerPort": 19001,
-  "packagerPid": 11520,
+  "packagerPid": 5988,
   "devToolsPort": 19002,
   "expoServerPort": 19000,
   "expoServerNgrokUrl": "https://a5-jda.anonymous.onehealthclient.exp.direct",
   "packagerNgrokUrl": "https://packager.a5-jda.anonymous.onehealthclient.exp.direct",
-  "ngrokPid": 10680
+  "ngrokPid": 10208
 }

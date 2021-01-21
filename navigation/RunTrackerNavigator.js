@@ -13,6 +13,8 @@ import RunHistoryScreen from '../screens/RunHistoryScreen';
 import LogInScreen from '../screens/LogInScreen';
 import LogOutScreen from '../screens/LogOutScreen';
 import SplashScreen from '../screens/SplashScreen';
+import TermsAndConditions from '../screens/TermsAndConditions';
+import Privacy from '../screens/Privacy';
 import UserDetailsScreen from '../screens/UserDetailsScreen';
 import EventsListSummaryScreen from '../screens/EventsListSummaryScreen';
 import TestScreen from '../screens/TestScreen';
@@ -34,8 +36,10 @@ const RunTrackerNavigator=()=>{
       swipeEnabled: false
     }}>
     <drawerNavigator.Screen name="Home" component={RunTrackerTabNavigator}/>
+    <drawerNavigator.Screen name="Terms & Conditions" component={TermsAndConditions}/>
+    <drawerNavigator.Screen name="Privacy" component={Privacy}/>
     <drawerNavigator.Screen name="LogOut" component={LogOutScreen}
-    listeners={({ navigation }) => ({ 
+    listeners={({ navigation }) => ({
         state: (e) => {
            if (e.data.state.index === 1) {
               AsyncStorage.removeItem('USER_ID');

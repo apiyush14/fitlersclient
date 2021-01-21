@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-	View,
-	StyleSheet
-} from 'react-native';
+import {View,StyleSheet} from 'react-native';
 
 //Dummy LogOutScreen
 const LogOutScreen = props => {
