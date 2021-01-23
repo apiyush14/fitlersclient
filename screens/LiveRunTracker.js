@@ -174,13 +174,15 @@ const LiveRunTrackerScreen = props=>{
           temporaryDistance = temporaryDistance + haversine(lastLocationVar, endLocation, {
             unit: 'meter'
           });
-          runDistanceForAutoPause = runDistanceForAutoPause + 1;
-          if (temporaryDistance >= 10) {
-            isToUpdatePath = true;
-            setRunDistance(runDistance => {
+          //Update UI to keep it live
+          setRunDistance(runDistance => {
               //console.log(totalDistance+haversine(startLocation, endLocation, {unit: 'meter'}));
               return runDistance + temporaryDistance;
             });
+
+          runDistanceForAutoPause = runDistanceForAutoPause + 1;
+          if (temporaryDistance >= 10) {
+            isToUpdatePath = true;
             temporaryDistance = 0;
           }
 
