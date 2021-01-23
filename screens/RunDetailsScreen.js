@@ -47,7 +47,7 @@ let mapRef=null;
 const RunDetailsScreen = props=>{
 
 // State Selectors
-const eventResultDetails = useSelector(state => state.events.eventResultDetails); 
+const eventResultDetails = useSelector(state => state.events.eventResultDetails);
 
 const dispatch = useDispatch();
 
@@ -90,6 +90,7 @@ useEffect(() => {
   {
     const pathArray=props.route.params.runPath;
     setRunPath(pathArray);
+    
     setRunDate(props.route.params.runDate);
     setRunDay(props.route.params.runDay);
     setRunDistance(props.route.params.runDistance);
@@ -207,7 +208,7 @@ return (
 
     <Card style={{width:'25%'}}>
       <Ionicons name="ios-flame" size={25} color='springgreen'/>
-      <Text style={styles.mediumTextStyle}>{runCaloriesBurnt}</Text>
+      <Text style={styles.mediumTextStyle}>{parseFloat(runCaloriesBurnt).toFixed(2)}</Text>
       <Text style={styles.mediumTextStyle}>Calories</Text>
     </Card>
 

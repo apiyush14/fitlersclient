@@ -25,12 +25,6 @@ const RunHistoryScreen = props => {
       //console.log('=========Run History Sync============');
       //console.log(runsHistory);
       if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
-        pendingRunsForSync.map(pendingRun => {
-          if (Array.isArray(pendingRun.runPath)) {
-            var pathString = pendingRun.runPath.map((path) => "" + path.latitude + "," + path.longitude).join(';');
-            pendingRun.runPath = pathString;
-          }
-        });
         dispatch(runActions.syncPendingRuns(pendingRunsForSync));
       }
     }, [props, isFocused]);
@@ -48,6 +42,8 @@ const RunHistoryScreen = props => {
 
     //Event Listener to be called on selecting Run and to navigate to Run History Screen
     const onSelectRunHistoryItem = (itemdata) => {
+      //console.log('============On Select Run History=============');
+      //console.log(itemdata);
       props.navigation.navigate('RunDetailsScreen', {
         runTrackSnapUrl: itemdata.item.runTrackSnapUrl,
         runDate: itemdata.item.runDate,
@@ -57,6 +53,7 @@ const RunHistoryScreen = props => {
         runPace: itemdata.item.runPace,
         runCaloriesBurnt: itemdata.item.runCaloriesBurnt,
         runPath: itemdata.item.runPath,
+        runId: itemdata.item.runId,
         sourceScreen: 'RunHistoryScreen'
       });
     };

@@ -1,21 +1,10 @@
-import {
-  insertRun,
-  fetchRuns,
-  fetchRunSummary,
-  updateRunSummary,
-  insertRunSummary,
-  updateRunsSyncState,
-  deleteRuns
-} from '../utils/DBUtils';
+import {insertRun,fetchRuns,fetchRunSummary,updateRunSummary,insertRunSummary,updateRunsSyncState,deleteRuns} from '../utils/DBUtils';
 import * as FileSystem from 'expo-file-system';
 import NetInfo from '@react-native-community/netinfo';
-import {
-  AsyncStorage
-} from 'react-native';
+import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
-import {
-  getUserAuthenticationToken
-} from '../utils/AuthenticationUtils';
+import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
+import RunDetails from '../models/rundetails';
 
 export const UPDATE_RUN_DETAILS = 'UPDATE_RUN_DETAILS';
 export const UPDATE_RUN_SUMMARY = 'UPDATE_RUN_SUMMARY';
@@ -66,7 +55,7 @@ export const addRun = (runId, runTotalTime, runDistance, runPace, runCaloriesBur
           resolve();
         }
       ).catch(err => {
-        reject(err);
+        //reject(err);
       });
     });
   }
@@ -80,15 +69,17 @@ export const addRunSummary = (run) => {
 
         //Insert New Run Summary
         if (response.rows._array.length === 0) {
-          insertRunSummary(run.runDistance, "1", run.runPace, run.runDistance).then((response) => {
+          insertRunSummary(run.runDistance, "1",run.runCredits, run.runPace, run.runDistance, run.runCaloriesBurnt).then((response) => {
             //Dispatch Update Run Summary State
             dispatch({
               type: UPDATE_RUN_SUMMARY,
               runSummary: {
                 totalDistance: run.runDistance,
                 totalRuns: "1",
+                totalCredits: run.runCredits,
                 averagePace: run.runPace,
-                averageDistance: run.runDistance
+                averageDistance: run.runDistance,
+                averageCaloriesBurnt: run.runCaloriesBurnt
               }
             });
           });
@@ -98,8 +89,10 @@ export const addRunSummary = (run) => {
           var updatedRunSummary = {
             totalDistance: parseFloat(response.rows._array[0].TOTAL_DISTANCE) + parseFloat(run.runDistance),
             totalRuns: parseInt(response.rows._array[0].TOTAL_RUNS) + 1,
+            totalCredits: parseFloat(response.rows._array[0].TOTAL_CREDITS) + parseFloat(run.runCredits),
             averagePace: ((parseFloat(response.rows._array[0].AVERAGE_PACE) * parseInt(response.rows._array[0].TOTAL_RUNS)) + run.runPace) / (parseInt(response.rows._array[0].TOTAL_RUNS) + 1),
-            averageDistance: response.rows._array[0].TOTAL_DISTANCE / response.rows._array[0].TOTAL_RUNS
+            averageDistance: response.rows._array[0].TOTAL_DISTANCE / response.rows._array[0].TOTAL_RUNS,
+            averageCaloriesBurnt: ((parseFloat(response.rows._array[0].AVERAGE_CALORIES_BURNT) * parseInt(response.rows._array[0].TOTAL_RUNS)) + run.runCaloriesBurnt) / (parseInt(response.rows._array[0].TOTAL_RUNS) + 1)
           };
           //Dispatch Update Run Summary State
           updateRunSummary(updatedRunSummary.totalDistance, updatedRunSummary.totalRuns, updatedRunSummary.averagePace, updatedRunSummary.averageDistance).then((response) => {
@@ -108,15 +101,17 @@ export const addRunSummary = (run) => {
               runSummary: {
                 totalDistance: updatedRunSummary.totalDistance,
                 totalRuns: updatedRunSummary.totalRuns,
+                totalCredits: updatedRunSummary.totalCredits,
                 averagePace: updatedRunSummary.averagePace,
-                averageDistance: updatedRunSummary.averageDistance
+                averageDistance: updatedRunSummary.averageDistance,
+                averageCaloriesBurnt: updatedRunSummary.averageCaloriesBurnt
               }
             });
           });
         }
         resolve();
       }).catch(err => {
-        reject(err);
+        //reject(err);
       });
     });
   }
@@ -167,7 +162,7 @@ export const loadRuns = () => {
           resolve();
         })
         .catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }
@@ -181,7 +176,7 @@ export const loadRunsFromServer = (pageNumber) => {
     return new Promise((resolve, reject) => {
       NetInfo.fetch().then(state => {
         if (!state.isConnected) {
-          reject(201);
+          //reject(201);
         }
       });
       var URL = configData.SERVER_URL + "run-details/getRuns/" + userId + "?page=";
@@ -200,7 +195,7 @@ export const loadRunsFromServer = (pageNumber) => {
           }
           resolve(response);
         }).catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }
@@ -221,8 +216,10 @@ export const loadRunSummary = () => {
                 id: dbResultSummary.id,
                 totalDistance: dbResultSummary.TOTAL_DISTANCE,
                 totalRuns: dbResultSummary.TOTAL_RUNS,
+                totalCredits: dbResultSummary.TOTAL_CREDITS,
                 averagePace: dbResultSummary.AVERAGE_PACE,
-                averageDistance: dbResultSummary.AVERAGE_DISTANCE
+                averageDistance: dbResultSummary.AVERAGE_DISTANCE,
+                averageCaloriesBurnt: dbResultSummary.AVERAGE_CALORIES_BURNT
               }
             });
           } else {
@@ -232,7 +229,7 @@ export const loadRunSummary = () => {
           resolve();
         })
         .catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }
@@ -246,7 +243,7 @@ export const loadRunSummaryFromServer = () => {
     return new Promise((resolve, reject) => {
       NetInfo.fetch().then(state => {
         if (!state.isConnected) {
-          reject(201);
+          //reject(201);
         }
       });
       var URL = configData.SERVER_URL + "run-details/getRunSummary/" + userId;
@@ -262,11 +259,11 @@ export const loadRunSummaryFromServer = () => {
               runSummary: response.runSummary
             });
             //Hydrate the database
-            insertRunSummary(response.runSummary.totalDistance, response.runSummary.totalRuns, response.runSummary.averagePace, response.runSummary.averageDistance);
+            insertRunSummary(response.runSummary.totalDistance, response.runSummary.totalRuns,response.runSummary.totalCredits, response.runSummary.averagePace, response.runSummary.averageDistance, response.runSummary.averageCaloriesBurnt);
           }
           resolve();
         }).catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }
@@ -279,9 +276,13 @@ export const syncPendingRuns = (pendingRunsForSync) => {
     var userId = header.USER_ID;
 
     return new Promise((resolve, reject) => {
-
-      pendingRunsForSync.map(pendingRun => {
-        pendingRun.userId = userId;
+      var pendingRunsForSyncRequest = pendingRunsForSync.map(pendingRun => {
+        if (Array.isArray(pendingRun.runPath)) {
+          var pathString = pendingRun.runPath.map((path) => "" + path.latitude + "," + path.longitude).join(';');
+          var runDetails = new RunDetails(pendingRun.runId, pendingRun.runTotalTime, pendingRun.runDistance, pendingRun.runPace, pendingRun.runCaloriesBurnt, pendingRun.runCredits, pendingRun.runStartDateTime, pendingRun.runDate, pendingRun.runDay, pathString, pendingRun.runTrackSnapUrl, pendingRun.eventId, pendingRun.isSyncDone);
+          runDetails.userId = userId;
+          return runDetails;
+        }
       });
 
       var URL = configData.SERVER_URL + "run-details/addRuns/" + userId;
@@ -289,7 +290,7 @@ export const syncPendingRuns = (pendingRunsForSync) => {
           method: 'POST',
           headers: header,
           body: JSON.stringify({
-            runDetailsList: pendingRunsForSync
+            runDetailsList: pendingRunsForSyncRequest
           })
         }).then(response => response.json())
         .then((response) => {
@@ -302,7 +303,7 @@ export const syncPendingRuns = (pendingRunsForSync) => {
           }
           resolve();
         }).catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }

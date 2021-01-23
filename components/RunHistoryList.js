@@ -7,6 +7,8 @@ List of Run History Cards
 const RunHistoryList=props=>{
 
 const renderRunHistoryItem=itemData=>{
+ //console.log('===============Render History Item==================');
+ //console.log(itemData.item.runPath);
  return <RunHistoryItem
  runTrackSnapUrl={itemData.item.runTrackSnapUrl}
  runPath={itemData.item.runPath}

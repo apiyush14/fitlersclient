@@ -45,7 +45,7 @@ export const updateUserDetails = (firstName,lastName) => {
           }
           resolve(response);
         }).catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }

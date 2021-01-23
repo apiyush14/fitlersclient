@@ -15,7 +15,7 @@ export const init = () => {
           reject(err);
         });
 
-      tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_SUMMARY (id INTEGER PRIMARY KEY NOT NULL, TOTAL_DISTANCE TEXT NOT NULL, TOTAL_RUNS TEXT NOT NULL,AVERAGE_PACE TEXT NOT NULL,AVERAGE_DISTANCE TEXT NOT NULL);',
+      tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_SUMMARY (id INTEGER PRIMARY KEY NOT NULL, TOTAL_DISTANCE TEXT NOT NULL, TOTAL_RUNS TEXT NOT NULL,TOTAL_CREDITS TEXT NOT NULL, AVERAGE_PACE TEXT NOT NULL,AVERAGE_DISTANCE TEXT NOT NULL, AVERAGE_CALORIES_BURNT TEXT NOT NULL);',
         //tx.executeSql('DROP TABLE RUN_SUMMARY;',
         [],
         () => {
@@ -139,10 +139,10 @@ export const updateRunsSyncState = (pendingRunsForSync) => {
   return promise;
 };
 
-export const insertRunSummary = (totalDistance, totalRuns, averagePace, averageDistance) => {
+export const insertRunSummary = (totalDistance, totalRuns, totalCredits , averagePace, averageDistance, averageCaloriesBurnt) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
-      tx.executeSql('INSERT INTO RUN_SUMMARY (TOTAL_DISTANCE,TOTAL_RUNS,AVERAGE_PACE,AVERAGE_DISTANCE) VALUES (?,?,?,?);', [totalDistance, totalRuns, averagePace, averageDistance],
+      tx.executeSql('INSERT INTO RUN_SUMMARY (TOTAL_DISTANCE,TOTAL_RUNS,TOTAL_CREDITS,AVERAGE_PACE,AVERAGE_DISTANCE,AVERAGE_CALORIES_BURNT) VALUES (?,?,?,?,?,?);', [totalDistance, totalRuns, totalCredits, averagePace, averageDistance, averageCaloriesBurnt],
         (_, result) => {
           resolve(result);
         },
@@ -154,10 +154,10 @@ export const insertRunSummary = (totalDistance, totalRuns, averagePace, averageD
   return promise;
 };
 
-export const updateRunSummary = (totalDistance, totalRuns, averagePace, averageDistance) => {
+export const updateRunSummary = (totalDistance, totalRuns, totalCredits, averagePace, averageDistance, averageCaloriesBurnt) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
-      tx.executeSql('UPDATE RUN_SUMMARY SET TOTAL_DISTANCE=?,TOTAL_RUNS=?,AVERAGE_PACE=?,AVERAGE_DISTANCE=?', [totalDistance, totalRuns, averagePace, averageDistance],
+      tx.executeSql('UPDATE RUN_SUMMARY SET TOTAL_DISTANCE=?,TOTAL_RUNS=?,TOTAL_CREDITS=?,AVERAGE_PACE=?,AVERAGE_DISTANCE=?,AVERAGE_CALORIES_BURNT=?', [totalDistance, totalRuns, totalCredits, averagePace, averageDistance, averageCaloriesBurnt],
         (_, result) => {
           resolve(result);
         },

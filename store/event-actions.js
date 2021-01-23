@@ -14,7 +14,7 @@ export const loadEventsFromServer=(pageNumber)=>{
  return new Promise((resolve,reject)=>{
     NetInfo.fetch().then(state => {
         if (!state.isConnected) {
-          reject(201);
+          //reject(201);
         }
       });
 
@@ -30,7 +30,7 @@ export const loadEventsFromServer=(pageNumber)=>{
      dispatch({type: UPDATE_EVENTS_FROM_SERVER, eventDetails:response.eventDetails});
      resolve();
     }).catch(err=>{
-      reject(err);
+      //reject(err);
     });
 });
 }
@@ -73,7 +73,7 @@ export const loadEventRegistrationDetails = () => {
           resolve();
         })
         .catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }
@@ -87,7 +87,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
     return new Promise((resolve, reject) => {
       NetInfo.fetch().then(state => {
         if (!state.isConnected) {
-          reject(201);
+          //reject(201);
         }
       });
       var URL = configData.SERVER_URL + "event-registration/getRegisteredEventsForUser/" + userId;
@@ -115,7 +115,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
           }
           resolve(response);
         }).catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }
@@ -128,7 +128,7 @@ export const registerUserForEvent=(eventDetails)=>{
  return new Promise((resolve,reject)=>{
     NetInfo.fetch().then(state => {
         if (!state.isConnected) {
-          reject(201);
+          //reject(201);
         }
       });
     var URL=configData.SERVER_URL +"event-registration/registerForEvent/"+eventDetails.eventId+"?userId="+userId;
@@ -152,7 +152,7 @@ export const registerUserForEvent=(eventDetails)=>{
      dispatch({type: UPDATE_EVENT_REGISTRATION_DETAILS,eventRegistrationDetails: eventRegistrationDetailsList});
      resolve();
     }).catch(err=>{
-      reject(err);
+      //reject(err);
     });
 });
 }
@@ -175,7 +175,7 @@ export const loadEventResultDetailsFromServer = () => {
     return new Promise((resolve, reject) => {
       NetInfo.fetch().then(state => {
         if (!state.isConnected) {
-          reject(201);
+          //reject(201);
         }
       });
       var URL = configData.SERVER_URL + "event-results/" + userId;
@@ -201,7 +201,7 @@ export const loadEventResultDetailsFromServer = () => {
           }
           resolve(response);
         }).catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }

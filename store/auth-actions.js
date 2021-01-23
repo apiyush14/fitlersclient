@@ -26,7 +26,7 @@ export const generateOTPForMSISDN = (msisdn) => {
         .then((response) => {
           resolve(response);
         }).catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }
@@ -58,7 +58,7 @@ export const validateOTPForMSISDN = (msisdn, otpCode) => {
           }
           resolve(response);
         }).catch(err => {
-          reject(err);
+          //reject(err);
         });
     });
   }

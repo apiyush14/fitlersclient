@@ -16,8 +16,13 @@ export default (state = initialState, action) => {
     switch (action.type) {
 
         case UPDATE_RUN_DETAILS:
+            //console.log('===============Inside Update Run Details====================');
+
             var updatedRuns = action.runs.map((run) => {
+                //console.log(run);
                 if (state.runs.findIndex(stateRun => stateRun.runId === run.runId) < 0) {
+                    //console.log('Going to update Run');
+                    console.log(run.runId);
                     var pathArr = run.runPath.split(";");
                     var path = pathArr.map(loc => {
                         var locationArr = loc.split(",");
@@ -34,12 +39,13 @@ export default (state = initialState, action) => {
             state.runs.sort(function(a, b) {
                 return new Date(b.runStartDateTime) - new Date(a.runStartDateTime);
             });
+            //console.log(state.runs);
             return state;
 
         case UPDATE_RUN_SUMMARY:
             const updatedSummary = action.runSummary;
             return { ...state,
-                runSummary: new RunSummary("1", updatedSummary.totalDistance.toString(), updatedSummary.totalRuns.toString(), updatedSummary.averagePace.toString(), updatedSummary.averageDistance.toString())
+                runSummary: new RunSummary("1", updatedSummary.totalDistance.toString(), updatedSummary.totalRuns.toString(),updatedSummary.totalCredits.toString(), updatedSummary.averagePace.toString(), updatedSummary.averageDistance.toString(), updatedSummary.averageCaloriesBurnt.toString())
             };
 
         case UPDATE_RUN_SYNC_STATE:
