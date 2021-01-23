@@ -41,7 +41,7 @@ const RunTrackerNavigator=()=>{
     <drawerNavigator.Screen name="LogOut" component={LogOutScreen}
     listeners={({ navigation }) => ({
         state: (e) => {
-           if (e.data.state.index === 1) {
+           if (e.data.state.index === 3) {
               AsyncStorage.removeItem('USER_ID');
               dispatch({type: UPDATE_USER_AUTH_DETAILS, authDetails:{userId: null, secret: null}});
               navigation.navigate("Home");
@@ -121,10 +121,10 @@ const RunTrackerStackNavigator=({navigation, route})=>{
 
   const authDetails = useSelector(state => state.authDetails);
   const userDetails = useSelector(state => state.userDetails);
-  /*console.log('==============Auth Details===============');
+  console.log('==============Auth Details===============');
   console.log(authDetails);
   console.log('==============User Details===============');
-  console.log(userDetails);*/
+  console.log(userDetails);
 
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>

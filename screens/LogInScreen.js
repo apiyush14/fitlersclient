@@ -1,10 +1,12 @@
   import React, {useState} from 'react';
-  import {View,Text,Alert,StyleSheet,Modal,TouchableWithoutFeedback,Keyboard,ImageBackground} from 'react-native';
+  import {View,Text,Alert,StyleSheet,Modal,TouchableWithoutFeedback,Keyboard,ImageBackground,TouchableOpacity} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import RoundButton from '../components/RoundButton';
   import TextInputItem from '../components/TextInputItem';
   import * as authActions from '../store/auth-actions';
   import {useDispatch} from 'react-redux';
+  import TermsAndConditions from '../screens/TermsAndConditions';
+import Privacy from '../screens/Privacy';
 
   //Login Screen
   const LogInScreen = props => {
@@ -16,8 +18,10 @@
       const [isValidMSISDN, setIsValidMSISDN] = useState(true);
       const [otpCode, setOtpCode] = useState("");
       const [modalVisible, setModalVisible] = useState(false);
+      const [modalForScreenVisible, setModalForScreenVisible] = useState(false);
       const [retryOtpTimer, setRetryOtpTimer] = useState(30);
       const [retryTimerId, setRetryTimerId] = useState(null);
+      const [screenName, setScreenName] = useState("");
 
       const onChangeMSISDNHandler = (text) => {
         var phoneNumberRegex = /^\d{10}$/;
@@ -118,6 +122,16 @@
         setRetryOtpTimer(30);
       };
 
+      const onClickTextItem=(selectedItem) => {
+         setScreenName(selectedItem);
+         setModalForScreenVisible(true);
+      };
+
+      const onCloseScreenTextItem=() => {
+         setScreenName("");
+         setModalForScreenVisible(false);
+      };
+
     return ( 
       <View style = {styles.logInScreenContainerStyle}>
        <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false} >
@@ -143,8 +157,34 @@
          disabled = {(!isValidMSISDN || (MSISDN.length === 0))}
          onPress = {onClickGetOTP}
         /> 
+        
+        <View style={styles.footerContainerStyle}>
+         <Text style={styles.footerTextStyle}>            By signing in, you agree to our{"\n"} 
+         <Text
+         style={styles.hyperLinkTextStyle}
+         onPress={()=>{onClickTextItem("terms")}}> Terms & Conditions </Text>
+          and 
+         <Text
+         style={styles.hyperLinkTextStyle} 
+         onPress={()=>{onClickTextItem("privacy")}}> Privacy Policy</Text>
+         </Text>
+        </View>
+
        </ImageBackground> 
       </TouchableWithoutFeedback>
+
+      <Modal animationType = "slide"
+       transparent = {false}
+       visible = {modalForScreenVisible}
+       onDismiss = {onModalClosed}
+       onRequestClose = {() => {console.log('==========Modal closed================')}
+      }>
+        {screenName==="terms"?(
+         <TermsAndConditions onClose={onCloseScreenTextItem}></TermsAndConditions>
+        ):
+         (<Privacy onClose={onCloseScreenTextItem}></Privacy>)
+        }
+      </Modal>
 
       <Modal animationType = "slide"
        transparent = {false}
@@ -199,6 +239,24 @@
     otpButtonStyle: {
       alignSelf: 'center',
       top: '45%'
+    },
+    footerContainerStyle: {
+      alignSelf: 'center',
+      borderRadius: 25,
+      top: '50%',
+      backgroundColor: 'black',
+      opacity: 0.5
+    },
+    footerTextStyle: {
+      fontSize: moderateScale(13, 0.8),
+      color: 'white',
+      padding: '2%'
+    },
+    hyperLinkTextStyle: {
+      fontSize: moderateScale(15, 0.8),
+      color: 'white',
+      fontWeight: 'bold',
+      textDecorationLine: 'underline'
     },
 
     otpModalContainerStyle: {

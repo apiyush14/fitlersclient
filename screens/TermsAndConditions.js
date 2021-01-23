@@ -183,52 +183,61 @@ Last Updated on: April 20th, 2018.
          </Text>
 		</ScrollView>
 		<View style={styles.buttonContainerStyle}>
-		 <RoundButton title="Close" style={styles.buttonStyle} onPress={()=>{props.navigation.navigate('HomeScreen')}}/>
+		 <RoundButton 
+                 title="Close" style={styles.buttonStyle} 
+                 onPress={()=>{
+                  if(props.onClose){
+                        props.onClose();
+                  }
+                  else{
+                    props.navigation.navigate('HomeScreen');
+                  }
+                }}/>
         </View>
 		</View>
 	);
 };
 
 const styles = StyleSheet.create({
-	termsAndConditionsContainerStyle: {
-        flex: 1,
-        backgroundColor: 'black',
-        alignItems: 'center',
-        justifyContent : 'center'
-	},
-	termsAndConditionsScrollViewStyle: {
-        flex: 1,
-        paddingTop: '10%'
-	},
-   buttonContainerStyle: {
-   	padding: '4%',
-    width: '100%',
-    alignSelf: 'center',
-    alignItems: 'center'
-  },
-  buttonStyle: {
-  	width: '100%',
-  	height: verticalScale(70),
-    borderRadius: 25,
-    bottom: '2%',
-    backgroundColor: 'grey',
-    opacity: 0.4
-  },
-	largeTextStyle: {
-		padding: '3%',
-		fontSize: moderateScale(40, 0.8),
-		color: 'springgreen'
-	},
-	mediumTextStyle: {
-		padding: '3%',
-		fontSize: moderateScale(17, 0.8),
-		color: 'springgreen'
-	},
-	smallTextStyle: {
-		padding: '3%',
-		fontSize: moderateScale(10, 0.8),
-		color: 'springgreen'
-	}
+        termsAndConditionsContainerStyle: {
+                flex: 1,
+                backgroundColor: 'black',
+                alignItems: 'center',
+                justifyContent: 'center'
+        },
+        termsAndConditionsScrollViewStyle: {
+                flex: 1,
+                paddingTop: '10%'
+        },
+        buttonContainerStyle: {
+                padding: '4%',
+                width: '100%',
+                alignSelf: 'center',
+                alignItems: 'center'
+        },
+        buttonStyle: {
+                width: '100%',
+                height: verticalScale(70),
+                borderRadius: 25,
+                bottom: '2%',
+                backgroundColor: 'grey',
+                opacity: 0.4
+        },
+        largeTextStyle: {
+                padding: '3%',
+                fontSize: moderateScale(40, 0.8),
+                color: 'springgreen'
+        },
+        mediumTextStyle: {
+                padding: '3%',
+                fontSize: moderateScale(17, 0.8),
+                color: 'springgreen'
+        },
+        smallTextStyle: {
+                padding: '3%',
+                fontSize: moderateScale(10, 0.8),
+                color: 'springgreen'
+        }
 });
 
 export default TermsAndConditions;

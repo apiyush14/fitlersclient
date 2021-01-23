@@ -7,6 +7,8 @@ import {Ionicons} from '@expo/vector-icons';
 import RunHistoryList from '../components/RunHistoryList';
 import DashboardItem from '../components/DashboardItem';
 import * as runActions from '../store/run-actions';
+import { Dimensions } from 'react-native';
+const { width, height } = Dimensions.get('window');
 
 const RunHistoryScreen = props => {
 
@@ -144,6 +146,7 @@ const styles = StyleSheet.create({
   },
 
   runsHistoryDashboardContainerStyle: {
+    width: width,
     paddingVertical: '20%',
     backgroundColor: 'black',
     borderRadius: 25
