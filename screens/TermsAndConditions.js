@@ -9,17 +9,16 @@ const TermsAndConditions = props => {
 	 <View style={styles.termsAndConditionsContainerStyle}>
 	  <ScrollView style={styles.termsAndConditionsScrollViewStyle}>
         <Text style={styles.largeTextStyle}>Terms & Conditions (T&C)</Text>
-         <Text style={styles.smallTextStyle}>This document is an electronic record in terms of Information Technology Act, 2000 and rules made thereunder and as the same may be amended from time to time. Being a system generated electronic record, it does not require any physical or digital signature. Greetings from StepSetGo (hereinafter referred to as the “App”). The App is owned by PepKit Media Pvt. Ltd., a company incorporated in India (hereinafter referred to as “We” or “Our” or “Us” or “Company”).
+         <Text style={styles.smallTextStyle}>This document is an electronic record in terms of Information Technology Act, 2000 and rules made thereunder and as the same may be amended from time to time. Being a system generated electronic record, it does not require any physical or digital signature. Greetings from OneHealth (hereinafter referred to as the “App”). The App is owned by Piyush Arora, an individual incorporated in India (hereinafter referred to as “We” or “Our” or “Us” or “Company”).
 By accessing Our App from any computer, computer device, mobile, smartphone or any electronic device, You (hereinafter referred to as “You” or “Your”) expressly agree to be bound by these App related Terms and Conditions (hereinafter referred to as the “App Terms and Conditions”).
-If You use the App, You are required to first carefully read as well as fully understand these App Terms and Conditions which are applicable when You view/access/use (hereinafter collectively, referred to as “use” or “using”) the App. Please also carefully read and fully understand Our Privacy Policy available at [●] (hereinafter referred to as the “Privacy Policy”), which is incorporated in these App Terms and Conditions by reference.
+If You use the App, You are required to first carefully read as well as fully understand these App Terms and Conditions which are applicable when You view/access/use (hereinafter collectively, referred to as “use” or “using”) the App. Please also carefully read and fully understand Our Privacy Policy available inside the application (hereinafter referred to as the “Privacy Policy”), which is incorporated in these App Terms and Conditions by reference.
 If, for any reason, You do not agree to these App Terms and Conditions, Privacy Policy and/or other App guidelines and policies (guidelines and policies hereinafter collectively referred to as “Other Policies”) as communicated to You when You use the App or do not wish to be bound by them, please do not use the App in any way whatsoever. By using the App, You have indicated to Us that You have read, acknowledged and understood as well as fully agreed, to be bound by these App Terms and Conditions, Privacy Policy and all Other Policies, irrespective whether You register with or use the App or create an account with Us or not.
          </Text>
         <Text style={styles.mediumTextStyle}>ABOUT THE APP</Text>
          <Text style={styles.smallTextStyle}>The App is proprietary to Us and constitutes Our intellectual property. Any intellectual property relating to any products and/or services offered on or through the App may be proprietary to Us or Our partners and shall constitute Ours or Our partners’ intellectual property as the case may be.
-The App has an in-built tracking system whereby it keeps a track of users’ steps and based on such tracked steps, coins or points get added to such user’s App account every time such user walks or runs/jogs or takes any step.
-Based on the minimum number of coins/points (as mentioned in the App) collected in the user’s account, the user can redeem the same either against products and/or services offered on or through the App, whether they are offered by Us or by our partners. Further, the said coins/points can also be used to avail various discount offers that may be made available on or through the App, whether by Us or by our partners. If there are any specific or additional terms and conditions attached to any such offered products and/or services, then the same will also be applicable and shall form an integral part of these App Terms and Conditions.
+The App has an in-built tracking system whereby it keeps a track of users’ running distance and location and based on such tracked distance, credits get added to the user’s App account
 The App is provided currently free of cost. We may convert the App to a subscription based model at a future date. However, We shall communicate the same to You as and when We decide to do so.
-Currently, this App is not applicable for any cycling or any other activity except for walking and running/jogging. If any such activity is permitted at any later date, then these App Terms and Conditions will be applicable to the same as well.
+Currently, this App is not applicable for any cycling or any other activity except for running/jogging. If any such activity is permitted at any later date, then these App Terms and Conditions will be applicable to the same as well.
          </Text>
         <Text style={styles.mediumTextStyle}>ACCEPTANCE OF TERMS, ETC.</Text>
          <Text style={styles.smallTextStyle}>These App Terms and Conditions is in the form of an electronic and legally binding contract that establishes the terms and conditions You have accepted before using the App or any part thereof. These include Our Privacy Policy and Other Policies as mentioned in these App Terms and Conditions as well as other specific policies and terms and conditions disclosed to You, in case You avail any subscription or any additional features, products or services We offer on or through the App, whether free or otherwise, including but not limited to terms governing features, billing, free trials, promotions and discounts. By using the App, You hereby unconditionally consent and accept to these App Terms and Conditions, Privacy Policy and Other Policies. To withdraw such consent, You must immediately cease using the App and terminate Your account with Us. You are requested to keep a physical copy of these App Terms and Conditions and all other referred policies herein for Your records.
@@ -32,9 +31,9 @@ By using the App, You hereby represent and warrant to Us that You have all right
          </Text>
         <Text style={styles.mediumTextStyle}>APP ACCOUNT</Text>
          <Text style={styles.smallTextStyle}>
-In order to use the App, You have the option of signing in using Your Facebook/Google login. If You do so, You authorize Us to access and use certain Facebook/Google account information of Yours, including but not limited to Your public Facebook/Google profile and information about Your Facebook/Google friends, Your interests and dislikes. For more information regarding the type/nature of information We collect from You and how We use it, please refer Our Privacy Policy at [●].
+In order to use the App, You have the option of signing in using Your Mobile Number and Your basic personal details (Name and Weight). If You do so, You authorize Us to access and use these details within the application.
 Your account details You provide to Us must always be kept private and confidential and should not be disclosed to or permitted to be used by anyone else and You are solely responsible and liable for any and all usage and activity on the App that takes place under Your account.
-By agreeing to these App Terms and Conditions, You grant Us the permission to send electronic communications to You as part of Our offering. This includes but is not limited to sending emails, newsletters, notifications and promotional offers from Us and Our partners. Should You no longer wish to receive such electronic communications, You may write to Us at support@stepsetgo.com
+By agreeing to these App Terms and Conditions, You grant Us the permission to send electronic communications to You as part of Our offering. This includes but is not limited to sending emails, newsletters, notifications and promotional offers from Us and Our partners. Should You no longer wish to receive such electronic communications, You may write to Us at support@onehealth.com
 Any account You open with Us is personal to You and You are prohibited from gifting, lending, transferring or otherwise permitting any other person or entity to access or use Your account in any way whatsoever.
 Each User is only permitted to have one account on this App platform. If the use of multiple accounts/registrations by a single user is found, We reserve the right to investigate, suspend and/or terminate, whether temporarily or permanently, Your App account with Us.
          </Text>
@@ -58,7 +57,7 @@ You agree to take all necessary precautions in all interactions with other App u
          </Text>
         <Text style={styles.mediumTextStyle}>ACCOUNT SECURITY</Text>
          <Text style={styles.smallTextStyle}>
-You shall be solely responsible and liable for maintaining the utmost privacy and confidentiality of Your App log-in (username and password) details as well as for any and all activities that occur under Your log-in. You agree to immediately notify Us of any disclosure or unauthorized use of Your log-in or any other breach of security by emailing us on support@stepsetgo.com
+You shall be solely responsible and liable for maintaining the utmost privacy and confidentiality of Your App log-in (mobile number and otp) details as well as for any and all activities that occur under Your log-in. You agree to immediately notify Us of any disclosure or unauthorized use of Your log-in or any other breach of security by emailing us on support@onehealth.com
 
          </Text>
         <Text style={styles.mediumTextStyle}>PROPRIETARY RIGHTS</Text>
@@ -70,7 +69,7 @@ By posting information or content to any profile pages or public area of the App
          </Text>
         <Text style={styles.mediumTextStyle}>USER INFORMATION</Text>
          <Text style={styles.smallTextStyle}>
-For information about the collection and possible use of information and content provided by You, please review Our Privacy Policy at the link [●].
+For information about the collection and possible use of information and content provided by You, please review Our Privacy Policy.
 It is hereby expressly agreed and understood by You that for exchanging personal contact information of Yours with any other App user, You shall have the choice to opt into the exchange. Upon choosing to opt in, You shall be solely responsible and liable for any and all risks and consequences thereof and You hereby agree to indemnify Us for the same.
 Notwithstanding any other provisions of these App Terms and Conditions, We reserve the right to disclose any information that You submit to Us, if in Our sole opinion, We reasonably believe that such disclosure is required to be disclosed (i) for complying with applicable laws, requests or orders from law enforcement agencies, appropriate competent authorities or for any legal process; (ii) for enforcing these App Terms and Conditions; (iii) for protecting or defending Ours, any App user’s or any third party's rights or property; (iv) for supporting any fraud/ legal investigation/ verification checks; or (v) in connection with a corporate transaction, including but not limited to sale of Our business, merger, consolidation, or in the unlikely event of bankruptcy. You acknowledge and understand the provisions of this Clause 9.3 and grant Us an unconditional, perpetual right and permission to make such disclosure.
 By using the App, You hereby permit Us to use the information You provide Us, including Your experiences to facilitate Us to improve the App and its functionality as well as for promotional purposes, including the permission to publish Your non-personal information in any of Our partner websites and/or to use for research and analytical purposes.
@@ -96,7 +95,7 @@ directly or indirectly modify, adapt, sublicense, translate, sell, reverse engin
 post, use, transmit or distribute, directly or indirectly, in any manner or media any content (whether textual, graphical, images, audio, video, audio-video or any combination thereof) or information obtained from the App other than solely in connection with Your use of the App in accordance with these App Terms and Conditions.
 registration of multiple accounts for a single user or registration of multiple accounts by assuming fake identities;
 undertaking and participating in any fraudulent activities with a purpose to collect invite rewards;
-hit Our servers/use a code/ undertake in any fraudulent activities to emulate steps, or adopt any means whatsoever to show and claim a number of steps, that is over and above the steps counted by Our App i.e. steps actually walked/run by the User of the account.
+hit Our servers/use a code/ undertake in any fraudulent activities to emulate run distance, or adopt any means whatsoever to show and claim credits, that is over and above the credits calculated by Our App
          </Text>
         <Text style={styles.mediumTextStyle}>CONTENT POSTED BY YOU</Text>
          <Text style={styles.smallTextStyle}>
@@ -151,7 +150,7 @@ You agree to indemnify, defend and hold Us harmless, as well as Our partners, af
          </Text>
         <Text style={styles.mediumTextStyle}>CAUTION</Text>
          <Text style={styles.smallTextStyle}>
-We may check new user account profiles strictly for verifying accuracy of profile information and any unsuitable, objectionable or inappropriate content. However, We may not be able to verify the identity of all such users or the accuracy of their content, nor can We guarantee that We will be able to identify all unsuitable, objectionable or inappropriate content. Please do not take any user content as fully accurate and/or complete. We will not be liable or responsible for any false and misleading content and information given by any user. If You have any concerns over any user content, please write to us on support@stepsetgo.com with the details thereof.
+We may check new user account profiles strictly for verifying accuracy of profile information and any unsuitable, objectionable or inappropriate content. However, We may not be able to verify the identity of all such users or the accuracy of their content, nor can We guarantee that We will be able to identify all unsuitable, objectionable or inappropriate content. Please do not take any user content as fully accurate and/or complete. We will not be liable or responsible for any false and misleading content and information given by any user. If You have any concerns over any user content, please write to us on support@onehealth.com with the details thereof.
 You hereby acknowledge and agree that You shall ensure that at all times Your interaction with other users of the App will always be lawful and appropriate and that You alone shall be responsible for all consequences thereof.
          </Text>
         <Text style={styles.mediumTextStyle}>MISCELLANEOUS</Text>
@@ -159,7 +158,7 @@ You hereby acknowledge and agree that You shall ensure that at all times Your in
 Entire Agreement: These App Terms and Conditions constitutes the entire agreement between You and Us regarding the subject matter hereof, and replaces and supersedes any and all prior agreements/ understandings/ correspondences, whether written or oral, between You and Us.
 Amendment: We reserve the right to amend these App Terms and Conditions from time to time. Any such amendments will be applicable to all persons viewing/accessing/using the App once the revisions have been posted onto the same. You should therefore check the App from time to time to review the current App Terms and Conditions as applicable to You.
 Survival: Termination or suspension of Your App Account shall not affect those provisions hereof that by their nature are intended to survive such termination or suspension.
-Governing Law and Jurisdiction: These App Terms and Conditions shall be governed and construed in accordance with the laws of India and shall be subject to the exclusive jurisdiction of any competent courts situated at Mumbai.
+Governing Law and Jurisdiction: These App Terms and Conditions shall be governed and construed in accordance with the laws of India and shall be subject to the exclusive jurisdiction of any competent courts situated at New Delhi.
 No Assignment: These App Terms and Conditions are personal to You. You cannot assign Your rights or obligations hereunder, whether partly or fully, to anyone.
 Severability: If any provisions of these App Terms and Conditions are held invalid or unenforceable under applicable law, such provision will be inapplicable, but the remainder will continue in full force and effect.
 Waiver: No waiver of any term, provision or condition of these App Terms and Conditions whether by conduct or otherwise in any one or more instances shall be deemed to be or construed as a further or continuing waiver of any such term, provision or condition or of any other term, provision or condition of these App Terms and Conditions.
@@ -173,13 +172,13 @@ We may occasionally update these App Terms and Conditions. When We post any chan
          <Text style={styles.smallTextStyle}>
 In accordance with Information Technology Act, 2000 and rules made there under, the name and contact details of the Grievance Officer are provided below:
 
-Name: Mr. Piyush Arora Email: support@stepsetgo.com
+Name: Mr. Piyush Arora Email: support@onehealth.com
          </Text>
         <Text style={styles.mediumTextStyle}>1. CONTACT US</Text>
          <Text style={styles.smallTextStyle}>
-Please contact Us by email on support@stepsetgo.com for any questions or comments regarding these App Terms and Conditions.
+Please contact Us by email on support@onehealth.com for any questions or comments regarding these App Terms and Conditions.
 
-Last Updated on: April 20th, 2018.
+Last Updated on: January 24th, 2021.
          </Text>
 		</ScrollView>
 		<View style={styles.buttonContainerStyle}>

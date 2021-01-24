@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 2,
     elevation: 5,
+    alignSelf: 'center'
   },
   mapContainerViewStyle: {
     height: '100%',
