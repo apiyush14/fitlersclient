@@ -16,6 +16,7 @@ const RunHistoryScreen = props => {
     const isFocused = useIsFocused();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
+    const [isMoreContentAvailableOnServer, setIsMoreContentAvailable] = useState(true);
 
     // State Selectors
     const runsHistory = useSelector(state => state.runs.runs);
@@ -31,17 +32,21 @@ const RunHistoryScreen = props => {
       }
     }, [props, isFocused]);
 
-    //Method to lazy load Runs from server 
-    const loadMoreDataFromServer = () => {
+  //Method to lazy load Runs from server 
+  const loadMoreDataFromServer = () => {
+    if (isMoreContentAvailableOnServer) {
       setIsLoading(true);
       let pageNumber = Math.floor(runsHistory.length / 3);
-      dispatch(runActions.loadRunsFromServer(pageNumber)).then(() => {
-        setIsLoading(false);
-      }).catch(err => {
+      dispatch(runActions.loadRunsFromServer(pageNumber)).then((response) => {
+        if (!response.isMoreContentAvailable) {
+          setIsMoreContentAvailable(false);
+        } else {
+          setIsMoreContentAvailable(true);
+        }
         setIsLoading(false);
       });
-    };
-
+    }
+  };
     //Event Listener to be called on selecting Run and to navigate to Run History Screen
     const onSelectRunHistoryItem = (itemdata) => {
       //console.log('============On Select Run History=============');

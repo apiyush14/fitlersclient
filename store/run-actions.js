@@ -159,10 +159,10 @@ export const loadRuns = () => {
               }
             });
           }
-          resolve();
+          resolve(response);
         })
         .catch(err => {
-          //reject(err);
+
         });
     });
   }
@@ -195,6 +195,7 @@ export const loadRunsFromServer = (pageNumber) => {
           }
           resolve(response);
         }).catch(err => {
+          resolve({isMoreContentAvailable: false});
           //reject(err);
         });
     });

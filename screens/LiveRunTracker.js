@@ -171,13 +171,15 @@ const LiveRunTrackerScreen = props=>{
             latitude: lastLocation.latitude,
             longitude: lastLocation.longitude
           }
-          temporaryDistance = temporaryDistance + haversine(lastLocationVar, endLocation, {
+
+          var haversineDistance=haversine(lastLocationVar, endLocation, {
             unit: 'meter'
           });
+          temporaryDistance = temporaryDistance + haversineDistance;
           //Update UI to keep it live
           setRunDistance(runDistance => {
               //console.log(totalDistance+haversine(startLocation, endLocation, {unit: 'meter'}));
-              return runDistance + temporaryDistance;
+              return runDistance + haversineDistance;
             });
 
           runDistanceForAutoPause = runDistanceForAutoPause + 1;
