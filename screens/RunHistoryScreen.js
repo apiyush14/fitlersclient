@@ -27,6 +27,7 @@ const RunHistoryScreen = props => {
     useEffect(() => {
       //console.log('=========Run History Sync============');
       //console.log(runsHistory);
+      setIsMoreContentAvailable(true);
       if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
         dispatch(runActions.syncPendingRuns(pendingRunsForSync));
       }
