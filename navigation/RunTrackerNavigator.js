@@ -43,7 +43,9 @@ const RunTrackerNavigator=()=>{
         state: (e) => {
            if (e.data.state.index === 3) {
               AsyncStorage.removeItem('USER_ID');
-              dispatch({type: UPDATE_USER_AUTH_DETAILS, authDetails:{userId: null, secret: null}});
+              dispatch({type: 'USER_LOG_OUT'});
+              //dispatch({type: UPDATE_USER_AUTH_DETAILS, authDetails:{userId: null, secret: null}});
+              console.log('==============Going to navigate to home===========');
               navigation.navigate("Home");
            }
         }

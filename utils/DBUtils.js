@@ -141,12 +141,15 @@ export const updateRunsSyncState = (pendingRunsForSync) => {
 
 export const insertRunSummary = (totalDistance, totalRuns, totalCredits , averagePace, averageDistance, averageCaloriesBurnt) => {
   const promise = new Promise((resolve, reject) => {
+    console.log('===============Insert Run Summary=================');
     db.transaction((tx) => {
       tx.executeSql('INSERT INTO RUN_SUMMARY (TOTAL_DISTANCE,TOTAL_RUNS,TOTAL_CREDITS,AVERAGE_PACE,AVERAGE_DISTANCE,AVERAGE_CALORIES_BURNT) VALUES (?,?,?,?,?,?);', [totalDistance, totalRuns, totalCredits, averagePace, averageDistance, averageCaloriesBurnt],
         (_, result) => {
+          console.log('=============Insert Run Summary Passed============');
           resolve(result);
         },
         (_, err) => {
+          console.log('===========Insert Run Summary Failed===============');
           reject(err);
         });
     });
@@ -248,6 +251,43 @@ export const fetchEventRegistrationDetails = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql('SELECT * FROM EVENT_REGISTRATION_DETAILS', [],
+        (_, result) => {
+          resolve(result);
+        },
+        (_, err) => {
+          reject(err);
+        });
+    });
+  });
+  return promise;
+};
+
+export const cleanUpAllData = () => {
+  const promise = new Promise((resolve, reject) => {
+    console.log('============Cleaning all data====================');
+    db.transaction((tx) => {
+      tx.executeSql('DROP TABLE RUN_DETAILS;', [],
+        (_, result) => {
+          resolve(result);
+        },
+        (_, err) => {
+          reject(err);
+        });
+      tx.executeSql('DROP TABLE RUN_SUMMARY;', [],
+        (_, result) => {
+          resolve(result);
+        },
+        (_, err) => {
+          reject(err);
+        });
+      tx.executeSql('DROP TABLE USER_AUTHENTICATION_DETAILS;', [],
+        (_, result) => {
+          resolve(result);
+        },
+        (_, err) => {
+          reject(err);
+        });
+      tx.executeSql('DROP TABLE EVENT_REGISTRATION_DETAILS;', [],
         (_, result) => {
           resolve(result);
         },

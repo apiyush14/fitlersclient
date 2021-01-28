@@ -6,7 +6,7 @@
   import * as authActions from '../store/auth-actions';
   import {useDispatch} from 'react-redux';
   import TermsAndConditions from '../screens/TermsAndConditions';
-import Privacy from '../screens/Privacy';
+  import Privacy from '../screens/Privacy';
 
   //Login Screen
   const LogInScreen = props => {

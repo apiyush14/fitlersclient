@@ -31,6 +31,8 @@ const LiveRunTrackerScreen = props=>{
     minutes: "00",
     hours: "00"
   });
+  const [runLevel, setRunLevel] = useState(6);
+  const [toggleDistance, setToggleDistance] = useState(false);
 
   var weekday = new Array(7);
   weekday[0] = "Sunday";
@@ -62,7 +64,6 @@ const LiveRunTrackerScreen = props=>{
 
   //Method to Subscribe to Accelerometer and add a listener to update every second
   const subscribeAccelerometer = () => {
-    DeviceMotion.setUpdateInterval(1000);
     DeviceMotion.addListener(accelerometerData => {
       updateUI(accelerometerData);
     });
@@ -76,6 +77,8 @@ const LiveRunTrackerScreen = props=>{
 
   // Update averagePace and Calories once distance gets changed
   useEffect(() => {
+    //console.log('================Updating Distance=============');
+    setToggleDistance(toggleDistance=>!toggleDistance);
     if (runDistance > 0) {
       //Update average pace
       const lapsedTimeinMinutes = runTotalTime / 60000;
@@ -95,7 +98,10 @@ const LiveRunTrackerScreen = props=>{
   //Method to Update UI each second based on accelerometer data
   const updateUI = (accelerometerData) => {
     (async () => {
-
+      DeviceMotion.setUpdateInterval(1000);
+      //console.log('===========Auto Pause================');
+      //console.log(timerForAutoPause);
+      //console.log(runDistanceForAutoPause);
       //Automatically pause the run if there is no distance tracked since last configured secs
       if (timerForAutoPause >= 20 && runDistanceForAutoPause < 5) {
         timerForAutoPause = 0;
@@ -125,7 +131,11 @@ const LiveRunTrackerScreen = props=>{
       startTime = currentTime;
 
       // Update Location
-      let location = await Location.getCurrentPositionAsync({});
+      let location = await Location.getCurrentPositionAsync(
+      {
+        maximumAge: 10000, // only for Android
+        accuracy: Location.Accuracy.Low 
+      })
 
       if (location) {
         let currentLocation = {
@@ -148,15 +158,16 @@ const LiveRunTrackerScreen = props=>{
           accelerometerData.acceleration.z * accelerometerData.acceleration.z);
 
         //console.log(accelerometerData);
+         //console.log(magnitude);
         if (runPath.length === 0) {
           isToUpdatePath = true;
         }
-
+        
         //Calibrate here for accelerometer sensor
         // When Running
-        else if (runPath.length > 0 && magnitude > 6) {
-          /*console.log("----------Adding------------");
-          console.log(accelerometerData);*/
+        else if (runPath.length > 0 && magnitude >  runLevel) {
+          //console.log("----------Adding------------");
+          //console.log(accelerometerData);
           let endLocation = {
             latitude: currentLocation.latitude,
             longitude: currentLocation.longitude
@@ -233,6 +244,14 @@ const LiveRunTrackerScreen = props=>{
     setIsPaused(false);
     subscribeAccelerometer();
   };
+
+  const increment = () => {
+    setRunLevel(runLevel=>runLevel+1);
+  };
+
+  const decrement = () => {
+    setRunLevel(runLevel=>runLevel-1);
+  };
 /*console.log(haversine(start, end))
 console.log(haversine(start, end, {unit: 'mile'}))
 console.log(haversine(start, end, {unit: 'meter'}))*/
@@ -283,6 +302,20 @@ return (
   <Text style={styles.largeTextStyle}>{parseFloat(runDistance/1000).toFixed(2)}</Text>
   <Text style={styles.mediumTextStyle}>KM</Text>
  </View>
+
+  <TouchableOpacity style={styles.testButton1} onPress={()=>{increment()}}>
+     <Text style={styles.textTest}>+</Text>
+     <Text style={styles.textTest}>{runLevel}</Text>
+  </TouchableOpacity>
+
+   <TouchableOpacity style={styles.testButton2} onPress={()=>{decrement()}}>
+     <Text style={styles.textTest}>-</Text>
+     <Text style={styles.textTest}>{runLevel}</Text>
+  </TouchableOpacity>
+
+  {toggleDistance?
+  (<View style={styles.testDistanceUpdate}>
+  </View>):(<View></View>)}
 
  </View>
  );
@@ -372,6 +405,42 @@ const styles = StyleSheet.create({
     padding: '3%',
     fontSize: moderateScale(30, 0.8),
     color: 'lightgrey'
+  },
+
+  testButton1: {
+    position: 'absolute',
+    top: '63%',
+    width: verticalScale(80),
+    height: verticalScale(80),
+    borderRadius: verticalScale(80 / 2),
+    borderColor: 'springgreen',
+    borderWidth: 2,
+    backgroundColor: 'white',
+  },
+  testButton2: {
+    position: 'absolute',
+    top: '63%',
+    width: verticalScale(80),
+    height: verticalScale(80),
+    borderRadius: verticalScale(80 / 2),
+    borderColor: 'springgreen',
+    borderWidth: 2,
+    backgroundColor: 'white',
+    right: 2
+  },
+  textTest: {
+    fontSize: moderateScale(20, 0.8),
+    color: 'black',
+    alignSelf: 'center'
+  },
+  testDistanceUpdate: {
+    position: 'absolute',
+    alignSelf: 'center',
+    top: '5%',
+    backgroundColor: 'red',
+    width: verticalScale(10),
+    height: verticalScale(10),
+    borderRadius: verticalScale(10 / 2),
   }
 
 });

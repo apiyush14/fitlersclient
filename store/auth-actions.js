@@ -1,8 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
-import {
-  AsyncStorage
-} from 'react-native';
+import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
+import {cleanUpAllData} from '../utils/DBUtils';
 
 export const UPDATE_USER_AUTH_DETAILS = 'UPDATE_USER_AUTH_DETAILS';
 
@@ -24,6 +23,9 @@ export const generateOTPForMSISDN = (msisdn) => {
           }
         }).then(response => response.json())
         .then((response) => {
+          if(response.status&&response.newUser){
+            dispatch(cleanUpOldUserData());
+          }
           resolve(response);
         }).catch(err => {
           //reject(err);
@@ -69,6 +71,19 @@ const updateUserAuthenticationDetailsInDB = (userAuthenticationDetails) => {
     try {
       await AsyncStorage.setItem('USER_ID', userAuthenticationDetails.userId);
       await AsyncStorage.setItem('USER_SECRET_KEY', userAuthenticationDetails.secret);
+    } catch (err) {
+
+    };
+  }
+};
+
+const cleanUpOldUserData = () => {
+  return async dispatch => {
+    try {
+      await AsyncStorage.removeItem('USER_ID');
+      await AsyncStorage.removeItem('USER_SECRET_KEY');
+      await AsyncStorage.removeItem('USER_NAME');
+      await cleanUpAllData();
     } catch (err) {
 
     };

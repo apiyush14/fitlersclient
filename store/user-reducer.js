@@ -11,7 +11,10 @@ export default (state = initialState, action) => {
 	switch (action.type) {
 		case UPDATE_USER_DETAILS:
 			return new UserDetails(action.userDetails.userFirstName, action.userDetails.userLastName);
-
+        
+        case 'USER_LOG_OUT':
+            return initialState;
+            
 		default:
 			return state;
 	}

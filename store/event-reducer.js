@@ -35,7 +35,10 @@ export default (state=initialState, action)=>{
         }
        }).filter(updatedEventResult=>updatedEventResult!==undefined);
         state.eventResultDetails=state.eventResultDetails.concat(updatedEventResultDetails);
-        return state;        
+        return state;
+
+        case 'USER_LOG_OUT':
+        return initialState; 
 
 		default:
 		return state;
