@@ -2,7 +2,7 @@ import React, { useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Button, Platform} from 'react-native';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import * as Location from 'expo-location';
-import { DeviceMotion } from 'expo-sensors';
+import { DeviceMotion, Pedometer } from 'expo-sensors';
 import Slider from '../components/Slider';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -19,20 +19,37 @@ let eventId=0;
 let timerForAutoPause=0;
 let runDistanceForAutoPause=0;
 
+let updateStepsListener=null;
+let updateLocationListener=null;
+
+let rangeOfAcceleration=[0.3,2,10,15,40,60,80];
+let rangeOfMultiplyingFactor=[0.30,0.40, 0.52, 0.54, 0.68, 0.83, 1.07];
+let strideMultiplyingFactor=0.30;//Default Multiplier based on 12.5 average pace
+let averageAcceleration=0.3;//Default Acceleration Value based on 12.5 average pace
+let accelerationValues=[];
+
+//Live Run Tracker Screen, uses 3 sensors for operation (pedometer, accelerometer, gps)
 const LiveRunTrackerScreen = props=>{
 
+  const height=170.66;
   //State Variables
   const [isPaused, setIsPaused] = useState(false);
   const [runDistance, setRunDistance] = useState(0);
-  const [runPace, setRunPace] = useState(0.00);
+  const [runPace, setRunPace] = useState(12.5);
   const [runCaloriesBurnt, setRunCaloriesBurnt] = useState(0);
+  const [prevStepsCount, setPrevStepsCount] = useState(0);
+  const [stepsCount, setStepsCount] = useState(0);
+  const [changeInStepsCount, setChangeInStepsCount] = useState(0);
   const [trackTimer, setTrackTimer] = useState({
     seconds: "00",
     minutes: "00",
     hours: "00"
   });
+
   const [runLevel, setRunLevel] = useState(6);
   const [toggleDistance, setToggleDistance] = useState(false);
+  const [toggleLocation, setToggleLocation] = useState(false);
+  const [testLocation, setTestLocation] = useState(null);
 
   var weekday = new Array(7);
   weekday[0] = "Sunday";
@@ -57,15 +74,128 @@ const LiveRunTrackerScreen = props=>{
     runPath = [];
     startTime = Date.now();
     eventId = props.route.params.eventId;
+    subscribePedometer();
     subscribeAccelerometer();
+    subscribeLocationUpdates();
     /*let timer = setInterval(() => updateUI() , 1000);
     return () => clearInterval(timer)*/
   }, []);
 
+  //Subscribe Pedometer to count steps
+  const subscribePedometer = () => {
+    updateStepsListener = Pedometer.watchStepCount((updatedSteps) => {
+      //console.log(updatedSteps);
+      updateStepsCount(updatedSteps);
+    });
+  };
+
+  //UnSubscriber Pedometer Updates
+  const unSubscribePedometer = () => {
+    setPrevStepsCount(0);
+    if (updateStepsListener) {
+      updateStepsListener.remove();
+    }
+  };
+
+  //Pedometer's Updates Listener
+  const updateStepsCount = (updatedSteps) => {
+    console.log('============Update Steps Count===============');
+    setPrevStepsCount((prevStepsCount) => {
+      setStepsCount((stepsCount) => {
+        console.log('============Steps Count=================');
+        console.log(updatedSteps);
+        console.log(prevStepsCount);
+        console.log(stepsCount);
+        setChangeInStepsCount(updatedSteps.steps - prevStepsCount);
+        return stepsCount + (updatedSteps.steps - prevStepsCount);
+      });
+      return updatedSteps.steps;
+    });
+  };
+
+  // Update distance once steps count changes
+  useEffect(() => {
+    if (changeInStepsCount > 0) {
+      runDistanceForAutoPause = runDistanceForAutoPause + 1;
+
+      var minStrideMultiplier = 0.30;
+      var maxStrideMultiplier = 0.40;
+      var minPace = 10;
+      var maxPace = 2;
+
+      for (var i = 0; i < rangeOfAcceleration.length - 1; i++) {
+        if (averageAcceleration >= rangeOfAcceleration[i] &&
+          averageAcceleration <= rangeOfAcceleration[i + 1]) {
+          minStrideMultiplier = rangeOfMultiplyingFactor[i];
+          maxStrideMultiplier = rangeOfMultiplyingFactor[i + 1];
+          minPace = rangeOfAcceleration[i + 1];
+          maxPace = rangeOfAcceleration[i];
+          break;
+        }
+      }
+
+      strideMultiplyingFactor = maxStrideMultiplier - (((averageAcceleration - (minPace)) / (maxPace - minPace)) *
+        (maxStrideMultiplier - minStrideMultiplier));
+      var strideValue = height * strideMultiplyingFactor;
+      console.log('===========Average Acceleration==============');
+      console.log(averageAcceleration);
+      console.log('===========Stride Multiplier==============');
+      console.log(strideMultiplyingFactor);
+      console.log('===========Stride Value==============');
+      console.log(strideValue);
+
+      var changeInDistanceInMeters = (changeInStepsCount * strideValue) / 100;
+      console.log('===========Change In Number Of Steps==============');
+      console.log(changeInStepsCount);
+      console.log('===========Change In Distance in Meters==============');
+      console.log(changeInDistanceInMeters);
+
+      setRunDistance((prevDistance) => {
+        console.log('===========Prev Distance==============');
+        console.log(prevDistance);
+        console.log('===========Change In Distance==============');
+        console.log(changeInDistanceInMeters);
+        return prevDistance + changeInDistanceInMeters;
+      });
+      //const distance=(stepsCount*78)/100;
+      //setRunDistance(distance);
+    }
+  }, [changeInStepsCount]);
+
+  //Subscriber for Location Updates
+  const subscribeLocationUpdates = () => {
+    updateLocationListener = Location.watchPositionAsync({
+      accuracy: Location.Accuracy.Highest,
+      timeInterval: 1000,
+      distanceInterval: 10
+    }, (updatedLocation) => {
+      //console.log(updatedLocation);
+      updateLocation(updatedLocation);
+    });
+  };
+
+  //Location Update Listener
+  const updateLocation = (updatedLocation) => {
+    if (!isPaused) {
+      let location = updatedLocation;
+      setTestLocation(location);
+      //console.log('=============Update Location==============');
+      //console.log(location);
+      let currentLocation = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.000757,
+        longitudeDelta: 0.0008,
+        weight: 2
+      };
+      runPath = [...runPath, currentLocation];
+    }
+  };
+
   //Method to Subscribe to Accelerometer and add a listener to update every second
   const subscribeAccelerometer = () => {
     DeviceMotion.addListener(accelerometerData => {
-      updateUI(accelerometerData);
+      updateAccelerometerData(accelerometerData);
     });
   };
 
@@ -77,33 +207,33 @@ const LiveRunTrackerScreen = props=>{
 
   // Update averagePace and Calories once distance gets changed
   useEffect(() => {
-    //console.log('================Updating Distance=============');
-    setToggleDistance(toggleDistance=>!toggleDistance);
+    setToggleDistance(toggleDistance => !toggleDistance);
     if (runDistance > 0) {
       //Update average pace
       const lapsedTimeinMinutes = runTotalTime / 60000;
       const averagePace = lapsedTimeinMinutes / (runDistance / 1000);
-      setRunPace(averagePace);
-
+      if (averagePaceKmPerHour < 12.5) {
+        setRunPace(averagePace);
+      }
       //TODO : Update the formula to get weight from user details
       //Update Total Calories Burnt
       const lapsedTimeinHours = lapsedTimeinMinutes / 60;
-      const averagePaceKmPerHour = (runDistance / 1000)/lapsedTimeinHours;
-      const caloriesBurnt = parseInt((averagePaceKmPerHour*3.5*68)/200)*lapsedTimeinMinutes;
+      const averagePaceKmPerHour = (runDistance / 1000) / lapsedTimeinHours;
+      const caloriesBurnt = parseInt((averagePaceKmPerHour * 3.5 * 68) / 200) * lapsedTimeinMinutes;
       setRunCaloriesBurnt(caloriesBurnt);
     }
   }, [runDistance]);
 
 
   //Method to Update UI each second based on accelerometer data
-  const updateUI = (accelerometerData) => {
+  const updateAccelerometerData = (accelerometerData) => {
     (async () => {
       DeviceMotion.setUpdateInterval(1000);
       //console.log('===========Auto Pause================');
       //console.log(timerForAutoPause);
       //console.log(runDistanceForAutoPause);
       //Automatically pause the run if there is no distance tracked since last configured secs
-      if (timerForAutoPause >= 20 && runDistanceForAutoPause < 5) {
+      if (timerForAutoPause >= 20 && runDistanceForAutoPause < 1) {
         timerForAutoPause = 0;
         runDistanceForAutoPause = 0;
         pauseRun();
@@ -130,14 +260,42 @@ const LiveRunTrackerScreen = props=>{
       runTotalTime = updatedLapsedTime;
       startTime = currentTime;
 
+      //console.log(accelerometerData);
+
+      let magnitude = Math.sqrt(accelerometerData.acceleration.x * accelerometerData.acceleration.x +
+        accelerometerData.acceleration.y * accelerometerData.acceleration.y +
+        accelerometerData.acceleration.z * accelerometerData.acceleration.z);
+
+      /*let magnitudeIncludeAcclr = Math.sqrt(accelerometerData.accelerationIncludingGravity.x * accelerometerData.accelerationIncludingGravity.x +
+          accelerometerData.accelerationIncludingGravity.y * accelerometerData.accelerationIncludingGravity.y +
+          accelerometerData.accelerationIncludingGravity.z * accelerometerData.accelerationIncludingGravity.z);*/
+
+      if (accelerationValues.length > 5) {
+        accelerationValues.splice(0, 1);
+      }
+      accelerationValues.push(magnitude);
+      const sum = accelerationValues.reduce((a, b) => a + b, 0);
+      averageAcceleration = (sum / accelerationValues.length) || 0.3;
+
+      //console.log(accelerometerData);
+      console.log('===========magnitude============');
+      //console.log(accelerometerData);
+      console.log(magnitude);
+      //console.log(magnitudeIncludeAcclr);
+      /*console.log('===========Average============');
+      console.log(averageAcceleration);*/
+
       // Update Location
-      let location = await Location.getCurrentPositionAsync(
+      /*let location = await Location.getCurrentPositionAsync(
       {
         maximumAge: 10000, // only for Android
-        accuracy: Location.Accuracy.Low 
+        accuracy: Location.Accuracy.Highest 
       })
 
+      setTestLocation(location);
+
       if (location) {
+        setToggleLocation(loc=>!loc);
         let currentLocation = {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
@@ -147,18 +305,7 @@ const LiveRunTrackerScreen = props=>{
         };
 
         let isToUpdatePath = false;
-        //console.log(accelerometerData);
-
-        let magnitude = Math.sqrt(accelerometerData.acceleration.x * accelerometerData.acceleration.x +
-          accelerometerData.acceleration.y * accelerometerData.acceleration.y +
-          accelerometerData.acceleration.z * accelerometerData.acceleration.z);
-
-        let magnitudeIncludeAcclr = Math.sqrt(accelerometerData.acceleration.x * accelerometerData.acceleration.x +
-          accelerometerData.acceleration.y * accelerometerData.acceleration.y +
-          accelerometerData.acceleration.z * accelerometerData.acceleration.z);
-
-        //console.log(accelerometerData);
-         //console.log(magnitude);
+        
         if (runPath.length === 0) {
           isToUpdatePath = true;
         }
@@ -166,17 +313,17 @@ const LiveRunTrackerScreen = props=>{
         //Calibrate here for accelerometer sensor
         // When Running
         else if (runPath.length > 0 && magnitude >  runLevel) {
-          //console.log("----------Adding------------");
+          console.log("----------Adding------------");
           //console.log(accelerometerData);
           let endLocation = {
             latitude: currentLocation.latitude,
             longitude: currentLocation.longitude
           };
 
-          /*let startLocation={
+          let startLocation={
         latitude: pathArray[pathArray.length-1].latitude,
         longitude: pathArray[pathArray.length-1].longitude
-      };*/
+      };
 
           let lastLocationVar = {
             latitude: lastLocation.latitude,
@@ -187,10 +334,12 @@ const LiveRunTrackerScreen = props=>{
             unit: 'meter'
           });
           temporaryDistance = temporaryDistance + haversineDistance;
+          console.log('===============Update UI==================');
+          console.log(haversineDistance);
           //Update UI to keep it live
           setRunDistance(runDistance => {
               //console.log(totalDistance+haversine(startLocation, endLocation, {unit: 'meter'}));
-              return runDistance + haversineDistance;
+              return runDistance + 1;
             });
 
           runDistanceForAutoPause = runDistanceForAutoPause + 1;
@@ -206,7 +355,7 @@ const LiveRunTrackerScreen = props=>{
         lastLocation = currentLocation;
         //return [...pathArray,currentLocation];});
         //}
-      }
+      }*/
     })();
   };
 
@@ -235,6 +384,9 @@ const LiveRunTrackerScreen = props=>{
   const pauseRun = () => {
     setIsPaused(true);
     unSubscribeAccelerometer();
+    unSubscribePedometer();
+    accelerationValues = [];
+    //console.log(updateLocationListener);
   };
 
   //Resume Run
@@ -243,14 +395,15 @@ const LiveRunTrackerScreen = props=>{
     startTime = Date.now();
     setIsPaused(false);
     subscribeAccelerometer();
+    subscribePedometer();
   };
 
   const increment = () => {
-    setRunLevel(runLevel=>runLevel+1);
+    setRunLevel(runLevel => runLevel + 1);
   };
 
   const decrement = () => {
-    setRunLevel(runLevel=>runLevel-1);
+    setRunLevel(runLevel => runLevel - 1);
   };
 /*console.log(haversine(start, end))
 console.log(haversine(start, end, {unit: 'mile'}))
@@ -312,9 +465,22 @@ return (
      <Text style={styles.textTest}>-</Text>
      <Text style={styles.textTest}>{runLevel}</Text>
   </TouchableOpacity>
+ 
+  {testLocation!==null?
+   (
+    <View style={styles.testPosition}>
+     <Text>{testLocation.coords.latitude}</Text>
+     <Text>{testLocation.coords.longitude}</Text>
+    </View>
+   ):(<Text></Text>)
+  }
 
   {toggleDistance?
   (<View style={styles.testDistanceUpdate}>
+  </View>):(<View></View>)}
+
+  {toggleLocation?
+  (<View style={styles.testLocationUpdate}>
   </View>):(<View></View>)}
 
  </View>
@@ -441,6 +607,23 @@ const styles = StyleSheet.create({
     width: verticalScale(10),
     height: verticalScale(10),
     borderRadius: verticalScale(10 / 2),
+  },
+  testLocationUpdate: {
+    position: 'absolute',
+    alignSelf: 'center',
+    top: '10%',
+    backgroundColor: 'green',
+    width: verticalScale(10),
+    height: verticalScale(10),
+    borderRadius: verticalScale(10 / 2),
+  },
+  testPosition: {
+    position: 'absolute',
+    top: '50%',
+    width: verticalScale(200),
+    height: verticalScale(60),
+    backgroundColor: 'white',
+    alignSelf: 'center'
   }
 
 });
