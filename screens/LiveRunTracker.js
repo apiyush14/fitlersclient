@@ -116,6 +116,8 @@ const LiveRunTrackerScreen = props=>{
   // Update distance once steps count changes
   useEffect(() => {
     if (changeInStepsCount > 0) {
+      //Empty the array to calculate average acceleration
+      accelerationValues = [];
       runDistanceForAutoPause = runDistanceForAutoPause + 1;
 
       var minStrideMultiplier = 0.30;
@@ -233,7 +235,7 @@ const LiveRunTrackerScreen = props=>{
       //console.log(timerForAutoPause);
       //console.log(runDistanceForAutoPause);
       //Automatically pause the run if there is no distance tracked since last configured secs
-      if (timerForAutoPause >= 20 && runDistanceForAutoPause < 1) {
+      if (timerForAutoPause >= 30 && runDistanceForAutoPause < 1) {
         timerForAutoPause = 0;
         runDistanceForAutoPause = 0;
         pauseRun();
@@ -270,9 +272,9 @@ const LiveRunTrackerScreen = props=>{
           accelerometerData.accelerationIncludingGravity.y * accelerometerData.accelerationIncludingGravity.y +
           accelerometerData.accelerationIncludingGravity.z * accelerometerData.accelerationIncludingGravity.z);*/
 
-      if (accelerationValues.length > 5) {
+      /*if (accelerationValues.length > 5) {
         accelerationValues.splice(0, 1);
-      }
+      }*/
       accelerationValues.push(magnitude);
       const sum = accelerationValues.reduce((a, b) => a + b, 0);
       averageAcceleration = (sum / accelerationValues.length) || 0.3;
@@ -466,14 +468,9 @@ return (
      <Text style={styles.textTest}>{runLevel}</Text>
   </TouchableOpacity>
  
-  {testLocation!==null?
-   (
     <View style={styles.testPosition}>
-     <Text>{testLocation.coords.latitude}</Text>
-     <Text>{testLocation.coords.longitude}</Text>
+     <Text>{stepsCount}</Text>
     </View>
-   ):(<Text></Text>)
-  }
 
   {toggleDistance?
   (<View style={styles.testDistanceUpdate}>

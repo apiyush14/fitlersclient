@@ -1,5 +1,5 @@
   import React, {useState} from 'react';
-  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard} from 'react-native';
+  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard,Switch} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import RoundButton from '../components/RoundButton';
   import TextInputItem from '../components/TextInputItem';
@@ -13,14 +13,56 @@
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [height, setHeight] = useState(0);
+    const [weight, setWeight] = useState(0);
+    const [isEnabled, setIsEnabled] = useState(false);
+    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
-    const onClickSubmit = () => {
-      dispatch(userActions.updateUserDetails(firstName,lastName)).then(response => {
-       console.log('===========Dispatch Action of Update finished=================');
-       props.navigation.navigate('Home');
+  const onClickSubmit = () => {
+    var heightVar=parseInt(height);
+    var weightVar=parseInt(weight);
+    if (height.length===0||parseInt(height) === 0) {
+      heightVar=182;
+      setHeight(182);
+    }
+    if (weight.length===0||parseInt(weight) === 0) {
+      weightVar=72;
+      setWeight(72);
+    }
+    if (firstName.length === 0) {
+      Alert.alert("Mandatory Input", "First Name is Mandatory!!!", [{
+        text: 'OK',
+        onPress: () => {
+
+        }
+      }], {
+        cancelable: false
       });
-    };
-   
+    } else if (heightVar < 90 || heightVar > 242) {
+      Alert.alert("Out Of Range", "Height value can be between 90 and 242 cms!!!", [{
+        text: 'OK',
+        onPress: () => {
+
+        }
+      }], {
+        cancelable: false
+      });
+    } else if (weightVar < 10 || weightVar > 230) {
+      Alert.alert("Out Of Range", "Weight value can be between 10 and 230 kgs!!!", [{
+        text: 'OK',
+        onPress: () => {
+
+        }
+      }], {
+        cancelable: false
+      });
+    } else {
+      dispatch(userActions.updateUserDetails(firstName, lastName, heightVar, weightVar)).then(response => {
+        console.log('===========Dispatch Action of Update finished=================');
+        props.navigation.navigate('Home');
+      });
+    }
+  };
     return (
      <View style={styles.userDetailsScreenContainerStyle}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -28,7 +70,7 @@
       <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
        keyboardType = "default"
-       placeholder = " First Name"
+       placeholder = "First Name"
        textAlign = "center"
        maxLength = {20}
        onChangeText = {(text)=>{setFirstName(text)}}>
@@ -36,14 +78,31 @@
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
        keyboardType = "default"
-       placeholder = " Last Name"
+       placeholder = "Last Name"
        textAlign = "center"
        maxLength = {20}
        onChangeText = {(text)=>{setLastName(text)}}>
        </TextInputItem>
+       <TextInputItem style = {styles.nameInputStyle}
+       textContentType = "none"
+       keyboardType = "numeric"
+       placeholder = "Height (in cm)"
+       textAlign = "center"
+       maxLength = {3}
+       onChangeText = {(text)=>{setHeight(text)}}>
+       </TextInputItem>
+       <TextInputItem style = {styles.nameInputStyle}
+       textContentType = "none"
+       keyboardType = "numeric"
+       placeholder = "Weight (in kgs)"
+       textAlign = "center"
+       maxLength = {3}
+       onChangeText = {(text)=>{setWeight(text)}}>
+       </TextInputItem>
+
       <RoundButton style = {styles.buttonSubmitStyle}
       title = "Submit"
-      disabled = {firstName.length === 0}
+      disabled = {false}
       onPress = {onClickSubmit}/> 
       </View>
        </TouchableWithoutFeedback>
@@ -62,11 +121,11 @@
     },
     nameInputStyle: {
       marginTop: '6%',
-      top: '30%'
+      top: '10%'
     },
     buttonSubmitStyle: {
       alignSelf: 'center',
-      top: '40%'
+      top: '20%'
     }
   });
 

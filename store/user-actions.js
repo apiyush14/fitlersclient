@@ -10,7 +10,10 @@ import {
 export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
 
 //TODO Names should be encrypted
-export const updateUserDetails = (firstName,lastName) => {
+export const updateUserDetails = (firstName,lastName,height,weight) => {
+  console.log('======Update User Details=========');
+  console.log(height);
+  console.log(weight);
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
@@ -24,7 +27,9 @@ export const updateUserDetails = (firstName,lastName) => {
 
       var userDetails={
         userFirstName: firstName,
-        userLastName: lastName
+        userLastName: lastName,
+        userHeight: height,
+        userWeight: weight
       }
 
       var URL = configData.SERVER_URL + "user/updateDetails/" + userId;
@@ -37,7 +42,7 @@ export const updateUserDetails = (firstName,lastName) => {
         }).then(response => response.json())
         .then((response) => {
           if (response === true) {
-            dispatch(updateUserDetailsInDB(firstName,lastName));
+            dispatch(updateUserDetailsInDB(firstName,lastName,height,weight));
             dispatch({
               type: UPDATE_USER_DETAILS,
               userDetails: userDetails
@@ -51,10 +56,12 @@ export const updateUserDetails = (firstName,lastName) => {
   }
 };
 
-const updateUserDetailsInDB = (firstName,lastName) => {
+const updateUserDetailsInDB = (firstName,lastName,height,weight) => {
   return async dispatch => {
     try {
       await AsyncStorage.setItem('USER_NAME', firstName+" "+lastName);
+      await AsyncStorage.setItem('USER_HEIGHT', height);
+      await AsyncStorage.setItem('USER_WEIGHT', weight);
     } catch (err) {
 
     };
