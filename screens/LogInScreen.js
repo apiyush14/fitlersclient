@@ -74,6 +74,7 @@
           var isLoginPassed = response.isValid;
           if (isLoginPassed === true) {
             clearInterval(retryTimerId);
+            setModalVisible(false);
             props.navigation.navigate('UserDetailsScreen');
           } else {
             setOtpCode("");

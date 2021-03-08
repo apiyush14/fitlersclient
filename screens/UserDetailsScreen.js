@@ -8,7 +8,6 @@
 
   //User Details Screen
   const UserDetailsScreen = props => {
-
     const dispatch = useDispatch();
 
     const [firstName, setFirstName] = useState("");
