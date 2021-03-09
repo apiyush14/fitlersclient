@@ -107,6 +107,7 @@ const LiveRunTrackerScreen = props=>{
         console.log(prevStepsCount);
         console.log(stepsCount);
         setChangeInStepsCount(updatedSteps.steps - prevStepsCount);
+        updateDistanceBasedonChangeInStepsCount(updatedSteps.steps - prevStepsCount);
         return stepsCount + (updatedSteps.steps - prevStepsCount);
       });
       return updatedSteps.steps;
@@ -114,8 +115,9 @@ const LiveRunTrackerScreen = props=>{
   };
 
   // Update distance once steps count changes
-  useEffect(() => {
+  const updateDistanceBasedonChangeInStepsCount=(changeInStepsCount)=>{
     if (changeInStepsCount > 0) {
+      setToggleDistance(toggleDistance => !toggleDistance);
       //Empty the array to calculate average acceleration
       accelerationValues = [];
       runDistanceForAutoPause = runDistanceForAutoPause + 1;
@@ -162,7 +164,7 @@ const LiveRunTrackerScreen = props=>{
       //const distance=(stepsCount*78)/100;
       //setRunDistance(distance);
     }
-  }, [changeInStepsCount]);
+  };
 
   //Subscriber for Location Updates
   const subscribeLocationUpdates = () => {
@@ -209,7 +211,6 @@ const LiveRunTrackerScreen = props=>{
 
   // Update averagePace and Calories once distance gets changed
   useEffect(() => {
-    setToggleDistance(toggleDistance => !toggleDistance);
     if (runDistance > 0) {
       //Update average pace
       const lapsedTimeinMinutes = runTotalTime / 60000;
