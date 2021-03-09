@@ -60,8 +60,8 @@ const updateUserDetailsInDB = (firstName,lastName,height,weight) => {
   return async dispatch => {
     try {
       await AsyncStorage.setItem('USER_NAME', firstName+" "+lastName);
-      await AsyncStorage.setItem('USER_HEIGHT', height);
-      await AsyncStorage.setItem('USER_WEIGHT', weight);
+      await AsyncStorage.setItem('USER_HEIGHT', height.toString());
+      await AsyncStorage.setItem('USER_WEIGHT', weight.toString());
     } catch (err) {
 
     };

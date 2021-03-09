@@ -12,7 +12,7 @@ import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
 
 const RunTrackerHomeScreen = (props) => {
-
+  console.log('==========RunTrackerHomeScreen===============');
   const dispatch = useDispatch();
 
   // State Selectors

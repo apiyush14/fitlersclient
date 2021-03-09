@@ -120,7 +120,6 @@ const RunTrackerTabNavigator=({navigation, route})=>{
 
 //Main Stack Navigator
 const RunTrackerStackNavigator=({navigation, route})=>{
-
   const authDetails = useSelector(state => state.authDetails);
   const userDetails = useSelector(state => state.userDetails);
   console.log('==============Auth Details===============');
@@ -200,6 +199,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
 
   //Login Stack Navigator
   const LoginStackNavigator=({navigation, route})=>{
+    console.log('==========Login Stack Navigator===============');
     return (
       <stackNavigator.Navigator 
       screenOptions={
