@@ -66,7 +66,8 @@ export const addRunSummary = (run) => {
   return async dispatch => {
     return new Promise((resolve, reject) => {
       fetchRunSummary().then((response) => {
-
+         console.log('===========Add Run Summary=================');
+         console.log(response);
         //Insert New Run Summary
         if (response.rows._array.length === 0) {
           insertRunSummary(run.runDistance, "1",run.runCredits, run.runPace, run.runDistance, run.runCaloriesBurnt).then((response) => {
@@ -91,11 +92,11 @@ export const addRunSummary = (run) => {
             totalRuns: parseInt(response.rows._array[0].TOTAL_RUNS) + 1,
             totalCredits: parseFloat(response.rows._array[0].TOTAL_CREDITS) + parseFloat(run.runCredits),
             averagePace: ((parseFloat(response.rows._array[0].AVERAGE_PACE) * parseInt(response.rows._array[0].TOTAL_RUNS)) + run.runPace) / (parseInt(response.rows._array[0].TOTAL_RUNS) + 1),
-            averageDistance: response.rows._array[0].TOTAL_DISTANCE / response.rows._array[0].TOTAL_RUNS,
+            averageDistance: ((parseFloat(response.rows._array[0].AVERAGE_DISTANCE) * parseInt(response.rows._array[0].TOTAL_RUNS)) + run.runDistance) / (parseInt(response.rows._array[0].TOTAL_RUNS) + 1),
             averageCaloriesBurnt: ((parseFloat(response.rows._array[0].AVERAGE_CALORIES_BURNT) * parseInt(response.rows._array[0].TOTAL_RUNS)) + run.runCaloriesBurnt) / (parseInt(response.rows._array[0].TOTAL_RUNS) + 1)
           };
           //Dispatch Update Run Summary State
-          updateRunSummary(updatedRunSummary.totalDistance, updatedRunSummary.totalRuns, updatedRunSummary.averagePace, updatedRunSummary.averageDistance).then((response) => {
+          updateRunSummary(updatedRunSummary.totalDistance, updatedRunSummary.totalRuns,updatedRunSummary.totalCredits ,updatedRunSummary.averagePace, updatedRunSummary.averageDistance, updatedRunSummary.averageCaloriesBurnt).then((response) => {
             dispatch({
               type: UPDATE_RUN_SUMMARY,
               runSummary: {
