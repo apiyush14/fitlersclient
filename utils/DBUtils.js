@@ -266,28 +266,28 @@ export const cleanUpAllData = () => {
   const promise = new Promise((resolve, reject) => {
     console.log('============Cleaning all data====================');
     db.transaction((tx) => {
-      tx.executeSql('DROP TABLE RUN_DETAILS;', [],
+      tx.executeSql('DELETE FROM RUN_DETAILS;', [],
         (_, result) => {
           resolve(result);
         },
         (_, err) => {
           reject(err);
         });
-      tx.executeSql('DROP TABLE RUN_SUMMARY;', [],
+      tx.executeSql('DELETE FROM RUN_SUMMARY;', [],
         (_, result) => {
           resolve(result);
         },
         (_, err) => {
           reject(err);
         });
-      tx.executeSql('DROP TABLE USER_AUTHENTICATION_DETAILS;', [],
+      tx.executeSql('DELETE FROM USER_AUTHENTICATION_DETAILS;', [],
         (_, result) => {
           resolve(result);
         },
         (_, err) => {
           reject(err);
         });
-      tx.executeSql('DROP TABLE EVENT_REGISTRATION_DETAILS;', [],
+      tx.executeSql('DELETE FROM EVENT_REGISTRATION_DETAILS;', [],
         (_, result) => {
           resolve(result);
         },

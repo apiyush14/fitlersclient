@@ -124,7 +124,9 @@ export const loadRuns = () => {
     return new Promise((resolve, reject) => {
       //Fetch Runs from Local DB
       fetchRuns().then(response => {
+         console.log('=============Load Runs==================');
           if (response.rows._array.length > 0) {
+            console.log('=============Load Runs Inside > 0==================');
             var updatedRuns = response.rows._array.map((run) => {
               var updatedRun = {
                 runId: run.RUN_ID,
@@ -151,7 +153,9 @@ export const loadRuns = () => {
             });
           } else {
             //Dispatch Load Runs from Server Action
+            console.log('=============Load Runs Inside <= 0==================');
             dispatch(loadRunsFromServer(0)).then((response) => {
+              console.log(response);
               if (response.runDetailsList.length > 0) {
                 response.runDetailsList.map((run) => {
                   //Hydrate Local DB
@@ -163,7 +167,8 @@ export const loadRuns = () => {
           resolve(response);
         })
         .catch(err => {
-
+           console.log('===============Exception=================');
+           console.log(err);
         });
     });
   }
@@ -207,9 +212,11 @@ export const loadRunsFromServer = (pageNumber) => {
 export const loadRunSummary = () => {
   return async dispatch => {
     return new Promise((resolve, reject) => {
+      console.log('=============Load Run Summary==================');
       //Fetch Run Summary from Local DB
       fetchRunSummary().then(response => {
           if (response.rows._array.length > 0) {
+            console.log('=============Load Run Summary Inside >0==================');
             var dbResultSummary = response.rows._array[0];
             //Dispatch Run Summary State Update
             dispatch({
@@ -225,6 +232,7 @@ export const loadRunSummary = () => {
               }
             });
           } else {
+            console.log('=============Load Run Summary Inside<0==================');
             //Dispatch Load Run Summary from Server
             dispatch(loadRunSummaryFromServer());
           }

@@ -37,8 +37,11 @@ export default (state=initialState, action)=>{
         state.eventResultDetails=state.eventResultDetails.concat(updatedEventResultDetails);
         return state;
 
-        case 'USER_LOG_OUT':
-        return initialState; 
+        case 'CLEAN_EVENT_STATE':
+        state.eventDetails=[];
+        state.eventRegistrationDetails=[];
+        state.eventResultDetails=[];
+        return state; 
 
 		default:
 		return state;

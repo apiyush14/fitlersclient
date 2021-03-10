@@ -19,6 +19,8 @@ import UserDetailsScreen from '../screens/UserDetailsScreen';
 import EventsListSummaryScreen from '../screens/EventsListSummaryScreen';
 import TestScreen from '../screens/TestScreen';
 import {useDispatch,useSelector} from 'react-redux';
+import * as userActions from '../store/user-actions';
+import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 
 export const UPDATE_USER_AUTH_DETAILS='UPDATE_USER_AUTH_DETAILS';
 
@@ -42,11 +44,24 @@ const RunTrackerNavigator=()=>{
     listeners={({ navigation }) => ({
         state: (e) => {
            if (e.data.state.index === 3) {
-              AsyncStorage.removeItem('USER_ID');
-              dispatch({type: 'USER_LOG_OUT'});
+
+                dispatch(cleanUserData(navigation,dispatch)).then(()=>{
+                  navigation.reset({
+                 index: 0,
+                 routes: [{ name: 'Home' }],
+              });
+                });
+                console.log('==============Going to navigate to home===========');
+                //navigation.navigate("Home");
+               
+              
               //dispatch({type: UPDATE_USER_AUTH_DETAILS, authDetails:{userId: null, secret: null}});
-              console.log('==============Going to navigate to home===========');
-              navigation.navigate("Home");
+              //console.log('==============Going to navigate to home===========');
+              /*navigation.reset({
+                 index: 0,
+                 routes: [{ name: 'Home' }],
+              });*/
+              //navigation.navigate("Home");
            }
         }
     })}
@@ -126,6 +141,8 @@ const RunTrackerStackNavigator=({navigation, route})=>{
   console.log(authDetails);
   console.log('==============User Details===============');
   console.log(userDetails);
+  //console.log(navigation);
+  //console.log(route);
 
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
@@ -246,6 +263,21 @@ const RunTrackerStackNavigator=({navigation, route})=>{
      else{
       return route.name;
      }
+   };
+
+   const cleanUserData=(navigation,dispatch)=>{
+     return async dispatch => {
+             console.log('============Navigator Clean User Data============');
+             await AsyncStorage.removeItem('USER_ID');
+             await dispatch({type: 'CLEAN_EVENT_STATE'});
+             await dispatch({type: 'CLEAN_RUN_STATE'});
+             await dispatch({type: 'CLEAN_USER_STATE'});
+             await dispatch({type: 'CLEAN_AUTH_STATE'});
+             await dispatch(userActions.cleanUpUserData());
+      return new Promise((resolve, reject) => {
+             resolve();
+           });
+     };
    };
 
    export default RunTrackerNavigator;

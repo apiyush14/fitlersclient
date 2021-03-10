@@ -25,8 +25,8 @@ const RunHistoryScreen = props => {
 
     // Use Effect Hook to be loaded everytime the screen loads
     useEffect(() => {
-      //console.log('=========Run History Sync============');
-      //console.log(runSummary);
+      console.log('=========Run History Sync============');
+      console.log(runsHistory);
       setIsMoreContentAvailable(true);
       if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
         dispatch(runActions.syncPendingRuns(pendingRunsForSync));

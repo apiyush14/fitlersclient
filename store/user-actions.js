@@ -6,6 +6,7 @@ import configData from "../config/config.json";
 import {
   getUserAuthenticationToken
 } from '../utils/AuthenticationUtils';
+import {cleanUpAllData} from '../utils/DBUtils';
 
 export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
 
@@ -62,6 +63,21 @@ const updateUserDetailsInDB = (firstName,lastName,height,weight) => {
       await AsyncStorage.setItem('USER_NAME', firstName+" "+lastName);
       await AsyncStorage.setItem('USER_HEIGHT', height.toString());
       await AsyncStorage.setItem('USER_WEIGHT', weight.toString());
+    } catch (err) {
+
+    };
+  }
+};
+
+export const cleanUpUserData = () => {
+  return async dispatch => {
+    try {
+      await AsyncStorage.removeItem('USER_ID');
+      await AsyncStorage.removeItem('USER_SECRET_KEY');
+      await AsyncStorage.removeItem('USER_NAME');
+      await AsyncStorage.removeItem('USER_HEIGHT');
+      await AsyncStorage.removeItem('USER_WEIGHT');
+      await cleanUpAllData();
     } catch (err) {
 
     };

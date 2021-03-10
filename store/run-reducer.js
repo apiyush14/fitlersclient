@@ -57,9 +57,10 @@ export default (state = initialState, action) => {
             }
             return state;
 
-        case 'USER_LOG_OUT':
-            console.log('==================User Log Out Called in Run Reducer============');
-            return initialState;
+        case 'CLEAN_RUN_STATE':
+            state.runs=[];
+            state.runSummary=null;
+            return state;
 
         default:
             return state;

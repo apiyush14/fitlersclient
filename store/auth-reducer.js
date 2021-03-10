@@ -10,8 +10,8 @@ export default (state = initialState, action) => {
 		case UPDATE_USER_AUTH_DETAILS:
 			return new UserAuthenticationDetails(action.authDetails.userId, action.authDetails.secret);
         
-        case 'USER_LOG_OUT':
-            return initialState;
+        case 'CLEAN_AUTH_STATE':
+            return new UserAuthenticationDetails(null, null);
 
 		default:
 			return state;

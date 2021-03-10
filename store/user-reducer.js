@@ -12,8 +12,10 @@ export default (state = initialState, action) => {
 		case UPDATE_USER_DETAILS:
 			return new UserDetails(action.userDetails.userFirstName, action.userDetails.userLastName, action.userDetails.userHeight, action.userDetails.userWeight);
         
-        case 'USER_LOG_OUT':
-            return initialState;
+        case 'CLEAN_USER_STATE':
+            console.log('==============CLEAN_USER_STATE==================');
+            console.log(state);
+            return new UserDetails(null,null,null,null);
             
 		default:
 			return state;

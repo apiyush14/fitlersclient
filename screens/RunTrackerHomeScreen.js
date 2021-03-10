@@ -4,6 +4,7 @@ import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import RoundButton from '../components/RoundButton';
 import {useDispatch,useSelector} from 'react-redux';
+import {useIsFocused} from "@react-navigation/native";
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import * as Permissions from 'expo-permissions';
@@ -14,6 +15,7 @@ import EventView from '../components/EventView';
 const RunTrackerHomeScreen = (props) => {
   console.log('==========RunTrackerHomeScreen===============');
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
 
   // State Selectors
   const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
@@ -35,14 +37,19 @@ const RunTrackerHomeScreen = (props) => {
   //Load Run History Data upon initialization
   useEffect(() => {
     const fetchData = async () => {
+      console.log('==========Load Home Screen=============');
+      console.log(isFocused);
+      if(isFocused){
+        console.log('==========Load Home Screen Inside Condition=============');
       dispatch(runActions.loadRuns());
       dispatch(runActions.loadRunSummary());
       dispatch(eventActions.loadEventsFromServer(0));
       dispatch(eventActions.loadEventRegistrationDetails());
       dispatch(eventActions.loadEventResultDetailsFromServer());
     };
+  }
     fetchData();
-  }, []);
+  }, [props, isFocused]);
 
   //Load Location Details
   useEffect(() => {
