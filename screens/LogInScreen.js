@@ -7,6 +7,10 @@
   import {useDispatch} from 'react-redux';
   import TermsAndConditions from '../screens/TermsAndConditions';
   import Privacy from '../screens/Privacy';
+  import {AsyncStorage} from 'react-native';
+
+
+  export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
 
   //Login Screen
   const LogInScreen = props => {
@@ -75,7 +79,7 @@
           if (isLoginPassed === true) {
             clearInterval(retryTimerId);
             setModalVisible(false);
-            props.navigation.navigate('UserDetailsScreen');
+            validateUserNameAndNavigate();
           } else {
             setOtpCode("");
             clearInterval(retryTimerId);
@@ -132,6 +136,22 @@
          setScreenName("");
          setModalForScreenVisible(false);
       };
+
+  const validateUserNameAndNavigate = () => {
+    AsyncStorage.getItem('USER_NAME').then((userName) => {
+      if (userName !== null) {
+        var userNameArr = userName.split(" ");
+        dispatch({
+          type: UPDATE_USER_DETAILS,
+          userDetails: {
+            userFirstName: userNameArr[0],
+            userLastName: userNameArr[1]
+          }
+        });
+      }
+      userName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
+    }).catch(err => props.navigation.navigate('UserDetailsScreen'));
+  };
 
     return ( 
       <View style = {styles.logInScreenContainerStyle}>

@@ -215,7 +215,7 @@ const LiveRunTrackerScreen = props=>{
       //Update average pace
       const lapsedTimeinMinutes = runTotalTime / 60000;
       const averagePace = lapsedTimeinMinutes / (runDistance / 1000);
-      if (averagePaceKmPerHour < 12.5) {
+      if (averagePace < 12.5) {
         setRunPace(averagePace);
       }
       //TODO : Update the formula to get weight from user details
