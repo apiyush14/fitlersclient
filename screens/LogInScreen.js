@@ -4,6 +4,7 @@
   import RoundButton from '../components/RoundButton';
   import TextInputItem from '../components/TextInputItem';
   import * as authActions from '../store/auth-actions';
+  import * as userActions from '../store/user-actions';
   import {useDispatch} from 'react-redux';
   import TermsAndConditions from '../screens/TermsAndConditions';
   import Privacy from '../screens/Privacy';
@@ -79,7 +80,7 @@
           if (isLoginPassed === true) {
             clearInterval(retryTimerId);
             setModalVisible(false);
-            validateUserNameAndNavigate();
+            loadUserDetailsAndNavigate();
           } else {
             setOtpCode("");
             clearInterval(retryTimerId);
@@ -137,19 +138,14 @@
          setModalForScreenVisible(false);
       };
 
-  const validateUserNameAndNavigate = () => {
-    AsyncStorage.getItem('USER_NAME').then((userName) => {
-      if (userName !== null) {
-        var userNameArr = userName.split(" ");
-        dispatch({
-          type: UPDATE_USER_DETAILS,
-          userDetails: {
-            userFirstName: userNameArr[0],
-            userLastName: userNameArr[1]
-          }
-        });
-      }
-      userName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
+//Load User Details from local or server and navigate either to User Details screen or Home Screen
+  const loadUserDetailsAndNavigate = () => {
+    dispatch(userActions.loadUserDetails()).then((userDetails) => {
+       console.log('=============Login Screen============');
+      console.log(userDetails);
+      console.log('============Going to User Details Screen');
+      console.log(userDetails === null || userDetails.userFirstName === null);
+      userDetails === null || userDetails.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
     }).catch(err => props.navigation.navigate('UserDetailsScreen'));
   };
 
