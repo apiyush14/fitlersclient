@@ -17,15 +17,17 @@
     const [isEnabled, setIsEnabled] = useState(false);
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
+  //Submit User Details Event Handler
   const onClickSubmit = () => {
-    var heightVar=parseInt(height);
-    var weightVar=parseInt(weight);
-    if (height.length===0||parseInt(height) === 0) {
-      heightVar=182;
+    var heightVar = parseInt(height);
+    var weightVar = parseInt(weight);
+    //Set default height and weight
+    if (height.length === 0 || parseInt(height) === 0) {
+      heightVar = 182;
       setHeight(182);
     }
-    if (weight.length===0||parseInt(weight) === 0) {
-      weightVar=72;
+    if (weight.length === 0 || parseInt(weight) === 0) {
+      weightVar = 72;
       setWeight(72);
     }
     if (firstName.length === 0) {
@@ -57,7 +59,6 @@
       });
     } else {
       dispatch(userActions.updateUserDetails(firstName, lastName, heightVar, weightVar)).then(response => {
-        console.log('===========Dispatch Action of Update finished=================');
         props.navigation.navigate('Home');
       });
     }

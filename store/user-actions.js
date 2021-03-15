@@ -3,6 +3,7 @@ import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import UserDetails from '../models/userDetails';
+import Response from '../models/response';
 import {cleanUpAllData} from '../utils/DBUtils';
 
 export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
@@ -10,39 +11,29 @@ export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
 //Method to Load User Details first from local DB, and then from server in case needed and hydrate local DB
 export const loadUserDetails = () => {
   return async dispatch => {
-    return new Promise((resolve, reject) => {
-      //Fetch User Details from Local DB
-      dispatch(fetchUserDetails()).then((response) => {
-         console.log('=============Load User Details==================');
-         console.log(response);
-          if (response.userFirstName!==null) {
-            console.log('=============Load User Details from Local Completed==================');
-            
-            //Dispatch User Details Update State
-            dispatch({
+    //Sync Fetch User Details from Local DB
+    return dispatch(fetchUserDetails()).then((response) => {
+        if (response != null && response.userFirstName !== null) {
+          //Async Dispatch User Details Update State
+          dispatch({
             type: UPDATE_USER_DETAILS,
             userDetails: response
           });
-          } else {
-            //Dispatch Load User Details from Server Action
-            console.log('=============Load User Details From Server==================');
-            dispatch(loadUserDetailsFromServer()).then((response) => {
-              console.log('=============Load User Details From Server Response==================');
-              console.log(response);
-              if (response.userFirstName!== null) {
-                  //Hydrate Local DB
-                  dispatch(updateUserDetailsInDB(response.userFirstName,response.userLastName,response.userHeight,response.userWeight));
-              }
-              resolve(response);
-            });
-          }
-          resolve(response);
-        })
-        .catch(err => {
-           console.log('===============Exception=================');
-           console.log(err);
-        });
-    });
+          return response;
+        } else {
+          //Sync Dispatch Load User Details from Server Action
+          return dispatch(loadUserDetailsFromServer()).then((response) => {
+            if (response != null && response.userFirstName !== null) {
+              //Hydrate Local DB Async
+              dispatch(updateUserDetailsInDB(response.userFirstName, response.userLastName, response.userHeight, response.userWeight));
+            }
+            return response;
+          });
+        }
+      })
+      .catch(err => {
+            return null;
+      });
   }
 };
 
@@ -52,41 +43,40 @@ export const loadUserDetailsFromServer = () => {
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
 
-    return new Promise((resolve, reject) => {
-      NetInfo.fetch().then(state => {
-        if (!state.isConnected) {
-          //reject(201);
-        }
-      });
-
-      var URL = configData.SERVER_URL + "user/getDetails/" + userId;
-      fetch(URL, {
-          method: 'GET',
-          headers: header
-        }).then(response => response.json())
-        .then((response) => {
-          console.log('=============Load User Details From Server Response==================');
-          console.log(response);
-          if (response.userDetails!==null&&response.userDetails.userFirstName!==null) {
-            //Dispatch User Details Update State
-            dispatch({
-              type: UPDATE_USER_DETAILS,
-              userDetails: response.userDetails
-            });
-          }
-          resolve(response.userDetails);
-        }).catch(err => {
-          //reject(err);
-        });
+    NetInfo.fetch().then(state => {
+      if (!state.isConnected) {
+        //reject(201);
+      }
     });
+
+    var URL = configData.SERVER_URL + "user/getDetails/" + userId;
+    fetch(URL, {
+        method: 'GET',
+        headers: header
+      }).then(response => response.json())
+      .then((response) => {
+        if(response.status>=400){
+          return response.status;
+        }
+        if (response.userDetails !== null && response.userDetails.userFirstName !== null) {
+          //Async Dispatch User Details Update State
+          dispatch({
+            type: UPDATE_USER_DETAILS,
+            userDetails: response.userDetails
+          });
+        }
+        return response.userDetails;
+        //resolve(response.userDetails);
+      }).catch(err => {
+        console.log('=================Exception From Get User Details===================');
+        console.log(err);
+        //reject(err);
+      });
   }
 };
 
 //TODO Names should be encrypted
-export const updateUserDetails = (firstName,lastName,height,weight) => {
-  console.log('======Update User Details=========');
-  console.log(height);
-  console.log(weight);
+export const updateUserDetails = (firstName, lastName, height, weight) => {
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
@@ -98,7 +88,7 @@ export const updateUserDetails = (firstName,lastName,height,weight) => {
         }
       });
 
-      var userDetails={
+      var userDetails = {
         userFirstName: firstName,
         userLastName: lastName,
         userHeight: height,
@@ -115,13 +105,16 @@ export const updateUserDetails = (firstName,lastName,height,weight) => {
         }).then(response => response.json())
         .then((response) => {
           if (response === true) {
-            dispatch(updateUserDetailsInDB(firstName,lastName,height,weight));
+            dispatch(updateUserDetailsInDB(firstName, lastName, height, weight)).then((response) => {
+              resolve(response);
+            });
             dispatch({
               type: UPDATE_USER_DETAILS,
               userDetails: userDetails
             });
+          } else {
+            resolve(response);
           }
-          resolve(response);
         }).catch(err => {
           //reject(err);
         });
@@ -133,25 +126,27 @@ export const updateUserDetails = (firstName,lastName,height,weight) => {
 const fetchUserDetails = () => {
   return async dispatch => {
     try {
-      var userFirstName=await AsyncStorage.getItem('USER_FIRST_NAME');
-      var userLastName=await AsyncStorage.getItem('USER_LAST_NAME');
-      var userHeight=await AsyncStorage.getItem('USER_HEIGHT');
-      var userWeight=await AsyncStorage.getItem('USER_WEIGHT');
-      var userDetails=new UserDetails(userFirstName, userLastName, userHeight, userWeight);
+      var userFirstName = await AsyncStorage.getItem('USER_FIRST_NAME');
+      var userLastName = await AsyncStorage.getItem('USER_LAST_NAME');
+      var userHeight = await AsyncStorage.getItem('USER_HEIGHT');
+      var userWeight = await AsyncStorage.getItem('USER_WEIGHT');
+      var userDetails = new UserDetails(userFirstName, userLastName, userHeight, userWeight);
       return userDetails;
     } catch (err) {
-
+      return null;
     };
   }
 };
 
-const updateUserDetailsInDB = (firstName,lastName,height,weight) => {
+const updateUserDetailsInDB = (userFirstName,userLastName,userHeight,userWeight) => {
   return async dispatch => {
     try {
-      await AsyncStorage.setItem('USER_FIRST_NAME', firstName);
-      await AsyncStorage.setItem('USER_LAST_NAME', lastName);
-      await AsyncStorage.setItem('USER_HEIGHT', height.toString());
-      await AsyncStorage.setItem('USER_WEIGHT', weight.toString());
+      await AsyncStorage.setItem('USER_FIRST_NAME', userFirstName);
+      await AsyncStorage.setItem('USER_LAST_NAME', userLastName);
+      await AsyncStorage.setItem('USER_HEIGHT', userHeight.toString());
+      await AsyncStorage.setItem('USER_WEIGHT', userWeight.toString());
+      var userDetails = new UserDetails(userFirstName, userLastName, userHeight, userWeight);
+      return userDetails;
     } catch (err) {
 
     };

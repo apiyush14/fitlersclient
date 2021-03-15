@@ -28,52 +28,46 @@
       const [retryTimerId, setRetryTimerId] = useState(null);
       const [screenName, setScreenName] = useState("");
 
-      const onChangeMSISDNHandler = (text) => {
-        var phoneNumberRegex = /^\d{10}$/;
-        if (text.match(phoneNumberRegex)) {
-          setIsValidMSISDN(true);
-          setMSISDN(text);
-        } else {
-          setIsValidMSISDN(false);
-        }
-      };
-
-      const onClickGetOTP = () => {
-        dispatch(authActions.generateOTPForMSISDN(MSISDN)).then(response => {
-          setModalVisible(true);
-          var intervalId = setInterval(() => updateRetryTimer(), 1000);
-          setRetryTimerId(intervalId);
-          setTimeout(() => {
-            setModalVisible(false);
-            setOtpCode("");
-            setRetryOtpTimer(30);
-            clearInterval(retryTimerId);
-          }, 30000);
-        }).catch(err => {
-          if (err === 201) {
-            Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
-              text: 'OK',
-              onPress: () => {}
-            }], {
-              cancelable: false
-            });
-          } else {
-            Alert.alert("Try Again", "Please try again later!!!", [{
-              text: 'OK',
-              onPress: () => {}
-            }], {
-              cancelable: false
-            });
-          }
+  //Get OTP event handler
+  const onClickGetOTP = () => {
+    dispatch(authActions.generateOTPForMSISDN(MSISDN)).then(response => {
+      if (response.status === 405) {
+        Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+          text: 'OK',
+          onPress: () => {}
+        }], {
+          cancelable: false
         });
-      };
+      } else if (response.status !== 200) {
+        Alert.alert("Try Again", "Please try again later!!!", [{
+          text: 'OK',
+          onPress: () => {}
+        }], {
+          cancelable: false
+        });
+      } else {
+        setModalVisible(true);
+        //Update Retry Timer each second to display on screen, once timer is started
+        var intervalId = setInterval(() => updateRetryTimer(), 1000);
+        setRetryTimerId(intervalId);
+        setTimeout(() => {
+          setModalVisible(false);
+          setOtpCode("");
+          setRetryOtpTimer(30);
+          clearInterval(retryTimerId);
+        }, 30000);
+      }
+    });
+  };
 
+      // Update Retry Timer hook
       const updateRetryTimer = () => {
         setRetryOtpTimer((prevState) => {
           return prevState - 1;
         });
       };
 
+      //Submit OTP event handler
       const onClickSubmitOTP = () => {
         dispatch(authActions.validateOTPForMSISDN(MSISDN, otpCode)).then((response) => {
           var isLoginPassed = response.isValid;
@@ -96,7 +90,7 @@
           }
         }).catch(err => {
           setOtpCode("");
-          AsyncStorage.removeItem('USER_ID');
+          dispatch(cleanUserData());
           clearInterval(retryTimerId);
           if (err === 201) {
             Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
@@ -122,32 +116,55 @@
         });
       };
 
+      //Modal Closed Event Handler
       const onModalClosed = () => {
         clearInterval(retryTimerId);
         setOtpCode("");
         setRetryOtpTimer(30);
       };
 
-      const onClickTextItem=(selectedItem) => {
-         setScreenName(selectedItem);
-         setModalForScreenVisible(true);
+      //Privacy & Terms & Conditions Item Handler
+      const onClickTextItem = (selectedItem) => {
+        setScreenName(selectedItem);
+        setModalForScreenVisible(true);
       };
 
-      const onCloseScreenTextItem=() => {
-         setScreenName("");
-         setModalForScreenVisible(false);
+      //Privacy & Terms & Conditions Item Close Action Handler
+      const onCloseScreenTextItem = () => {
+        setScreenName("");
+        setModalForScreenVisible(false);
       };
 
-//Load User Details from local or server and navigate either to User Details screen or Home Screen
-  const loadUserDetailsAndNavigate = () => {
-    dispatch(userActions.loadUserDetails()).then((userDetails) => {
-       console.log('=============Login Screen============');
-      console.log(userDetails);
-      console.log('============Going to User Details Screen');
-      console.log(userDetails === null || userDetails.userFirstName === null);
-      userDetails === null || userDetails.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
-    }).catch(err => props.navigation.navigate('UserDetailsScreen'));
-  };
+      //Load User Details from local or server and navigate either to User Details screen or Home Screen
+      const loadUserDetailsAndNavigate = () => {
+        dispatch(userActions.loadUserDetails()).then((userDetails) => {
+          userDetails === null || userDetails.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
+        }).catch(err => props.navigation.navigate('UserDetailsScreen'));
+      };
+
+      //Method to validate Phone Number Input
+      const onChangeMSISDNHandler = (text) => {
+        var phoneNumberRegex = /^\d{10}$/;
+        if (text.match(phoneNumberRegex)) {
+          setIsValidMSISDN(true);
+          setMSISDN(text);
+        } else {
+          setIsValidMSISDN(false);
+        }
+      };
+
+      //Method to clean User Data in case of failure while validating OTP
+      const cleanUserData = () => {
+        return async dispatch => {
+          await dispatch({
+            type: 'CLEAN_USER_STATE'
+          });
+          await dispatch({
+            type: 'CLEAN_AUTH_STATE'
+          });
+          await dispatch(userActions.cleanUpUserData());
+        };
+      };
 
     return ( 
       <View style = {styles.logInScreenContainerStyle}>
@@ -194,7 +211,7 @@
        transparent = {false}
        visible = {modalForScreenVisible}
        onDismiss = {onModalClosed}
-       onRequestClose = {() => {console.log('==========Modal closed================')}
+       onRequestClose = {() => {}
       }>
         {screenName==="terms"?(
          <TermsAndConditions onClose={onCloseScreenTextItem}></TermsAndConditions>
@@ -207,7 +224,7 @@
        transparent = {false}
        visible = {modalVisible}
        onDismiss = {onModalClosed}
-       onRequestClose = {() => {console.log('==========Modal closed================')}
+       onRequestClose = {() => {}
       }>
 
       <TouchableWithoutFeedback onPress = {Keyboard.dismiss}

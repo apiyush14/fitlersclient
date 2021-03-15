@@ -268,15 +268,11 @@ const RunTrackerStackNavigator=({navigation, route})=>{
    const cleanUserData=(navigation,dispatch)=>{
      return async dispatch => {
              console.log('============Navigator Clean User Data============');
-             await AsyncStorage.removeItem('USER_ID');
              await dispatch({type: 'CLEAN_EVENT_STATE'});
              await dispatch({type: 'CLEAN_RUN_STATE'});
              await dispatch({type: 'CLEAN_USER_STATE'});
              await dispatch({type: 'CLEAN_AUTH_STATE'});
              await dispatch(userActions.cleanUpUserData());
-      return new Promise((resolve, reject) => {
-             resolve();
-           });
      };
    };
 
