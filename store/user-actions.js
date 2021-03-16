@@ -77,50 +77,57 @@ export const loadUserDetailsFromServer = () => {
 };
 
 //TODO Names should be encrypted
-//Pending
+//Method to Update User Details on Server and local Async DB
 export const updateUserDetails = (firstName, lastName, height, weight) => {
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
 
-    return new Promise((resolve, reject) => {
-      NetInfo.fetch().then(state => {
-        if (!state.isConnected) {
-          reject(201);
-        }
-      });
-
-      var userDetails = {
-        userFirstName: firstName,
-        userLastName: lastName,
-        userHeight: height,
-        userWeight: weight
+    NetInfo.fetch().then(state => {
+      if (!state.isConnected) {
+        return new Response(405, null);
       }
-
-      var URL = configData.SERVER_URL + "user/updateDetails/" + userId;
-      fetch(URL, {
-          method: 'PUT',
-          headers: header,
-          body: JSON.stringify({
-            userDetails: userDetails
-          })
-        }).then(response => response.json())
-        .then((response) => {
-          if (response === true) {
-            dispatch(updateUserDetailsInDB(firstName, lastName, height, weight)).then((response) => {
-              resolve(response);
-            });
-            dispatch({
-              type: UPDATE_USER_DETAILS,
-              userDetails: userDetails
-            });
-          } else {
-            resolve(response);
-          }
-        }).catch(err => {
-          //reject(err);
-        });
     });
+
+    var userDetails = {
+      userFirstName: firstName,
+      userLastName: lastName,
+      userHeight: height,
+      userWeight: weight
+    }
+
+    var URL = configData.SERVER_URL + "user/updateDetails/" + userId;
+    return fetch(URL, {
+        method: 'PUT',
+        headers: header,
+        body: JSON.stringify({
+          userDetails: userDetails
+        })
+      }).then(response => response.json())
+      .then((response) => {
+        if (response.status >= 400) {
+          return new Response(response.status, null);
+        } else if (response === true) {
+          //Async Update State for User Details
+          dispatch({
+            type: UPDATE_USER_DETAILS,
+            userDetails: userDetails
+          });
+
+          //Sync Update User Details in Async DB
+          return dispatch(updateUserDetailsInDB(firstName, lastName, height, weight)).then((response) => {
+            if (response.status >= 400) {
+              return new Response(response.status, null);
+            } else {
+              return new Response(200, response.data);
+            }
+          });
+        } else {
+          return new Response(200, userDetails);
+        }
+      }).catch(err => {
+        return new Response(500, null);
+      });
   }
 };
 
@@ -140,8 +147,8 @@ const fetchUserDetails = () => {
   }
 };
 
-//Pending
-const updateUserDetailsInDB = (userFirstName,userLastName,userHeight,userWeight) => {
+//Private method to update user details in Async DB
+const updateUserDetailsInDB = (userFirstName, userLastName, userHeight, userWeight) => {
   return async dispatch => {
     try {
       await AsyncStorage.setItem('USER_FIRST_NAME', userFirstName);
@@ -149,9 +156,9 @@ const updateUserDetailsInDB = (userFirstName,userLastName,userHeight,userWeight)
       await AsyncStorage.setItem('USER_HEIGHT', userHeight.toString());
       await AsyncStorage.setItem('USER_WEIGHT', userWeight.toString());
       var userDetails = new UserDetails(userFirstName, userLastName, userHeight, userWeight);
-      return userDetails;
+      return new Response(200, userDetails);
     } catch (err) {
-         console.log('==========Error while Updating User Details============');
+      return new Response(500, null);
     };
   }
 };

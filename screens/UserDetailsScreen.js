@@ -8,14 +8,15 @@
 
   //User Details Screen
   const UserDetailsScreen = props => {
-    const dispatch = useDispatch();
 
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [height, setHeight] = useState(0);
-    const [weight, setWeight] = useState(0);
-    const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const dispatch = useDispatch();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [height, setHeight] = useState(0);
+  const [weight, setWeight] = useState(0);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   //Submit User Details Event Handler
   const onClickSubmit = () => {
@@ -59,10 +60,27 @@
       });
     } else {
       dispatch(userActions.updateUserDetails(firstName, lastName, heightVar, weightVar)).then(response => {
-        props.navigation.navigate('Home');
+        if (response.status === 405) {
+          Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+            text: 'OK',
+            onPress: () => {}
+          }], {
+            cancelable: false
+          });
+        } else if (response.status !== 200) {
+          Alert.alert("Try Again", "Please try again later!!!", [{
+            text: 'OK',
+            onPress: () => {}
+          }], {
+            cancelable: false
+          });
+        } else {
+          props.navigation.navigate('Home');
+        }
       });
     }
   };
+
     return (
      <View style={styles.userDetailsScreenContainerStyle}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>

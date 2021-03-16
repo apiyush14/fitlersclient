@@ -1,4 +1,4 @@
-  import React, {useState} from 'react';
+  import React, {useState, useRef} from 'react';
   import {View,Text,Alert,StyleSheet,Modal,TouchableWithoutFeedback,Keyboard,ImageBackground,TouchableOpacity} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import RoundButton from '../components/RoundButton';
@@ -24,6 +24,8 @@
   const [retryTimerId, setRetryTimerId] = useState(null);
   const [screenName, setScreenName] = useState("");
 
+  const timerRef=useRef(null);
+
   //Get OTP event handler
   const onClickGetOTP = () => {
     dispatch(authActions.generateOTPForMSISDN(MSISDN)).then(response => {
@@ -46,7 +48,7 @@
         //Update Retry Timer each second to display on screen, once timer is started
         var intervalId = setInterval(() => updateRetryTimer(), 1000);
         setRetryTimerId(intervalId);
-        setTimeout(() => {
+        timerRef.current=setTimeout(() => {
           setModalVisible(false);
           setOtpCode("");
           setRetryOtpTimer(30);
@@ -70,6 +72,7 @@
         setOtpCode("");
         dispatch(cleanUserData());
         clearInterval(retryTimerId);
+        clearTimeout(timerRef.current);
         Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
           text: 'OK',
           onPress: () => {
@@ -83,6 +86,7 @@
         setOtpCode("");
         dispatch(cleanUserData());
         clearInterval(retryTimerId);
+        clearTimeout(timerRef.current);
         Alert.alert("OTP Alert", "OTP Validation Failed please try again!!!", [{
           text: 'OK',
           onPress: () => {
@@ -94,11 +98,13 @@
         });
       } else if (response.data.isValid) {
         clearInterval(retryTimerId);
+        clearTimeout(timerRef.current);
         setModalVisible(false);
         loadUserDetailsAndNavigate();
       } else {
         setOtpCode("");
         clearInterval(retryTimerId);
+        clearTimeout(timerRef.current);
         Alert.alert("OTP Alert", "Incorrect OTP please try again!!!", [{
           text: 'OK',
           onPress: () => {
