@@ -7,6 +7,7 @@ import Response from '../models/response';
 import {cleanUpAllData} from '../utils/DBUtils';
 
 export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
+export const CLEAN_USER_STATE = 'CLEAN_USER_STATE';
 
 //Method to Load User Details first from local DB, and then from server in case needed and hydrate local DB
 export const loadUserDetails = () => {
@@ -76,6 +77,7 @@ export const loadUserDetailsFromServer = () => {
 };
 
 //TODO Names should be encrypted
+//Pending
 export const updateUserDetails = (firstName, lastName, height, weight) => {
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
@@ -138,6 +140,7 @@ const fetchUserDetails = () => {
   }
 };
 
+//Pending
 const updateUserDetailsInDB = (userFirstName,userLastName,userHeight,userWeight) => {
   return async dispatch => {
     try {
@@ -153,6 +156,7 @@ const updateUserDetailsInDB = (userFirstName,userLastName,userHeight,userWeight)
   }
 };
 
+//Pending
 export const cleanUpUserData = () => {
   return async dispatch => {
     try {

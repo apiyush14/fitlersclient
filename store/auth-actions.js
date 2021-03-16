@@ -6,6 +6,29 @@ import Response from '../models/response';
 import UserAuthenticationDetails from '../models/userAuthenticationDetails';
 
 export const UPDATE_USER_AUTH_DETAILS = 'UPDATE_USER_AUTH_DETAILS';
+export const CLEAN_AUTH_STATE = 'CLEAN_AUTH_STATE';
+
+//Method to load User Auth Details from Async Storage and update state
+export const loadUserAuthDetails = () => {
+  return async dispatch => {
+    //Sync Fetch Auth Details from Local DB
+    return dispatch(fetchUserAuthDetails()).then((response) => {
+        if (response.status >= 400) {
+          return new Response(response.status, null);
+        } else if (response.data.userId !== null) {
+          //Async Dispatch User Auth Details Update State
+          dispatch({
+            type: UPDATE_USER_AUTH_DETAILS,
+            authDetails: response.data
+          });
+        }
+        return new Response(200, response.data);
+      })
+      .catch(err => {
+        return new Response(500, null);
+      });
+  }
+};
 
 //TODO MSISDN should be encrypted
 //Generate OTP for MSISDN Sync Action
@@ -39,58 +62,40 @@ export const generateOTPForMSISDN = (msisdn) => {
 //Sync Method to Validate entered OTP and update state and hydrate local DB
 export const validateOTPForMSISDN = (msisdn, otpCode) => {
   return async dispatch => {
-    return new Promise((resolve, reject) => {
-      NetInfo.fetch().then(state => {
-        if (!state.isConnected) {
-          reject(201);
-        }
-      });
-
-      var URL = configData.SERVER_URL + "auth/validateOTP/" + msisdn + "?otpCode=" + otpCode;
-      fetch(URL, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }).then(response => response.json())
-        .then((response) => {
-          if (response.isValid === true) {
-            //Sync dispatch to update Auth Details in Async Storage
-            dispatch(updateUserAuthenticationDetailsInDB(response)).then((response) => {
-              resolve(response);
-            });
-            //Async dispatch to update state for Auth Details
-            dispatch({
-              type: UPDATE_USER_AUTH_DETAILS,
-              authDetails: response
-            });
-          } else {
-            resolve(response);
-          }
-        }).catch(err => {
-          //reject(err);
-        });
+    NetInfo.fetch().then(state => {
+      if (!state.isConnected) {
+        return new Response(405, null);
+      }
     });
-  }
-};
 
-//Method to load User Auth Details from Async Storage and update state
-export const loadUserAuthDetails = () => {
-  return async dispatch => {
-    //Sync Fetch Auth Details from Local DB
-    return dispatch(fetchUserAuthDetails()).then((response) => {
+    var URL = configData.SERVER_URL + "auth/validateOTP/" + msisdn + "?otpCode=" + otpCode;
+    return fetch(URL, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(response => response.json())
+      .then((response) => {
         if (response.status >= 400) {
           return new Response(response.status, null);
-        } else if (response.data.userId !== null) {
-          //Async Dispatch User Auth Details Update State
+        } else if (response.isValid === true) {
+          //Async dispatch to update state for Auth Details
           dispatch({
             type: UPDATE_USER_AUTH_DETAILS,
-            authDetails: response.data
+            authDetails: response
           });
+          //Sync dispatch to update Auth Details in Async Storage
+          return dispatch(updateUserAuthenticationDetailsInDB(response)).then((response) => {
+            if (response.status >= 400) {
+              return new Response(response.status, null);
+            } else {
+              return new Response(200, response.data);
+            }
+          });
+        } else {
+          return new Response(200, response);
         }
-        return new Response(200, response.data);
-      })
-      .catch(err => {
+      }).catch(err => {
         return new Response(500, null);
       });
   }
@@ -102,9 +107,9 @@ const updateUserAuthenticationDetailsInDB = (userAuthenticationDetails) => {
     try {
       await AsyncStorage.setItem('USER_ID', userAuthenticationDetails.userId);
       await AsyncStorage.setItem('USER_SECRET_KEY', userAuthenticationDetails.secret);
-      return userAuthenticationDetails;
+      return new Response(200, userAuthenticationDetails);
     } catch (err) {
-
+      return new Response(500, null);
     };
   }
 };

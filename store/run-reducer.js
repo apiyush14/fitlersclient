@@ -1,9 +1,4 @@
-import {
-    UPDATE_RUN_DETAILS,
-    UPDATE_RUN_SUMMARY,
-    LOAD_RUN_SUMMARY,
-    UPDATE_RUN_SYNC_STATE
-} from './run-actions';
+import {UPDATE_RUN_DETAILS,UPDATE_RUN_SUMMARY,LOAD_RUN_SUMMARY,UPDATE_RUN_SYNC_STATE,CLEAN_RUN_STATE} from './run-actions';
 import RunDetails from '../models/rundetails';
 import RunSummary from '../models/runsummary';
 
@@ -14,7 +9,6 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-
         case UPDATE_RUN_DETAILS:
             //console.log('===============Inside Update Run Details====================');
 
@@ -57,7 +51,7 @@ export default (state = initialState, action) => {
             }
             return state;
 
-        case 'CLEAN_RUN_STATE':
+        case CLEAN_RUN_STATE:
             state.runs=[];
             state.runSummary=null;
             return state;

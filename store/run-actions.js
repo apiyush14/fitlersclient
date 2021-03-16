@@ -9,6 +9,7 @@ import RunDetails from '../models/rundetails';
 export const UPDATE_RUN_DETAILS = 'UPDATE_RUN_DETAILS';
 export const UPDATE_RUN_SUMMARY = 'UPDATE_RUN_SUMMARY';
 export const UPDATE_RUN_SYNC_STATE = 'UPDATE_RUN_SYNC_STATE';
+export const CLEAN_RUN_STATE = 'CLEAN_RUN_STATE';
 
 //Method to add a new Run to Local DB and to server
 export const addRun = (runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, runCredits, runStartDateTime, runDate, runDay, runPath, runTrackSnapUrl, eventId) => {

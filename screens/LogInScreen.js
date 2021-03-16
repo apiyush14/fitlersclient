@@ -8,25 +8,21 @@
   import {useDispatch} from 'react-redux';
   import TermsAndConditions from '../screens/TermsAndConditions';
   import Privacy from '../screens/Privacy';
-  import {AsyncStorage} from 'react-native';
-
-
-  export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
 
   //Login Screen
   const LogInScreen = props => {
 
-      const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-      //State Variables
-      const [MSISDN, setMSISDN] = useState("");
-      const [isValidMSISDN, setIsValidMSISDN] = useState(true);
-      const [otpCode, setOtpCode] = useState("");
-      const [modalVisible, setModalVisible] = useState(false);
-      const [modalForScreenVisible, setModalForScreenVisible] = useState(false);
-      const [retryOtpTimer, setRetryOtpTimer] = useState(30);
-      const [retryTimerId, setRetryTimerId] = useState(null);
-      const [screenName, setScreenName] = useState("");
+  //State Variables
+  const [MSISDN, setMSISDN] = useState("");
+  const [isValidMSISDN, setIsValidMSISDN] = useState(true);
+  const [otpCode, setOtpCode] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalForScreenVisible, setModalForScreenVisible] = useState(false);
+  const [retryOtpTimer, setRetryOtpTimer] = useState(30);
+  const [retryTimerId, setRetryTimerId] = useState(null);
+  const [screenName, setScreenName] = useState("");
 
   //Get OTP event handler
   const onClickGetOTP = () => {
@@ -60,111 +56,111 @@
     });
   };
 
-      // Update Retry Timer hook
-      const updateRetryTimer = () => {
-        setRetryOtpTimer((prevState) => {
-          return prevState - 1;
-        });
-      };
+  // Update Retry Timer hook
+  const updateRetryTimer = () => {
+    setRetryOtpTimer((prevState) => {
+      return prevState - 1;
+    });
+  };
 
-      //Submit OTP event handler
-      const onClickSubmitOTP = () => {
-        dispatch(authActions.validateOTPForMSISDN(MSISDN, otpCode)).then((response) => {
-          var isLoginPassed = response.isValid;
-          if (isLoginPassed === true) {
-            clearInterval(retryTimerId);
-            setModalVisible(false);
-            loadUserDetailsAndNavigate();
-          } else {
-            setOtpCode("");
-            clearInterval(retryTimerId);
-            Alert.alert("OTP Alert", "Incorrect OTP please try again!!!", [{
-              text: 'OK',
-              onPress: () => {
-                setModalVisible(false);
-                setRetryOtpTimer(30);
-              }
-            }], {
-              cancelable: false
-            });
-          }
-        }).catch(err => {
-          setOtpCode("");
-          dispatch(cleanUserData());
-          clearInterval(retryTimerId);
-          if (err === 201) {
-            Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
-              text: 'OK',
-              onPress: () => {
-                setModalVisible(false);
-                setRetryOtpTimer(30);
-              }
-            }], {
-              cancelable: false
-            });
-          } else {
-            Alert.alert("OTP Alert", "OTP Validation Failed please try again!!!", [{
-              text: 'OK',
-              onPress: () => {
-                setModalVisible(false);
-                setRetryOtpTimer(30);
-              }
-            }], {
-              cancelable: false
-            });
-          }
-        });
-      };
-
-      //Modal Closed Event Handler
-      const onModalClosed = () => {
-        clearInterval(retryTimerId);
+  //Submit OTP event handler
+  const onClickSubmitOTP = () => {
+    dispatch(authActions.validateOTPForMSISDN(MSISDN, otpCode)).then((response) => {
+      if (response.status === 405) {
         setOtpCode("");
-        setRetryOtpTimer(30);
-      };
+        dispatch(cleanUserData());
+        clearInterval(retryTimerId);
+        Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+          text: 'OK',
+          onPress: () => {
+            setModalVisible(false);
+            setRetryOtpTimer(30);
+          }
+        }], {
+          cancelable: false
+        });
+      } else if (response.status !== 200) {
+        setOtpCode("");
+        dispatch(cleanUserData());
+        clearInterval(retryTimerId);
+        Alert.alert("OTP Alert", "OTP Validation Failed please try again!!!", [{
+          text: 'OK',
+          onPress: () => {
+            setModalVisible(false);
+            setRetryOtpTimer(30);
+          }
+        }], {
+          cancelable: false
+        });
+      } else if (response.data.isValid) {
+        clearInterval(retryTimerId);
+        setModalVisible(false);
+        loadUserDetailsAndNavigate();
+      } else {
+        setOtpCode("");
+        clearInterval(retryTimerId);
+        Alert.alert("OTP Alert", "Incorrect OTP please try again!!!", [{
+          text: 'OK',
+          onPress: () => {
+            setModalVisible(false);
+            setRetryOtpTimer(30);
+          }
+        }], {
+          cancelable: false
+        });
+      }
+    });
+  };
 
-      //Privacy & Terms & Conditions Item Handler
-      const onClickTextItem = (selectedItem) => {
-        setScreenName(selectedItem);
-        setModalForScreenVisible(true);
-      };
+  //Modal Closed Event Handler
+  const onModalClosed = () => {
+    clearInterval(retryTimerId);
+    setOtpCode("");
+    setRetryOtpTimer(30);
+  };
 
-      //Privacy & Terms & Conditions Item Close Action Handler
-      const onCloseScreenTextItem = () => {
-        setScreenName("");
-        setModalForScreenVisible(false);
-      };
+  //Privacy & Terms & Conditions Item Handler
+  const onClickTextItem = (selectedItem) => {
+    setScreenName(selectedItem);
+    setModalForScreenVisible(true);
+  };
 
-      //Load User Details from local or server and navigate either to User Details screen or Home Screen
-      const loadUserDetailsAndNavigate = () => {
-        dispatch(userActions.loadUserDetails()).then((userDetails) => {
-          userDetails === null || userDetails.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
-        }).catch(err => props.navigation.navigate('UserDetailsScreen'));
-      };
+  //Privacy & Terms & Conditions Item Close Action Handler
+  const onCloseScreenTextItem = () => {
+    setScreenName("");
+    setModalForScreenVisible(false);
+  };
 
-      //Method to validate Phone Number Input
-      const onChangeMSISDNHandler = (text) => {
-        var phoneNumberRegex = /^\d{10}$/;
-        if (text.match(phoneNumberRegex)) {
-          setIsValidMSISDN(true);
-          setMSISDN(text);
-        } else {
-          setIsValidMSISDN(false);
-        }
-      };
+  //Load User Details from local or server and navigate either to User Details screen or Home Screen
+  const loadUserDetailsAndNavigate = () => {
+    dispatch(userActions.loadUserDetails()).then((userDetails) => {
+      userDetails.status !== 200 || userDetails.data.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
+    });
+  };
 
-      //Method to clean User Data in case of failure while validating OTP
-      const cleanUserData = () => {
-        return async dispatch => {
-          await dispatch({
-            type: 'CLEAN_USER_STATE'
-          });
-          await dispatch({
-            type: 'CLEAN_AUTH_STATE'
-          });
-          await dispatch(userActions.cleanUpUserData());
-        };
-      };
+  //Method to validate Phone Number Input
+  const onChangeMSISDNHandler = (text) => {
+    var phoneNumberRegex = /^\d{10}$/;
+    if (text.match(phoneNumberRegex)) {
+      setIsValidMSISDN(true);
+      setMSISDN(text);
+    } else {
+      setIsValidMSISDN(false);
+    }
+  };
+
+  //Method to clean User Data in case of failure while validating OTP
+  const cleanUserData = () => {
+    return async dispatch => {
+      await dispatch({
+        type: 'CLEAN_USER_STATE'
+      });
+      await dispatch({
+        type: 'CLEAN_AUTH_STATE'
+      });
+      await dispatch(userActions.cleanUpUserData());
+    };
+  };
 
     return ( 
       <View style = {styles.logInScreenContainerStyle}>

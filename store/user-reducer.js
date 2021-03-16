@@ -1,6 +1,4 @@
-import {
-	UPDATE_USER_DETAILS
-} from './user-actions';
+import {UPDATE_USER_DETAILS, CLEAN_USER_STATE} from './user-actions';
 import UserDetails from '../models/userDetails';
 
 const initialState = {
@@ -14,7 +12,7 @@ export default (state = initialState, action) => {
 		    console.log(action.userDetails);
 			return new UserDetails(action.userDetails.userFirstName, action.userDetails.userLastName, action.userDetails.userHeight, action.userDetails.userWeight);
         
-        case 'CLEAN_USER_STATE':
+        case CLEAN_USER_STATE:
             console.log('==============CLEAN_USER_STATE==================');
             console.log(state);
             return new UserDetails(null,null,null,null);

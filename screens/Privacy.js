@@ -147,45 +147,45 @@ Fitness. for the purpose of this Privacy Policy shall means any activities relat
 };
 
 const styles = StyleSheet.create({
-	privacyContainerStyle: {
-        flex: 1,
-        backgroundColor: 'black',
-        alignItems: 'center',
-        justifyContent : 'center'
-	},
-	privacyScrollViewStyle: {
-        flex: 1,
-        paddingTop: '10%'
-	},
-   buttonContainerStyle: {
-   	padding: '4%',
-    width: '100%',
-    alignSelf: 'center',
-    alignItems: 'center'
-  },
-  buttonStyle: {
-  	width: '100%',
-  	height: verticalScale(70),
-    borderRadius: 25,
-    bottom: '2%',
-    backgroundColor: 'grey',
-    opacity: 0.4
-  },
-	largeTextStyle: {
-		padding: '3%',
-		fontSize: moderateScale(40, 0.8),
-		color: 'springgreen'
-	},
-	mediumTextStyle: {
-		padding: '3%',
-		fontSize: moderateScale(17, 0.8),
-		color: 'springgreen'
-	},
-	smallTextStyle: {
-		padding: '3%',
-		fontSize: moderateScale(10, 0.8),
-		color: 'springgreen'
-	}
+        privacyContainerStyle: {
+                flex: 1,
+                backgroundColor: 'black',
+                alignItems: 'center',
+                justifyContent: 'center'
+        },
+        privacyScrollViewStyle: {
+                flex: 1,
+                paddingTop: '10%'
+        },
+        buttonContainerStyle: {
+                padding: '4%',
+                width: '100%',
+                alignSelf: 'center',
+                alignItems: 'center'
+        },
+        buttonStyle: {
+                width: '100%',
+                height: verticalScale(70),
+                borderRadius: 25,
+                bottom: '2%',
+                backgroundColor: 'grey',
+                opacity: 0.4
+        },
+        largeTextStyle: {
+                padding: '3%',
+                fontSize: moderateScale(40, 0.8),
+                color: 'springgreen'
+        },
+        mediumTextStyle: {
+                padding: '3%',
+                fontSize: moderateScale(17, 0.8),
+                color: 'springgreen'
+        },
+        smallTextStyle: {
+                padding: '3%',
+                fontSize: moderateScale(10, 0.8),
+                color: 'springgreen'
+        }
 });
 
 export default Privacy;
