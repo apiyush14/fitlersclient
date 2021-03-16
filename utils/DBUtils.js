@@ -174,12 +174,15 @@ export const updateRunSummary = (totalDistance, totalRuns, totalCredits, average
 
 export const fetchRunSummary = () => {
   const promise = new Promise((resolve, reject) => {
+    console.log('===============Fetch Run Summary=================');
     db.transaction((tx) => {
       tx.executeSql('SELECT * FROM RUN_SUMMARY;', [],
         (_, result) => {
+           console.log('===============Fetch Run Summary Cmpleted=================');
           resolve(result);
         },
         (_, err) => {
+          console.log('===============Fetch Run Summary Failed=================');
           reject(err);
         });
     });

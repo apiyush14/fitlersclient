@@ -25,7 +25,7 @@ export const generateOTPForMSISDN = (msisdn) => {
         }
       }).then(response => response.json())
       .then((response) => {
-        if (response.status && response.status > 400) {
+        if (response.status >= 400) {
           return new Response(response.status, null);
         } else {
           return new Response(200, response);
@@ -78,7 +78,7 @@ export const validateOTPForMSISDN = (msisdn, otpCode) => {
 export const loadUserAuthDetails = () => {
   return async dispatch => {
     //Sync Fetch Auth Details from Local DB
-    return await dispatch(fetchUserAuthDetails()).then((response) => {
+    return dispatch(fetchUserAuthDetails()).then((response) => {
         if (response.status >= 400) {
           return new Response(response.status, null);
         } else if (response.data.userId !== null) {
@@ -95,6 +95,7 @@ export const loadUserAuthDetails = () => {
       });
   }
 };
+
 //Private Method to Update Auth Details in Async Storage
 const updateUserAuthenticationDetailsInDB = (userAuthenticationDetails) => {
   return async dispatch => {

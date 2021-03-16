@@ -12,6 +12,7 @@ export const loadEventsFromServer=(pageNumber)=>{
     var header= await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
  return new Promise((resolve,reject)=>{
+   console.log('===============Load Events From Server');
     NetInfo.fetch().then(state => {
         if (!state.isConnected) {
           //reject(201);
@@ -25,8 +26,8 @@ export const loadEventsFromServer=(pageNumber)=>{
     headers: header
   }).then(response => response.json())
     .then((response)=> {
-     //console.log('===============GET API results');
-     //console.log(response);
+     console.log('===============GET API results');
+     console.log(response);
      dispatch({type: UPDATE_EVENTS_FROM_SERVER, eventDetails:response.eventDetails});
      resolve();
     }).catch(err=>{

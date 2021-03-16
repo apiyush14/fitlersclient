@@ -48,6 +48,7 @@ const RunTrackerHomeScreen = (props) => {
       dispatch(eventActions.loadEventResultDetailsFromServer());
     };
   }
+  console.log('==========Load Home Screen=============');
     fetchData();
   }, [props, isFocused]);
 

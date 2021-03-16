@@ -177,8 +177,10 @@ export const loadRuns = () => {
 //Method to Load Runs from server based on pageNumber provided
 export const loadRunsFromServer = (pageNumber) => {
   return async dispatch => {
+    console.log('=============Load Runs From Server===============');
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
+    console.log(header);
     return new Promise((resolve, reject) => {
       NetInfo.fetch().then(state => {
         if (!state.isConnected) {
@@ -239,6 +241,7 @@ export const loadRunSummary = () => {
           resolve();
         })
         .catch(err => {
+           console.log('=============Load Run Summary Failed==================');
           //reject(err);
         });
     });

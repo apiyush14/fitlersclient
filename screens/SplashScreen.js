@@ -15,7 +15,7 @@ const SplashScreen = props => {
     setTimeout(() => {
       setAnimating(false);
       dispatch(authActions.loadUserAuthDetails()).then((userAuthDetails) => {
-        userAuthDetails.status!==200||userAuthDetails.data.userId === null ? props.navigation.navigate('LogInScreen') : loadUserDetailsAndNavigate();
+        userAuthDetails.status !== 200 || userAuthDetails.data.userId === null || userAuthDetails.data.userSecretKey === null ? props.navigation.navigate('LogInScreen') : loadUserDetailsAndNavigate();
       });
     }, 5000);
   }, []);
@@ -23,8 +23,8 @@ const SplashScreen = props => {
   //Load User Details from local or server and navigate either to User Details screen or Home Screen
   const loadUserDetailsAndNavigate = () => {
     dispatch(userActions.loadUserDetails()).then((userDetails) => {
-      userDetails === null || userDetails.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
-    }).catch(err => props.navigation.navigate('UserDetailsScreen'));
+      userDetails.status !== 200 || userDetails.data.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
+    });
   };
 
 return (

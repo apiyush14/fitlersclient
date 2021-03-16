@@ -13,26 +13,30 @@ export const loadUserDetails = () => {
   return async dispatch => {
     //Sync Fetch User Details from Local DB
     return dispatch(fetchUserDetails()).then((response) => {
-        if (response != null && response.userFirstName !== null) {
+        if (response.status >= 400) {
+          return new Response(response.status, null);
+        } else if (response.data.userFirstName !== null) {
           //Async Dispatch User Details Update State
           dispatch({
             type: UPDATE_USER_DETAILS,
-            userDetails: response
+            userDetails: response.data
           });
-          return response;
+          return new Response(200, response.data);
         } else {
           //Sync Dispatch Load User Details from Server Action
           return dispatch(loadUserDetailsFromServer()).then((response) => {
-            if (response != null && response.userFirstName !== null) {
+            if (response.status >= 400) {
+              return new Response(response.status, null);
+            } else if (response.data.userFirstName !== null) {
               //Hydrate Local DB Async
-              dispatch(updateUserDetailsInDB(response.userFirstName, response.userLastName, response.userHeight, response.userWeight));
+              dispatch(updateUserDetailsInDB(response.data.userFirstName, response.data.userLastName, response.data.userHeight, response.data.userWeight));
             }
-            return response;
+            return new Response(200, response.data);
           });
         }
       })
       .catch(err => {
-            return null;
+        return new Response(500, null);
       });
   }
 };
@@ -45,32 +49,28 @@ export const loadUserDetailsFromServer = () => {
 
     NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        //reject(201);
+        return new Response(405, null);
       }
     });
 
     var URL = configData.SERVER_URL + "user/getDetails/" + userId;
-    fetch(URL, {
+    return fetch(URL, {
         method: 'GET',
         headers: header
       }).then(response => response.json())
       .then((response) => {
-        if(response.status>=400){
-          return response.status;
-        }
-        if (response.userDetails !== null && response.userDetails.userFirstName !== null) {
+        if (response.status >= 400) {
+          return new Response(response.status, null);
+        } else if (response.userDetails !== null && response.userDetails.userFirstName !== null) {
           //Async Dispatch User Details Update State
           dispatch({
             type: UPDATE_USER_DETAILS,
             userDetails: response.userDetails
           });
         }
-        return response.userDetails;
-        //resolve(response.userDetails);
+        return new Response(200, response.userDetails);
       }).catch(err => {
-        console.log('=================Exception From Get User Details===================');
-        console.log(err);
-        //reject(err);
+        return new Response(500, null);
       });
   }
 };
@@ -131,9 +131,9 @@ const fetchUserDetails = () => {
       var userHeight = await AsyncStorage.getItem('USER_HEIGHT');
       var userWeight = await AsyncStorage.getItem('USER_WEIGHT');
       var userDetails = new UserDetails(userFirstName, userLastName, userHeight, userWeight);
-      return userDetails;
+      return new Response(200, userDetails);
     } catch (err) {
-      return null;
+      return new Response(500, null);
     };
   }
 };
@@ -148,7 +148,7 @@ const updateUserDetailsInDB = (userFirstName,userLastName,userHeight,userWeight)
       var userDetails = new UserDetails(userFirstName, userLastName, userHeight, userWeight);
       return userDetails;
     } catch (err) {
-
+         console.log('==========Error while Updating User Details============');
     };
   }
 };

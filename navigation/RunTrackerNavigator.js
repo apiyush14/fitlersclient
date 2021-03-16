@@ -141,6 +141,12 @@ const RunTrackerStackNavigator=({navigation, route})=>{
   console.log(authDetails);
   console.log('==============User Details===============');
   console.log(userDetails);
+  console.log((authDetails===null)
+      ||(authDetails.userId===undefined)
+      ||(authDetails.userId===null) 
+      ||(userDetails===null) 
+      ||(userDetails.userFirstName===undefined)
+      ||(userDetails.userFirstName===null));
   //console.log(navigation);
   //console.log(route);
 
