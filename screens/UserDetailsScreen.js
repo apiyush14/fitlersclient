@@ -82,8 +82,8 @@
   };
 
     return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
      <View style={styles.userDetailsScreenContainerStyle}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.userDetailsSubContainerStyle}>
       <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
@@ -93,6 +93,7 @@
        maxLength = {20}
        onChangeText = {(text)=>{setFirstName(text)}}>
        </TextInputItem>
+       
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
        keyboardType = "default"
@@ -101,17 +102,19 @@
        maxLength = {20}
        onChangeText = {(text)=>{setLastName(text)}}>
        </TextInputItem>
+
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "none"
-       keyboardType = "numeric"
+       keyboardType = "number-pad"
        placeholder = "Height (in cm)"
        textAlign = "center"
        maxLength = {3}
        onChangeText = {(text)=>{setHeight(text)}}>
        </TextInputItem>
+       
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "none"
-       keyboardType = "numeric"
+       keyboardType = "number-pad"
        placeholder = "Weight (in kgs)"
        textAlign = "center"
        maxLength = {3}
@@ -123,8 +126,8 @@
       disabled = {false}
       onPress = {onClickSubmit}/> 
       </View>
-       </TouchableWithoutFeedback>
-     </View> 
+     </View>
+     </TouchableWithoutFeedback>
     );
   };
 

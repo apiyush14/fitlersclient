@@ -48,11 +48,14 @@ export const loadUserDetailsFromServer = () => {
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
 
-    NetInfo.fetch().then(state => {
+    var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
         return new Response(405, null);
       }
     });
+    if (networkStatus) {
+      return networkStatus;
+    }
 
     var URL = configData.SERVER_URL + "user/getDetails/" + userId;
     return fetch(URL, {
@@ -83,11 +86,14 @@ export const updateUserDetails = (firstName, lastName, height, weight) => {
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
 
-    NetInfo.fetch().then(state => {
+    var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
         return new Response(405, null);
       }
     });
+    if (networkStatus) {
+      return networkStatus;
+    }
 
     var userDetails = {
       userFirstName: firstName,

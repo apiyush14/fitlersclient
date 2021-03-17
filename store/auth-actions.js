@@ -34,11 +34,14 @@ export const loadUserAuthDetails = () => {
 //Generate OTP for MSISDN Sync Action
 export const generateOTPForMSISDN = (msisdn) => {
   return async dispatch => {
-    NetInfo.fetch().then(state => {
+    var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
         return new Response(405, null);
       }
     });
+    if (networkStatus) {
+      return networkStatus;
+    }
 
     var URL = configData.SERVER_URL + "auth/getOTP/" + msisdn;
     return fetch(URL, {
@@ -62,11 +65,14 @@ export const generateOTPForMSISDN = (msisdn) => {
 //Sync Method to Validate entered OTP and update state and hydrate local DB
 export const validateOTPForMSISDN = (msisdn, otpCode) => {
   return async dispatch => {
-    NetInfo.fetch().then(state => {
+    var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
         return new Response(405, null);
       }
     });
+    if (networkStatus) {
+      return networkStatus;
+    }
 
     var URL = configData.SERVER_URL + "auth/validateOTP/" + msisdn + "?otpCode=" + otpCode;
     return fetch(URL, {
