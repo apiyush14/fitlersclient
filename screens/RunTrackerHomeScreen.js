@@ -13,7 +13,6 @@ import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
 
 const RunTrackerHomeScreen = (props) => {
-  console.log('==========RunTrackerHomeScreen===============');
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
 
@@ -37,10 +36,7 @@ const RunTrackerHomeScreen = (props) => {
   //Load Run History Data upon initialization
   useEffect(() => {
     const fetchData = async () => {
-      console.log('==========Load Home Screen=============');
-      console.log(isFocused);
       if(isFocused){
-        console.log('==========Load Home Screen Inside Condition=============');
       dispatch(runActions.loadRuns());
       dispatch(runActions.loadRunSummary());
       dispatch(eventActions.loadEventsFromServer(0));
@@ -48,7 +44,6 @@ const RunTrackerHomeScreen = (props) => {
       dispatch(eventActions.loadEventResultDetailsFromServer());
     };
   }
-  console.log('==========Load Home Screen=============');
     fetchData();
   }, [props, isFocused]);
 

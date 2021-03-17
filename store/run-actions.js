@@ -119,95 +119,98 @@ export const addRunSummary = (run) => {
   }
 };
 
-//Method to Load Runs first from local DB, and then from server in case needed and hydrate local DB
+//Async Method to Load Runs first from local DB, and then from server in case needed and hydrate local DB
 export const loadRuns = () => {
   return async dispatch => {
-    return new Promise((resolve, reject) => {
-      //Fetch Runs from Local DB
-      fetchRuns().then(response => {
-         console.log('=============Load Runs==================');
-          if (response.rows._array.length > 0) {
-            console.log('=============Load Runs Inside > 0==================');
-            var updatedRuns = response.rows._array.map((run) => {
-              var updatedRun = {
-                runId: run.RUN_ID,
-                runTotalTime: run.RUN_TOTAL_TIME,
-                runDistance: run.RUN_DISTANCE,
-                runPace: run.RUN_PACE,
-                runCaloriesBurnt: run.RUN_CALORIES_BURNT,
-                runCredits: run.RUN_CREDITS,
-                runStartDateTime: run.RUN_START_DATE_TIME,
-                runDate: run.RUN_DATE,
-                runDay: run.RUN_DAY,
-                runPath: run.RUN_PATH,
-                runTrackSnapUrl: run.RUN_TRACK_SNAP_URL,
-                eventId: run.EVENT_ID,
-                isSyncDone: run.IS_SYNC_DONE
-              };
-              return updatedRun;
-            });
+    //Fetch Runs from Local DB
+    fetchRuns().then(response => {
+        //In case Local DB has some data
+        if (response.rows._array.length > 0) {
+          var updatedRuns = response.rows._array.map((run) => {
+            var updatedRun = {
+              runId: run.RUN_ID,
+              runTotalTime: run.RUN_TOTAL_TIME,
+              runDistance: run.RUN_DISTANCE,
+              runPace: run.RUN_PACE,
+              runCaloriesBurnt: run.RUN_CALORIES_BURNT,
+              runCredits: run.RUN_CREDITS,
+              runStartDateTime: run.RUN_START_DATE_TIME,
+              runDate: run.RUN_DATE,
+              runDay: run.RUN_DAY,
+              runPath: run.RUN_PATH,
+              runTrackSnapUrl: run.RUN_TRACK_SNAP_URL,
+              eventId: run.EVENT_ID,
+              isSyncDone: run.IS_SYNC_DONE
+            };
+            return updatedRun;
+          });
 
-            //Dispatch Runs Update State
-            dispatch({
-              type: UPDATE_RUN_DETAILS,
-              runs: updatedRuns
-            });
-          } else {
-            //Dispatch Load Runs from Server Action
-            console.log('=============Load Runs Inside <= 0==================');
-            dispatch(loadRunsFromServer(0)).then((response) => {
-              console.log(response);
-              if (response.runDetailsList.length > 0) {
-                response.runDetailsList.map((run) => {
-                  //Hydrate Local DB
-                  insertRun(run.runId, run.runTotalTime.toString(), run.runDistance.toString(), run.runPace.toString(), run.runCaloriesBurnt.toString(), 0, run.runStartDateTime.toString(), run.runDate.toString(), run.runDay.toString(), run.runPath.toString(), run.runTrackSnapUrl.toString(),run.eventId ,"1");
-                });
-              }
-            });
-          }
-          resolve(response);
-        })
-        .catch(err => {
-           console.log('===============Exception=================');
-           console.log(err);
-        });
-    });
+          //Async Dispatch Runs Update State
+          dispatch({
+            type: UPDATE_RUN_DETAILS,
+            runs: updatedRuns
+          });
+        }
+        //In case there is no data in local store, go to server
+        else {
+          //Async Dispatch Load Runs from Server Action
+          dispatch(loadRunsFromServer(0)).then((response) => {
+            if (response.status >= 400) {
+              //Do nothing
+            } else if (response.data.runDetailsList.length > 0) {
+              response.data.runDetailsList.map((run) => {
+                //Hydrate Local DB
+                insertRun(run.runId, run.runTotalTime.toString(), run.runDistance.toString(), run.runPace.toString(), run.runCaloriesBurnt.toString(), 0, run.runStartDateTime.toString(), run.runDate.toString(), run.runDay.toString(), run.runPath.toString(), run.runTrackSnapUrl.toString(), run.eventId, "1");
+              });
+            }
+          });
+        }
+      })
+      .catch(err => {
+
+      });
   }
 };
 
 //Method to Load Runs from server based on pageNumber provided
 export const loadRunsFromServer = (pageNumber) => {
   return async dispatch => {
-    console.log('=============Load Runs From Server===============');
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
-    console.log(header);
-    return new Promise((resolve, reject) => {
-      NetInfo.fetch().then(state => {
-        if (!state.isConnected) {
-          //reject(201);
-        }
-      });
-      var URL = configData.SERVER_URL + "run-details/getRuns/" + userId + "?page=";
-      URL = URL + pageNumber;
-      fetch(URL, {
-          method: 'GET',
-          headers: header
-        }).then(response => response.json())
-        .then((response) => {
-          if (response.runDetailsList.length > 0) {
-            //Dispatch Runs Update State
-            dispatch({
-              type: UPDATE_RUN_DETAILS,
-              runs: response.runDetailsList
-            })
-          }
-          resolve(response);
-        }).catch(err => {
-          resolve({isMoreContentAvailable: false});
-          //reject(err);
-        });
+    var networkStatus = await NetInfo.fetch().then(state => {
+      if (!state.isConnected) {
+        return new Response(405, null);
+      }
     });
+    if (networkStatus) {
+      return networkStatus;
+    }
+
+    var URL = configData.SERVER_URL + "run-details/getRuns/" + userId + "?page=";
+    URL = URL + pageNumber;
+    return fetch(URL, {
+        method: 'GET',
+        headers: header
+      }).then(response => response.json())
+      .then((response) => {
+        if (response.status >= 400) {
+          return new Response(response.status, null);
+        } else if (response.runDetailsList.length > 0) {
+          //Async Dispatch Runs Update State
+          dispatch({
+            type: UPDATE_RUN_DETAILS,
+            runs: response.runDetailsList
+          })
+        }
+        //Pending to check alternative, used to format response correctly
+        var result = {
+          status: 200,
+          data: response
+        };
+        return result;
+      }).catch(err => {
+        return new Response(500, null);
+      });
   }
 };
 

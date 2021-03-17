@@ -94,6 +94,7 @@ export const deleteRuns = (runIds) => {
   return promise;
 };
 
+//Method to fetch runs from RUN_DETAILS
 export const fetchRuns = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
