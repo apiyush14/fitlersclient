@@ -21,12 +21,14 @@
     "expo-crypto": "~8.2.1",
     "expo-file-system": "~9.0.1",
     "expo-linear-gradient": "~8.2.1",
+    "expo-linking": "^2.1.1",
     "expo-location": "~8.2.1",
     "expo-media-library": "~8.2.1",
     "expo-permissions": "~9.0.1",
     "expo-sensors": "~9.0.1",
     "expo-sqlite": "~8.2.1",
     "expo-status-bar": "^1.0.2",
+    "expo-task-manager": "~8.3.0",
     "haversine": "^1.1.1",
     "react": "~16.11.0",
     "react-dom": "~16.11.0",
@@ -44,8 +46,7 @@
     "react-navigation-tabs": "^2.9.0",
     "react-redux": "^7.2.1",
     "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0",
-    "expo-task-manager": "~8.3.0"
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

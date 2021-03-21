@@ -4,23 +4,21 @@ import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import RoundButton from '../components/RoundButton';
 import {useDispatch,useSelector} from 'react-redux';
-import {useIsFocused} from "@react-navigation/native";
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import * as Permissions from 'expo-permissions';
 
 import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
+//import * as Linking from 'expo-linking';
 
 const RunTrackerHomeScreen = (props) => {
   const dispatch = useDispatch();
-  const isFocused = useIsFocused();
 
   // State Selectors
   const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
   const eventDetails = useSelector(state => state.events.eventDetails);
   const [isLoading, setIsLoading] = useState(false);
-
 
   // State Variables
   const [mapRegion, setMapRegion] = useState({
@@ -33,27 +31,35 @@ const RunTrackerHomeScreen = (props) => {
   const [modalEventDetails, setModalEventDetails] = useState(null);
   const [ongoingEventDetails, setOngoingEventDetails] = useState(null);
 
-  //Load Run History Data upon initialization
+  //Async Load User Data upon initialization
   useEffect(() => {
     const fetchData = async () => {
-      if(isFocused){
       dispatch(runActions.loadRuns());
       dispatch(runActions.loadRunSummary());
       dispatch(eventActions.loadEventsFromServer(0));
       dispatch(eventActions.loadEventRegistrationDetails());
       dispatch(eventActions.loadEventResultDetailsFromServer());
-    };
-  }
+    }
     fetchData();
-  }, [props, isFocused]);
+  }, []);
 
   //Load Location Details
   useEffect(() => {
     (async () => {
+
+   Permissions.askAsync(Permissions.MOTION).then(response => {
+        //TODO : To handle alert to change settings
+        //Motion Sensor Permission Handling
+        if (response.status !== 'granted') {
+          Alert.alert("Location Alert", "Motion Sensor Permission is required!!!");
+        }
+      });
+
       Location.requestPermissionsAsync().then(response => {
         if (response.status !== 'granted') {
           //TODO : To handle alert to change settings
           Alert.alert("Location Alert", "Location Permission is required!!!");
+          //Linking.openURL('app-settings:');
         } else {
           Location.getCurrentPositionAsync({}).then(response => {
             setMapRegion({
@@ -66,16 +72,10 @@ const RunTrackerHomeScreen = (props) => {
         }
       });
 
-      Permissions.askAsync(Permissions.MOTION).then(response => {
-        //TODO : To handle alert to change settings
-        //Motion Sensor Permission Handling
-        if (response.status !== 'granted') {
-          Alert.alert("Location Alert", "Motion Sensor Permission is required!!!");
-        }
-      });
+   
     })();
   }, []);
-  
+
   //Use effect for Event Registration Changes
   useEffect(() => {
     (async () => {
@@ -117,8 +117,6 @@ const RunTrackerHomeScreen = (props) => {
     setIsLoading(true);
     let pageNumber = Math.floor(eventDetails.length / 3);
     dispatch(eventActions.loadEventsFromServer(pageNumber)).then(() => {
-      setIsLoading(false);
-    }).catch(err => {
       setIsLoading(false);
     });
   };

@@ -25,21 +25,22 @@ const RunHistoryScreen = props => {
 
     // Use Effect Hook to be loaded everytime the screen loads
     useEffect(() => {
-      console.log('=========Run History Sync============');
-      console.log(runsHistory);
       setIsMoreContentAvailable(true);
       if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
         dispatch(runActions.syncPendingRuns(pendingRunsForSync));
       }
     }, [props, isFocused]);
 
-  //Method to lazy load Runs from server 
+  //Async Method to lazy load Runs from server 
   const loadMoreDataFromServer = () => {
     if (isMoreContentAvailableOnServer) {
       setIsLoading(true);
       let pageNumber = Math.floor(runsHistory.length / 3);
       dispatch(runActions.loadRunsFromServer(pageNumber)).then((response) => {
-        if (!response.isMoreContentAvailable) {
+        //console.log(response);
+        if (response.data.status >= 400) {
+          //Do Nothing
+        } else if (!response.data.moreContentAvailable) {
           setIsMoreContentAvailable(false);
         } else {
           setIsMoreContentAvailable(true);
@@ -48,23 +49,22 @@ const RunHistoryScreen = props => {
       });
     }
   };
-    //Event Listener to be called on selecting Run and to navigate to Run History Screen
-    const onSelectRunHistoryItem = (itemdata) => {
-      //console.log('============On Select Run History=============');
-      //console.log(itemdata);
-      props.navigation.navigate('RunDetailsScreen', {
-        runTrackSnapUrl: itemdata.item.runTrackSnapUrl,
-        runDate: itemdata.item.runDate,
-        runDay: itemdata.item.runDay,
-        runTotalTime: itemdata.item.runTotalTime,
-        runDistance: itemdata.item.runDistance,
-        runPace: itemdata.item.runPace,
-        runCaloriesBurnt: itemdata.item.runCaloriesBurnt,
-        runPath: itemdata.item.runPath,
-        runId: itemdata.item.runId,
-        sourceScreen: 'RunHistoryScreen'
-      });
-    };
+
+  //Event Listener to be called on selecting Run and to navigate to Run History Screen
+  const onSelectRunHistoryItem = (itemdata) => {
+    props.navigation.navigate('RunDetailsScreen', {
+      runTrackSnapUrl: itemdata.item.runTrackSnapUrl,
+      runDate: itemdata.item.runDate,
+      runDay: itemdata.item.runDay,
+      runTotalTime: itemdata.item.runTotalTime,
+      runDistance: itemdata.item.runDistance,
+      runPace: itemdata.item.runPace,
+      runCaloriesBurnt: itemdata.item.runCaloriesBurnt,
+      runPath: itemdata.item.runPath,
+      runId: itemdata.item.runId,
+      sourceScreen: 'RunHistoryScreen'
+    });
+  };
 
   // Run History Footer View
   const renderRunSummaryFooter = () => {

@@ -125,6 +125,7 @@ export const fetchRunsToSync = () => {
   return promise;
 };
 
+//Method to Update Runs Sync Flag in RUN_DETAILS
 export const updateRunsSyncState = (pendingRunsForSync) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -173,17 +174,15 @@ export const updateRunSummary = (totalDistance, totalRuns, totalCredits, average
   return promise;
 };
 
+//Method to fetch Run Summary from RUN_SUMMARY
 export const fetchRunSummary = () => {
   const promise = new Promise((resolve, reject) => {
-    console.log('===============Fetch Run Summary=================');
     db.transaction((tx) => {
       tx.executeSql('SELECT * FROM RUN_SUMMARY;', [],
         (_, result) => {
-           console.log('===============Fetch Run Summary Cmpleted=================');
           resolve(result);
         },
         (_, err) => {
-          console.log('===============Fetch Run Summary Failed=================');
           reject(err);
         });
     });
@@ -266,9 +265,9 @@ export const fetchEventRegistrationDetails = () => {
   return promise;
 };
 
+//Method to Clean Up All Local Data
 export const cleanUpAllData = () => {
   const promise = new Promise((resolve, reject) => {
-    console.log('============Cleaning all data====================');
     db.transaction((tx) => {
       tx.executeSql('DELETE FROM RUN_DETAILS;', [],
         (_, result) => {
