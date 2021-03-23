@@ -2,10 +2,11 @@ import * as SQLite from 'expo-sqlite';
 
 const db = SQLite.openDatabase('onehealth.db');
 
+//Method to initialize the tables for first time usage
 export const init = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
-       tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (RUN_ID INTEGER PRIMARY KEY NOT NULL, RUN_TOTAL_TIME TEXT NOT NULL, RUN_DISTANCE TEXT NOT NULL,RUN_PACE TEXT NOT NULL,RUN_CALORIES_BURNT TEXT NOT NULL,RUN_CREDITS TEXT NOT NULL,RUN_START_DATE_TIME TEXT NOT NULL ,RUN_DATE TEXT NOT NULL, RUN_DAY TEXT NOT NULL, RUN_PATH TEXT NOT NULL, RUN_TRACK_SNAP_URL TEXT NOT NULL,EVENT_ID INTEGER,IS_SYNC_DONE TEXT NOT NULL);',
+      tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_DETAILS (RUN_ID INTEGER PRIMARY KEY NOT NULL, RUN_TOTAL_TIME TEXT NOT NULL, RUN_DISTANCE TEXT NOT NULL,RUN_PACE TEXT NOT NULL,RUN_CALORIES_BURNT TEXT NOT NULL,RUN_CREDITS TEXT NOT NULL,RUN_START_DATE_TIME TEXT NOT NULL ,RUN_DATE TEXT NOT NULL, RUN_DAY TEXT NOT NULL, RUN_PATH TEXT NOT NULL, RUN_TRACK_SNAP_URL TEXT NOT NULL,EVENT_ID INTEGER,IS_SYNC_DONE TEXT NOT NULL);',
         //tx.executeSql('DROP TABLE RUN_DETAILS;',
         [],
         () => {
@@ -15,7 +16,7 @@ export const init = () => {
           reject(err);
         });
 
-       tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_SUMMARY (id INTEGER PRIMARY KEY NOT NULL, TOTAL_DISTANCE TEXT NOT NULL, TOTAL_RUNS TEXT NOT NULL,TOTAL_CREDITS TEXT NOT NULL, AVERAGE_PACE TEXT NOT NULL,AVERAGE_DISTANCE TEXT NOT NULL, AVERAGE_CALORIES_BURNT TEXT NOT NULL);',
+      tx.executeSql('CREATE TABLE IF NOT EXISTS RUN_SUMMARY (id INTEGER PRIMARY KEY NOT NULL, TOTAL_DISTANCE TEXT NOT NULL, TOTAL_RUNS TEXT NOT NULL,TOTAL_CREDITS TEXT NOT NULL, AVERAGE_PACE TEXT NOT NULL,AVERAGE_DISTANCE TEXT NOT NULL, AVERAGE_CALORIES_BURNT TEXT NOT NULL);',
         //tx.executeSql('DROP TABLE RUN_SUMMARY;',
         [],
         () => {
@@ -25,17 +26,7 @@ export const init = () => {
           reject(err);
         });
 
-      tx.executeSql('CREATE TABLE IF NOT EXISTS USER_AUTHENTICATION_DETAILS (id INTEGER PRIMARY KEY NOT NULL, USER_ID TEXT NOT NULL, USER_SECRET_KEY TEXT NOT NULL);',
-        //tx.executeSql('DROP TABLE USER_AUTHENTICATION_DETAILS;',
-        [],
-        () => {
-          resolve();
-        },
-        (_, err) => {
-          reject(err);
-        });
-
-        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_REGISTRATION_DETAILS (EVENT_ID INTEGER PRIMARY KEY NOT NULL, EVENT_NAME TEXT NOT NULL, EVENT_DESCRIPTION TEXT,EVENT_START_DATE TEXT NOT NULL,EVENT_END_DATE TEXT NOT NULL);',
+      tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_REGISTRATION_DETAILS (EVENT_ID INTEGER PRIMARY KEY NOT NULL, EVENT_NAME TEXT NOT NULL, EVENT_DESCRIPTION TEXT,EVENT_START_DATE TEXT NOT NULL,EVENT_END_DATE TEXT NOT NULL);',
         //tx.executeSql('DROP TABLE EVENT_REGISTRATION_DETAILS;',
         //tx.executeSql('DELETE FROM EVENT_REGISTRATION_DETAILS;',
         [],
@@ -45,15 +36,6 @@ export const init = () => {
         (_, err) => {
           reject(err);
         });
-
-      /*tx.executeSql('INSERT INTO RUN_SUMMARY (total_distance,total_runs,average_pace,average_distance) VALUES (?,?,?,?);',
-         ["0","0","0","0"], 
-          ()=>{ 
-            resolve(); 
-          },
-          (_,err)=>{ 
-           reject(err); 
-          }); */
     });
   });
   return promise;
@@ -107,6 +89,7 @@ export const fetchRuns = () => {
   return promise;
 };
 
+//Method to return Runs from RUN_DETAILS that are not updated to server
 export const fetchRunsToSync = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -154,6 +137,7 @@ export const insertRunSummary = (totalDistance, totalRuns, totalCredits, average
   return promise;
 };
 
+//Method to Update Run Summary in RUN_SUMMARY
 export const updateRunSummary = (totalDistance, totalRuns, totalCredits, averagePace, averageDistance, averageCaloriesBurnt) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -185,51 +169,7 @@ export const fetchRunSummary = () => {
   return promise;
 };
 
-export const insertUser = (userId, userSecretKey) => {
-  const promise = new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql('INSERT INTO USER_AUTHENTICATION_DETAILS (USER_ID,USER_SECRET_KEY) VALUES (?,?)', [userId, userSecretKey],
-        (_, result) => {
-          resolve(result);
-        },
-        (_, err) => {
-          reject(err);
-        });
-    });
-  });
-  return promise;
-};
-
-export const updateUser = (userId, userSecretKey) => {
-  const promise = new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql('UPDATE USER_AUTHENTICATION_DETAILS SET USER_ID=?,USER_SECRET_KEY=?', [userId, userSecretKey],
-        (_, result) => {
-          resolve(result);
-        },
-        (_, err) => {
-          reject(err);
-        });
-    });
-  });
-  return promise;
-};
-
-export const fetchUserAuthenticationDetails = () => {
-  const promise = new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql('SELECT * FROM USER_AUTHENTICATION_DETAILS;', [],
-        (_, result) => {
-          resolve(result);
-        },
-        (_, err) => {
-          reject(err);
-        });
-    });
-  });
-  return promise;
-};
-
+//Method to Insert Event Registration Details in EVENT_REGISTRATION_DETAILS
 export const insertEventRegistrationDetails = (eventId, eventName, eventDescription, eventStartDate, eventEndDate) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -245,6 +185,7 @@ export const insertEventRegistrationDetails = (eventId, eventName, eventDescript
   return promise;
 };
 
+//Method to Get Event Registration Details from EVENT_REGISTRATION_DETAILS
 export const fetchEventRegistrationDetails = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -272,13 +213,6 @@ export const cleanUpAllData = () => {
           reject(err);
         });
       tx.executeSql('DELETE FROM RUN_SUMMARY;', [],
-        (_, result) => {
-          resolve(result);
-        },
-        (_, err) => {
-          reject(err);
-        });
-      tx.executeSql('DELETE FROM USER_AUTHENTICATION_DETAILS;', [],
         (_, result) => {
           resolve(result);
         },
