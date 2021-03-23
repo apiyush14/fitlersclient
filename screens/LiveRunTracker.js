@@ -5,6 +5,7 @@ import * as Location from 'expo-location';
 import { DeviceMotion, Pedometer } from 'expo-sensors';
 import Slider from '../components/Slider';
 import { Ionicons } from '@expo/vector-icons';
+import RunDetails from '../models/rundetails';
 
 let runId=0;
 let runTotalTime=0;
@@ -18,6 +19,7 @@ let runStartDateTime=null;
 let eventId=0;
 let timerForAutoPause=0;
 let runDistanceForAutoPause=0;
+let runDetails=null;
 
 let updateStepsListener=null;
 let updateLocationListener=null;
@@ -77,6 +79,7 @@ const LiveRunTrackerScreen = props=>{
     subscribePedometer();
     subscribeAccelerometer();
     subscribeLocationUpdates();
+    runDetails=new RunDetails(runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, 0, runStartDateTime, runDate, runDay, runPath, "", eventId, "0");
     /*let timer = setInterval(() => updateUI() , 1000);
     return () => clearInterval(timer)*/
   }, []);
@@ -159,7 +162,9 @@ const LiveRunTrackerScreen = props=>{
         console.log(prevDistance);
         console.log('===========Change In Distance==============');
         console.log(changeInDistanceInMeters);
-        return prevDistance + changeInDistanceInMeters;
+        var newDistance=prevDistance + changeInDistanceInMeters;
+        runDetails.runDistance=newDistance;
+        return newDistance;
       });
       //const distance=(stepsCount*78)/100;
       //setRunDistance(distance);
@@ -168,13 +173,21 @@ const LiveRunTrackerScreen = props=>{
 
   //Subscriber for Location Updates
   const subscribeLocationUpdates = () => {
-    updateLocationListener = Location.watchPositionAsync({
-      accuracy: Location.Accuracy.Highest,
-      timeInterval: 1000,
-      distanceInterval: 10
-    }, (updatedLocation) => {
-      //console.log(updatedLocation);
-      updateLocation(updatedLocation);
+    Location.requestPermissionsAsync().then(response => {
+      if (response.status !== 'granted') {
+        //TODO : To handle alert to change settings
+        //Alert.alert("Location Alert", "Location Permission is required!!!");
+        //Linking.openURL('app-settings:');
+      } else {
+        updateLocationListener = Location.watchPositionAsync({
+          accuracy: Location.Accuracy.Highest,
+          timeInterval: 1000,
+          distanceInterval: 10
+        }, (updatedLocation) => {
+          //console.log(updatedLocation);
+          updateLocation(updatedLocation);
+        });
+      }
     });
   };
 
@@ -216,6 +229,7 @@ const LiveRunTrackerScreen = props=>{
       const lapsedTimeinMinutes = runTotalTime / 60000;
       const averagePace = lapsedTimeinMinutes / (runDistance / 1000);
       if (averagePace < 12.5) {
+        runDetails.runPace=averagePace;
         setRunPace(averagePace);
       }
       //TODO : Update the formula to get weight from user details
@@ -223,6 +237,7 @@ const LiveRunTrackerScreen = props=>{
       const lapsedTimeinHours = lapsedTimeinMinutes / 60;
       const averagePaceKmPerHour = (runDistance / 1000) / lapsedTimeinHours;
       const caloriesBurnt = parseInt((averagePaceKmPerHour * 3.5 * 68) / 200) * lapsedTimeinMinutes;
+      runDetails.runCaloriesBurnt=caloriesBurnt;
       setRunCaloriesBurnt(caloriesBurnt);
     }
   }, [runDistance]);
@@ -261,6 +276,7 @@ const LiveRunTrackerScreen = props=>{
       });
 
       runTotalTime = updatedLapsedTime;
+      runDetails.runTotalTime= updatedLapsedTime;
       startTime = currentTime;
 
       //console.log(accelerometerData);
@@ -365,18 +381,11 @@ const LiveRunTrackerScreen = props=>{
   //Complete the run if distance more than 10m and load Run Details Screen
   const stopRun = () => {
     //Accelerometer.removeAllListeners();
+    console.log('==========Stop The Run==================');
+    console.log(runDate);
     if (runDistance > 10) {
       props.navigation.navigate('RunDetailsScreen', {
-        runId: runId,
-        runPath: runPath,
-        runDate: runDate,
-        runDay: runDay,
-        runTotalTime: runTotalTime,
-        runDistance: runDistance,
-        runPace: runPace,
-        runCaloriesBurnt: runCaloriesBurnt,
-        runStartDateTime: runStartDateTime,
-        eventId: eventId
+        runDetails: runDetails
       });
     } else {
       props.navigation.navigate('HomeScreen');

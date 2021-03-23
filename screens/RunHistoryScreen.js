@@ -6,6 +6,7 @@ import {useSelector,useDispatch} from 'react-redux';
 import {Ionicons} from '@expo/vector-icons';
 import RunHistoryList from '../components/RunHistoryList';
 import DashboardItem from '../components/DashboardItem';
+import RunDetails from '../models/rundetails';
 import * as runActions from '../store/run-actions';
 import { Dimensions } from 'react-native';
 const { width, height } = Dimensions.get('window');
@@ -23,13 +24,13 @@ const RunHistoryScreen = props => {
     const runSummary = useSelector(state => state.runs.runSummary);
     const pendingRunsForSync = useSelector(state => state.runs.runs.filter(run => run.isSyncDone === "0"));
 
-    // Use Effect Hook to be loaded everytime the screen loads
-    useEffect(() => {
-      setIsMoreContentAvailable(true);
-      if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
-        dispatch(runActions.syncPendingRuns(pendingRunsForSync));
-      }
-    }, [props, isFocused]);
+  // Use Effect Hook to be loaded everytime the screen loads
+  useEffect(() => {
+    setIsMoreContentAvailable(true);
+    if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
+      dispatch(runActions.syncPendingRuns(pendingRunsForSync));
+    }
+  }, [props, isFocused]);
 
   //Async Method to lazy load Runs from server 
   const loadMoreDataFromServer = () => {
@@ -37,7 +38,6 @@ const RunHistoryScreen = props => {
       setIsLoading(true);
       let pageNumber = Math.floor(runsHistory.length / 3);
       dispatch(runActions.loadRunsFromServer(pageNumber)).then((response) => {
-        //console.log(response);
         if (response.data.status >= 400) {
           //Do Nothing
         } else if (!response.data.moreContentAvailable) {
@@ -52,17 +52,10 @@ const RunHistoryScreen = props => {
 
   //Event Listener to be called on selecting Run and to navigate to Run History Screen
   const onSelectRunHistoryItem = (itemdata) => {
+    var runDetails = new RunDetails(itemdata.item.runId, itemdata.item.runTotalTime, itemdata.item.runDistance, itemdata.item.runPace, itemdata.item.runCaloriesBurnt, 0, itemdata.item.runStartDateTime, itemdata.item.runDate, itemdata.item.runDay, itemdata.item.runPath, itemdata.item.runTrackSnapUrl, 0, "0");
     props.navigation.navigate('RunDetailsScreen', {
-      runTrackSnapUrl: itemdata.item.runTrackSnapUrl,
-      runDate: itemdata.item.runDate,
-      runDay: itemdata.item.runDay,
-      runTotalTime: itemdata.item.runTotalTime,
-      runDistance: itemdata.item.runDistance,
-      runPace: itemdata.item.runPace,
-      runCaloriesBurnt: itemdata.item.runCaloriesBurnt,
-      runPath: itemdata.item.runPath,
-      runId: itemdata.item.runId,
-      sourceScreen: 'RunHistoryScreen'
+      sourceScreen: 'RunHistoryScreen',
+      runDetails: runDetails
     });
   };
 
@@ -120,7 +113,9 @@ const RunHistoryScreen = props => {
      <View style={styles.footerViewContainerStyle}>
       <View style={styles.footerValueContainerStyle}>
        <Ionicons name="ios-flame" size={30} color='springgreen'/>
-       <Text style={styles.footerTextStyle}>0</Text> 
+       <Text style={styles.footerTextStyle}>
+        {runSummary!=null?parseFloat(runSummary.averageCaloriesBurnt).toFixed(2):0}
+       </Text> 
       </View>
       <Text style={styles.footerTextStyle}>Calories</Text>
      </View>

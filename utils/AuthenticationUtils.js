@@ -1,6 +1,4 @@
-  import {
-    AsyncStorage
-  } from 'react-native';
+  import {AsyncStorage} from 'react-native';
   import * as Crypto from 'expo-crypto';
 
   export const getUserAuthenticationToken = () => {

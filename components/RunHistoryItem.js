@@ -18,45 +18,45 @@ const [trackTimer, setTrackTimer]=useState({
 const [mapRegion, setMapRegion] = useState(null);
 const [runPath, setRunPath] = useState([]);
 
-//Load Time Use effect hook
-useEffect(() => {
-         
-         setRunPath(props.runPath);
+  //Load Time Use effect hook
+  useEffect(() => {
+    setRunPath(props.runPath);
 
-         let secondsVar = ("0" + (Math.floor(props.runTotalTime / 1000) % 60)).slice(-2);
-         let minutesVar = ("0" + (Math.floor(props.runTotalTime / 60000) % 60)).slice(-2);
-         let hoursVar = ("0" + Math.floor(props.runTotalTime / 3600000)).slice(-2);
-         setTrackTimer(
-        {
-            seconds: secondsVar,
-            minutes: minutesVar,
-            hours: hoursVar
-        });
+    let secondsVar = ("0" + (Math.floor(props.runTotalTime / 1000) % 60)).slice(-2);
+    let minutesVar = ("0" + (Math.floor(props.runTotalTime / 60000) % 60)).slice(-2);
+    let hoursVar = ("0" + Math.floor(props.runTotalTime / 3600000)).slice(-2);
+    setTrackTimer({
+      seconds: secondsVar,
+      minutes: minutesVar,
+      hours: hoursVar
+    });
 
+    if (props.runPath.length > 0) {
       setMapRegion({
         latitude: props.runPath[Math.floor(props.runPath.length / 2)].latitude,
         longitude: props.runPath[Math.floor(props.runPath.length / 2)].longitude,
         latitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].latitude - props.runPath[0].latitude) + 0.005,
         longitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].longitude - props.runPath[0].longitude) + 0.005
-      });   
-     },[]);
+      });
+    }
+  }, []);
 
 return(
  	<View style={styles.runHistoryItemContainerStyle}>
  	<TouchableOpacity onPress={props.onSelectRunItem}>
  	 <View style={styles.mapContainerViewStyle}>
+   {runPath&&runPath.length>0?(
    <MapView style={styles.mapContainerStyle} region={mapRegion}
     pitchEnabled={false} rotateEnabled={false} zoomEnabled={false} scrollEnabled={false}>
-    {runPath?(
      <Polyline
      strokeWidth={3}
      strokeColor='red'
-     coordinates={runPath}/>):(<View></View>)}
+     coordinates={runPath}/>
      {runPath[0]!==undefined?(
      <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
       {runPath[runPath.length-1]!==undefined?(
      <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
-   </MapView>
+   </MapView>):<View style={styles.mapContainerStyle}></View>}
    </View>
 
    <View style={styles.runDetailsContainerStyle}>

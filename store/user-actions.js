@@ -169,7 +169,7 @@ const updateUserDetailsInDB = (userFirstName, userLastName, userHeight, userWeig
   }
 };
 
-//Pending
+//Method to clean up All User Data from Async Store and Local DB
 export const cleanUpUserData = () => {
   return async dispatch => {
     try {
@@ -180,8 +180,9 @@ export const cleanUpUserData = () => {
       await AsyncStorage.removeItem('USER_HEIGHT');
       await AsyncStorage.removeItem('USER_WEIGHT');
       await cleanUpAllData();
+      new Response(200, true);
     } catch (err) {
-
+      new Response(500, null);
     };
   }
 };

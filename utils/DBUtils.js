@@ -59,15 +59,15 @@ export const init = () => {
   return promise;
 };
 
-export const insertRun = (runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, runCredits, runStartDateTime, runDate, runDay, runPath, runTrackSnapUrl,eventId ,isSyncDone) => {
+//Method to Insert New Run in RUN_DETAILS
+export const insertRun = (runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, runCredits, runStartDateTime, runDate, runDay, runPath, runTrackSnapUrl, eventId, isSyncDone) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
-      tx.executeSql('INSERT INTO RUN_DETAILS (RUN_ID,RUN_TOTAL_TIME,RUN_DISTANCE,RUN_PACE,RUN_CALORIES_BURNT,RUN_CREDITS,RUN_START_DATE_TIME ,RUN_DATE, RUN_DAY, RUN_PATH, RUN_TRACK_SNAP_URL,EVENT_ID,IS_SYNC_DONE) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);', [runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, runCredits, runStartDateTime, runDate, runDay, runPath, runTrackSnapUrl,eventId, isSyncDone],
+      tx.executeSql('INSERT INTO RUN_DETAILS (RUN_ID,RUN_TOTAL_TIME,RUN_DISTANCE,RUN_PACE,RUN_CALORIES_BURNT,RUN_CREDITS,RUN_START_DATE_TIME ,RUN_DATE, RUN_DAY, RUN_PATH, RUN_TRACK_SNAP_URL,EVENT_ID,IS_SYNC_DONE) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);', [runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, runCredits, runStartDateTime, runDate, runDay, runPath, runTrackSnapUrl, eventId, isSyncDone],
         (_, result) => {
           resolve(result);
         },
         (_, err) => {
-          console.log('Insertion Run Failed');
           reject(err);
         });
     });
@@ -75,9 +75,8 @@ export const insertRun = (runId, runTotalTime, runDistance, runPace, runCalories
   return promise;
 };
 
+//Method to Delete Runs from RUN_DETAILS based on runIds
 export const deleteRuns = (runIds) => {
-  console.log('=======Delete Runs===============');
-  console.log(runIds);
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql('DELETE FROM RUN_DETAILS where RUN_ID in (' + runIds + ');', [],
@@ -85,8 +84,6 @@ export const deleteRuns = (runIds) => {
           resolve(result);
         },
         (_, err) => {
-          console.log('==================Failed======================');
-          console.log(err);
           reject(err);
         });
     });
@@ -141,17 +138,15 @@ export const updateRunsSyncState = (pendingRunsForSync) => {
   return promise;
 };
 
-export const insertRunSummary = (totalDistance, totalRuns, totalCredits , averagePace, averageDistance, averageCaloriesBurnt) => {
+//Method to Insert Run Summary In RUN_SUMMARY
+export const insertRunSummary = (totalDistance, totalRuns, totalCredits, averagePace, averageDistance, averageCaloriesBurnt) => {
   const promise = new Promise((resolve, reject) => {
-    console.log('===============Insert Run Summary=================');
     db.transaction((tx) => {
       tx.executeSql('INSERT INTO RUN_SUMMARY (TOTAL_DISTANCE,TOTAL_RUNS,TOTAL_CREDITS,AVERAGE_PACE,AVERAGE_DISTANCE,AVERAGE_CALORIES_BURNT) VALUES (?,?,?,?,?,?);', [totalDistance, totalRuns, totalCredits, averagePace, averageDistance, averageCaloriesBurnt],
         (_, result) => {
-          console.log('=============Insert Run Summary Passed============');
           resolve(result);
         },
         (_, err) => {
-          console.log('===========Insert Run Summary Failed===============');
           reject(err);
         });
     });

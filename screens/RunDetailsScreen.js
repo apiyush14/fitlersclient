@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity,ScrollView} from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import { useDispatch } from 'react-redux';
@@ -8,171 +8,117 @@ import Card from '../components/Card';
 import {Ionicons} from '@expo/vector-icons';
 import {useSelector} from 'react-redux';
 import {useIsFocused} from "@react-navigation/native";
+import RunDetails from '../models/rundetails';
 
-var isCalledFromHistoryScreen=false;
-let runStartDateTime=null;
-let runId=0;
-let eventId=0;
-
-let mapRef=null;
-
-/*const TESTPOINTS = [
-{latitude: 31.624708978431634, longitude: 74.87492581820307},
-{latitude:31.624808978431635, longitude:74.87502581820307},
-{latitude:31.624908978431636, longitude:74.87512581820307},
-{latitude:31.625008978431637, longitude:74.87522581820307},
-{latitude:31.625208978431640, longitude:74.87532581820307},
-{latitude:31.625308978431645, longitude:74.87542581820307},
-{latitude:31.625408978431647, longitude:74.87552581820307},
-{latitude:31.625608978431648, longitude:74.87562581820307},
-{latitude:31.625708978431649, longitude:74.87572581820307},
-{latitude:31.625808978431656, longitude:74.87582581820307},
-{latitude:31.625908978431664, longitude:74.87592581820307},
-{latitude:31.626008978431667, longitude:74.87602581820307},
-{latitude:31.626109998432674, longitude:74.87612581820307},
-
-{latitude:31.626008978431667, longitude:74.87602581820307},
-{latitude:31.625908978431664, longitude:74.87612581820307},
-{latitude:31.625808978431664, longitude:74.87622581820307},
-{latitude:31.625708978431664, longitude:74.87632581820307},
-{latitude:31.625608978431664, longitude:74.87632581820307},
-{latitude:31.625508978431664, longitude:74.87652581820307},
-{latitude:31.625408978431664, longitude:74.87662581820307},
-{latitude:31.625308978431664, longitude:74.87672581820307},
-{latitude:31.625208978431664, longitude:74.87682581820307},
-{latitude:31.625108978431664, longitude:74.87692581820307},
-{latitude:31.625008978431664, longitude:74.87702581820307}
-];*/
+var isCalledFromHistoryScreen = false;
+let runStartDateTime = null;
+let runId = 0;
+let eventId = 0;
+let runDetails = null;
 
 const RunDetailsScreen = props=>{
 
-// State Selectors
-const eventResultDetails = useSelector(state => state.events.eventResultDetails);
+  // State Selectors
+  const eventResultDetails = useSelector(state => state.events.eventResultDetails);
 
-const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-//State Variables
-//const [mapState,setMapState]=useState(null);
-const [runPath, setRunPath]=useState([]);
-const [mapRegion, setMapRegion]=useState(null);
-const [runDate, setRunDate]=useState(null);
-const [runDay, setRunDay]=useState(null);
-const [runDistance,setRunDistance]=useState(0);
-const [runTotalTime, setRunTotalTime]=useState(0);
-const [runCaloriesBurnt,setRunCaloriesBurnt]=useState(0);
-const [runPace, setRunPace]=useState(0.00);
-const [userRank, setUserRank]=useState(0);
-const [isEvent, setIsEvent]=useState(false);
-const [trackTimer, setTrackTimer]=useState({
-  seconds: "00",
-  minutes: "00",
-  hours: "00"
-});
+  //State Variables
+  //const [mapState,setMapState]=useState(null);
+  const [runPath, setRunPath] = useState([]);
+  const [mapRegion, setMapRegion] = useState(null);
+  const [runDate, setRunDate] = useState(null);
+  const [runDay, setRunDay] = useState(null);
+  const [runDistance, setRunDistance] = useState(0);
+  const [runTotalTime, setRunTotalTime] = useState(0);
+  const [runCaloriesBurnt, setRunCaloriesBurnt] = useState(0);
+  const [runPace, setRunPace] = useState(0.00);
+  const [userRank, setUserRank] = useState(0);
+  const [isEvent, setIsEvent] = useState(false);
+  const [trackTimer, setTrackTimer] = useState({
+    seconds: "00",
+    minutes: "00",
+    hours: "00"
+  });
 
-//Load Screen Use Effect hook used to populate state variables
-useEffect(() => {
-  
-  console.log(props.route);
+  //Load Screen Use Effect hook used to populate state variables
+  useEffect(() => {
 
-  if(props.route.params.sourceScreen){
-    if(props.route.params.sourceScreen==='RunHistoryScreen'){
-      isCalledFromHistoryScreen=true;
+    runDetails = props.route.params.runDetails;
+    if (props.route.params.sourceScreen) {
+      if (props.route.params.sourceScreen === 'RunHistoryScreen') {
+        isCalledFromHistoryScreen = true;
+      }
     }
-  }
 
-  if(props.route.params.eventId){
-    var eventResult=eventResultDetails.find(eventResult=>eventResult.runId===props.route.params.runId);
-    setUserRank(eventResult!==undefined?eventResult.userRank:0);
-    setIsEvent(true);
-  }
+    if (runDetails.eventId > 0) {
+      var eventResult = eventResultDetails.find(eventResult => eventResult.runId === runDetails.runId);
+      setUserRank(eventResult !== undefined ? eventResult.userRank : 0);
+      setIsEvent(true);
+    }
 
-  if(props.route.params.runPath)
-  {
-    const pathArray=props.route.params.runPath;
-    setRunPath(pathArray);
-    
-    setRunDate(props.route.params.runDate);
-    setRunDay(props.route.params.runDay);
-    setRunDistance(props.route.params.runDistance);
-    setRunPace(props.route.params.runPace);
-    setRunCaloriesBurnt(props.route.params.runCaloriesBurnt);
+    if (runDetails.runDistance) {
+      const pathArray = runDetails.runPath;
+      //To handle No Location Available Scenario
+      if (pathArray.length > 0) {
+        setRunPath(pathArray);
+        setMapRegion({
+          latitude: pathArray[Math.floor(pathArray.length / 2)].latitude,
+          longitude: pathArray[Math.floor(pathArray.length / 2)].longitude,
+          latitudeDelta: Math.abs(pathArray[pathArray.length - 1].latitude - pathArray[0].latitude) + 0.005,
+          longitudeDelta: Math.abs(pathArray[pathArray.length - 1].longitude - pathArray[0].longitude) + 0.005
+        });
+      }
 
-    setMapRegion({
-     latitude: pathArray[Math.floor(pathArray.length/2)].latitude,
-     longitude: pathArray[Math.floor(pathArray.length/2)].longitude,
-     latitudeDelta: Math.abs(pathArray[pathArray.length-1].latitude-pathArray[0].latitude)+0.005,
-     longitudeDelta: Math.abs(pathArray[pathArray.length-1].longitude-pathArray[0].longitude)+0.005
-   });
-    
-    runStartDateTime=props.route.params.runStartDateTime;
-    runId=props.route.params.runId;
-    eventId=props.route.params.eventId;
-    var runTotalTimeVar=props.route.params.runTotalTime;
-    let secondsVar = ("0" + (Math.floor(runTotalTimeVar / 1000) % 60)).slice(-2);
-    let minutesVar = ("0" + (Math.floor(runTotalTimeVar / 60000) % 60)).slice(-2);
-    let hoursVar = ("0" + Math.floor(runTotalTimeVar / 3600000)).slice(-2);
-    setTrackTimer(
-    {
-      seconds: secondsVar,
-      minutes: minutesVar,
-      hours: hoursVar
-    });
-    setRunTotalTime(runTotalTimeVar);
-  }
+      setRunDate(runDetails.runDate);
+      setRunDay(runDetails.runDay);
+      setRunDistance(runDetails.runDistance);
+      setRunPace(runDetails.runPace);
+      setRunCaloriesBurnt(runDetails.runCaloriesBurnt);
 
-       //To be removed
-       /*if(!isCalledFromHistoryScreen){
-         console.log('Setting Up Run Path');
-         setRunPath(TESTPOINTS);
-       }*/
-       
-     }, [props.route.params]);
+      runStartDateTime = runDetails.runStartDateTime;
+      runId = runDetails.runId;
+      eventId = runDetails.eventId;
+      var runTotalTimeVar = runDetails.runTotalTime;
+      let secondsVar = ("0" + (Math.floor(runTotalTimeVar / 1000) % 60)).slice(-2);
+      let minutesVar = ("0" + (Math.floor(runTotalTimeVar / 60000) % 60)).slice(-2);
+      let hoursVar = ("0" + Math.floor(runTotalTimeVar / 3600000)).slice(-2);
+      setTrackTimer({
+        seconds: secondsVar,
+        minutes: minutesVar,
+        hours: hoursVar
+      });
+      setRunTotalTime(runTotalTimeVar);
+    }
+    saveRun();
+  }, [props.route.params]);
 
-//Use effect hook for taking a snapshot of the map
-useEffect(() => {
- if(runPath.length>0&&(!isCalledFromHistoryScreen)){
-   //takeSnapshot();
-   savePlaceHandler(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,0,runStartDateTime,runDate,runDay,runPath,"",eventId);
- }
-}, [runPath]);
-
-//Method to take a snapshot and call save method
-/*const takeSnapshot=()=>{
-  const snapshot = mapRef.takeSnapshot({
-   // width: 300,      // optional, when omitted the view-width is used
-   // height: 300,     // optional, when omitted the view-height is used
-    format: 'png',   // image formats: 'png', 'jpg' (default: 'png')
-    quality: 0.8,    // image quality: 0..1 (only relevant for jpg, default: 1)
-    result: 'file'   // result types: 'file', 'base64' (default: 'file')
-  });
-  snapshot.then((uri) => {
-    //setMapState(uri);
-    //savePlaceHandler(uri,date,day,lapsedTime,totalDistance,averagePace,caloriesBurnt,path);
-    savePlaceHandler(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,null,runStartDateTime,runDate,runDay,runPath,uri,eventId);
-  });
-};*/
-
-//Method to dispatch Add Run
-const savePlaceHandler = (runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl,eventId) => {
-  dispatch(runActions.addRun(runId,runTotalTime,runDistance,runPace,runCaloriesBurnt,runCredits,runStartDateTime,runDate,runDay,runPath,runTrackSnapUrl,eventId));
-};
+  //Method to save Run In Local DB and Server
+  const saveRun = () => {
+    if ((!isCalledFromHistoryScreen)) {
+      dispatch(runActions.addRun(runDetails)).then((response) => {
+        if (response.status >= 400) {
+          Alert.alert("Run Not Saved", "Sorry, we could not save this Run!!!");
+        }
+      });
+    }
+  };
 
 //View
 return (
  <View style={styles.runDetailsContainerStyle}>
-
-  <MapView style={styles.mapContainerStyle} region={mapRegion} ref={map => {mapRef = map }}
+  {runPath&&runPath.length>0?(
+  <MapView style={styles.mapContainerStyle} region={mapRegion}
    pitchEnabled={true} rotateEnabled={true} zoomEnabled={true} scrollEnabled={true}>
-   {runPath?(
    <Polyline 
    strokeWidth={5}
    strokeColor='red'
-   coordinates={runPath}/>):(<View></View>)}
+   coordinates={runPath}/>
    {runPath[0]!==undefined?(
    <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
    {runPath[runPath.length-1]!==undefined?(
    <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
-  </MapView>
+  </MapView>):<View style={styles.mapContainerStyle}></View>}
 
  <View style={styles.scrollViewContainerStyle}>
   <ScrollView style={styles.runMetricsContainerStyle}>

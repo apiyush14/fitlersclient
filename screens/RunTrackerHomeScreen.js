@@ -47,7 +47,7 @@ const RunTrackerHomeScreen = (props) => {
   useEffect(() => {
     (async () => {
 
-   Permissions.askAsync(Permissions.MOTION).then(response => {
+      Permissions.askAsync(Permissions.MOTION).then(response => {
         //TODO : To handle alert to change settings
         //Motion Sensor Permission Handling
         if (response.status !== 'granted') {
@@ -72,7 +72,7 @@ const RunTrackerHomeScreen = (props) => {
         }
       });
 
-   
+
     })();
   }, []);
 
