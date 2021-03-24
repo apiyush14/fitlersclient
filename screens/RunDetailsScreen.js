@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Platform} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import { useDispatch } from 'react-redux';
@@ -126,7 +126,7 @@ return (
 
    <View style={styles.rowStyle}>
     <Card style={{width:'97%'}}>
-      <Ionicons name="ios-trophy" size={25} color='springgreen'/>
+      <Ionicons name={Platform.OS === 'android'?"md-trophy":"ios-trophy"} size={25} color='springgreen'/>
       <Text style={styles.largeTextStyle}>{userRank}</Text>
       <Text style={styles.mediumTextStyle}>Rank</Text>
     </Card>
@@ -134,12 +134,12 @@ return (
 
    <View style={styles.rowStyle}>
     <Card style={{width:'60%'}}>
-     <Ionicons name="ios-walk" size={30} color='springgreen'/>
+     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={30} color='springgreen'/>
      <Text style={styles.largeTextStyle}>{parseFloat(runDistance/1000).toFixed(2)} KM</Text>
     </Card>
 
     <Card style={{width:'35%'}}>
-     <Ionicons name="ios-stopwatch" size={20} color='springgreen'/>
+     <Ionicons name={Platform.OS === 'android'?"md-stopwatch":"ios-stopwatch"} size={20} color='springgreen'/>
      <Text style={styles.mediumTextStyle}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
      <Text style={styles.smallTextStyle}>HH:MM:SS</Text>
     </Card>
@@ -147,19 +147,19 @@ return (
 
    <View style={styles.rowStyle}>
     <Card style={{width:'35%'}}>
-      <Ionicons name="ios-calendar" size={25} color='springgreen'/>
+      <Ionicons name={Platform.OS === 'android'?"md-calendar":"ios-calendar"} size={25} color='springgreen'/>
       <Text style={styles.mediumTextStyle}>{runDate}</Text>
       <Text style={styles.mediumTextStyle}>{runDay}</Text>
     </Card>
 
     <Card style={{width:'25%'}}>
-      <Ionicons name="ios-flame" size={25} color='springgreen'/>
+      <Ionicons name={Platform.OS === 'android'?"md-flame":"ios-flame"} size={25} color='springgreen'/>
       <Text style={styles.mediumTextStyle}>{parseFloat(runCaloriesBurnt).toFixed(2)}</Text>
       <Text style={styles.mediumTextStyle}>Calories</Text>
     </Card>
 
     <Card style={{width:'33%'}}>
-      <Ionicons name="ios-speedometer" size={25} color='springgreen'/>
+      <Ionicons name={Platform.OS === 'android'?"md-speedometer":"ios-speedometer"} size={25} color='springgreen'/>
       <Text style={styles.mediumTextStyle}>{parseFloat(runPace).toFixed(2)}</Text>
       <Text style={styles.mediumTextStyle}>Pace</Text>
     </Card>

@@ -1,5 +1,5 @@
 import React, {useState,useEffect} from 'react';
-import {View,Text,StyleSheet,ActivityIndicator} from 'react-native';
+import {View,Text,StyleSheet,ActivityIndicator,Platform} from 'react-native';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import {useIsFocused} from "@react-navigation/native";
 import {useSelector,useDispatch} from 'react-redux';
@@ -101,7 +101,7 @@ const RunHistoryScreen = props => {
     <View style={styles.footerContainerStyle}>
      <View style={styles.footerViewContainerStyle}>
       <View style={styles.footerValueContainerStyle}> 
-       <Ionicons name="ios-ribbon" size={30} color='springgreen'/>
+       <Ionicons name={Platform.OS === 'android'?"md-ribbon":"ios-ribbon"} size={30} color='springgreen'/>
        <Text style={styles.footerTextStyle}>{runSummary!=null?parseInt(runSummary.totalRuns):0}</Text>
       </View>
       <Text style={styles.footerTextStyle}>Total Runs</Text>
@@ -112,7 +112,7 @@ const RunHistoryScreen = props => {
 
      <View style={styles.footerViewContainerStyle}>
       <View style={styles.footerValueContainerStyle}>
-       <Ionicons name="ios-flame" size={30} color='springgreen'/>
+       <Ionicons name={Platform.OS === 'android'?"md-flame":"ios-flame"} size={30} color='springgreen'/>
        <Text style={styles.footerTextStyle}>
         {runSummary!=null?parseFloat(runSummary.averageCaloriesBurnt).toFixed(2):0}
        </Text> 
