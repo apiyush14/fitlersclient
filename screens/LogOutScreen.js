@@ -1,14 +1,12 @@
 import React from 'react';
-import {View,StyleSheet} from 'react-native';
+import {View,StyleSheet,Text} from 'react-native';
 
 //Dummy LogOutScreen
 const LogOutScreen = props => {
 
-	return ( <
-		View >
-
-		<
-		/View>
+	return ( <View>
+         <Text>Logging Out</Text>
+		</View>
 	);
 };
 

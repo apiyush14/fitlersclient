@@ -1,11 +1,10 @@
 import React from 'react';
 import {Ionicons} from '@expo/vector-icons';
 import { Platform, View, TouchableOpacity, StyleSheet } from 'react-native';
-import { AsyncStorage } from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer,StackActions } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import RunTrackerHomeScreen from '../screens/RunTrackerHomeScreen';
 import LiveRunTracker from '../screens/LiveRunTracker';
 import RunDetailsScreen from '../screens/RunDetailsScreen';
@@ -17,17 +16,12 @@ import TermsAndConditions from '../screens/TermsAndConditions';
 import Privacy from '../screens/Privacy';
 import UserDetailsScreen from '../screens/UserDetailsScreen';
 import EventsListSummaryScreen from '../screens/EventsListSummaryScreen';
-import TestScreen from '../screens/TestScreen';
 import {useDispatch,useSelector} from 'react-redux';
 import * as userActions from '../store/user-actions';
-import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
-
-export const UPDATE_USER_AUTH_DETAILS='UPDATE_USER_AUTH_DETAILS';
 
 const drawerNavigator = createDrawerNavigator();
 const stackNavigator=createStackNavigator();
 const tabNavigator=createBottomTabNavigator();
-const popAction = StackActions.pop(1);
 
 //Main Navigator
 const RunTrackerNavigator=()=>{
@@ -43,26 +37,9 @@ const RunTrackerNavigator=()=>{
     <drawerNavigator.Screen name="LogOut" component={LogOutScreen}
     listeners={({ navigation }) => ({
         state: (e) => {
-           if (e.data.state.index === 3) {
-
-                dispatch(cleanUserData(navigation,dispatch)).then(()=>{
-                  navigation.reset({
-                 index: 0,
-                 routes: [{ name: 'Home' }],
-              });
-                });
-                console.log('==============Going to navigate to home===========');
-                //navigation.navigate("Home");
-               
-              
-              //dispatch({type: UPDATE_USER_AUTH_DETAILS, authDetails:{userId: null, secret: null}});
-              //console.log('==============Going to navigate to home===========');
-              /*navigation.reset({
-                 index: 0,
-                 routes: [{ name: 'Home' }],
-              });*/
-              //navigation.navigate("Home");
-           }
+        if (e.data.state.index === 3) {
+          dispatch(cleanUserData(navigation, dispatch));
+        }
         }
     })}
     />
@@ -73,10 +50,7 @@ const RunTrackerNavigator=()=>{
 
 // Tab Navigator
 const RunTrackerTabNavigator=({navigation, route})=>{
-  console.log('=============Route====================');
-  //console.log(getActiveScreenName(route));
   var currentActiveScreenName=getActiveScreenName(route);
-  //var isTabNavigationVisible=true;
   var isTabNavigationVisible= currentActiveScreenName==='HomeScreen'
   ||currentActiveScreenName==='HomeScreen'
   ||currentActiveScreenName==='History'
@@ -117,14 +91,6 @@ const RunTrackerTabNavigator=({navigation, route})=>{
   <tabNavigator.Screen name="Home" component={RunTrackerStackNavigator} 
   listeners={{
     tabPress: e=>{
-      console.log('==============Home Tab Navigator================');
-      console.log(e);
-      //if (e.data.state.index === 1) {
-              //navigation.navigate("HomeScreen");
-        //   }
-      /*if(route.state.routes[0].state&&route.state.routes[0].state.index===1){
-      navigation.dispatch(popAction);
-    }*/
     }
   }}/>
   <tabNavigator.Screen name="Events" component={EventsStackNavigator} />
@@ -137,18 +103,6 @@ const RunTrackerTabNavigator=({navigation, route})=>{
 const RunTrackerStackNavigator=({navigation, route})=>{
   const authDetails = useSelector(state => state.authDetails);
   const userDetails = useSelector(state => state.userDetails);
-  console.log('==============Auth Details===============');
-  console.log(authDetails);
-  console.log('==============User Details===============');
-  console.log(userDetails);
-  console.log((authDetails===null)
-      ||(authDetails.userId===undefined)
-      ||(authDetails.userId===null) 
-      ||(userDetails===null) 
-      ||(userDetails.userFirstName===undefined)
-      ||(userDetails.userFirstName===null));
-  //console.log(navigation);
-  //console.log(route);
 
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
@@ -222,7 +176,6 @@ const RunTrackerStackNavigator=({navigation, route})=>{
 
   //Login Stack Navigator
   const LoginStackNavigator=({navigation, route})=>{
-    console.log('==========Login Stack Navigator===============');
     return (
       <stackNavigator.Navigator 
       screenOptions={
@@ -260,25 +213,25 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       );
     };
 
-   const getActiveScreenName=(route)=>{
-     if(route&&route.state){
-       if(route.state.index>=0&&route.state.routes){
-         return getActiveScreenName(route.state.routes[route.state.index]);
-       }
-     }
-     else{
-      return route.name;
-     }
-   };
-
-   const cleanUserData=(navigation,dispatch)=>{
+//Private Utility Method to Get Active Screen Name Recursively    
+const getActiveScreenName = (route) => {
+  if (route && route.state) {
+    if (route.state.index >= 0 && route.state.routes) {
+      return getActiveScreenName(route.state.routes[route.state.index]);
+    }
+  } else {
+    return route.name;
+  }
+};
+ 
+   //Private Utility Method to cleanup user state and local DB
+   const cleanUserData = (navigation, dispatch) => {
      return async dispatch => {
-             console.log('============Navigator Clean User Data============');
-             await dispatch({type: 'CLEAN_EVENT_STATE'});
-             await dispatch({type: 'CLEAN_RUN_STATE'});
-             await dispatch({type: 'CLEAN_USER_STATE'});
-             await dispatch({type: 'CLEAN_AUTH_STATE'});
-             await dispatch(userActions.cleanUpUserData());
+       await dispatch({type: 'CLEAN_EVENT_STATE'});
+       await dispatch({type: 'CLEAN_RUN_STATE'});
+       await dispatch({type: 'CLEAN_USER_STATE'});
+       await dispatch({type: 'CLEAN_AUTH_STATE'});
+       return await dispatch(userActions.cleanUpUserData());
      };
    };
 

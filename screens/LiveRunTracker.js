@@ -8,13 +8,7 @@ import Slider from '../components/Slider';
 import { Ionicons } from '@expo/vector-icons';
 import RunDetails from '../models/rundetails';
 
-let runId=0;
-let runTotalTime=0;
-let runPath=[];
 let startTime=Date.now();
-let runDate=null;
-let runDay=null;
-let runStartDateTime=null;
 let eventId=0;
 let timerForAutoPause=0;
 let runDistanceForAutoPause=0;
@@ -65,18 +59,14 @@ const LiveRunTrackerScreen = props=>{
   //Load Time useEffect hook
   useEffect(() => {
     var today = new Date();
-    runId = today.getTime();
-    runStartDateTime = today.toJSON();
-    runDate = today.getDate() + "/" + parseInt(today.getMonth() + 1) + "/" + today.getFullYear();
-    runDay = weekday[today.getDay()];
-    runTotalTime = 0;
-    runPath = [];
+    var runDate = today.getDate() + "/" + parseInt(today.getMonth() + 1) + "/" + today.getFullYear();
+    var runDay = weekday[today.getDay()];
     startTime = Date.now();
     eventId = props.route.params.eventId;
     subscribePedometer();
     subscribeAccelerometer();
     subscribeLocationUpdates();
-    runDetails = new RunDetails(runId, runTotalTime, runDistance, runPace, 0, 0, runStartDateTime, runDate, runDay, runPath, "", eventId, "0");
+    runDetails = new RunDetails(today.getTime(), 0, 0, runPace, 0, 0,  today.toJSON(), runDate, runDay, [], "", eventId, "0");
   }, []);
 
   //Subscribe Pedometer to count steps
@@ -148,7 +138,7 @@ const LiveRunTrackerScreen = props=>{
   const updatePaceAndCalories = (runDistance) => {
     if (runDistance > 0) {
       //Update average pace
-      const lapsedTimeinMinutes = runTotalTime / 60000;
+      const lapsedTimeinMinutes = runDetails.runTotalTime / 60000;
       const averagePace = lapsedTimeinMinutes / (runDistance / 1000);
       if (averagePace < 12.5) {
         runDetails.runPace = averagePace;
@@ -193,7 +183,7 @@ const LiveRunTrackerScreen = props=>{
         longitudeDelta: 0.0008,
         weight: 2
       };
-      runPath = [...runPath, currentLocation];
+      runDetails.runPath = [...runDetails.runPath, currentLocation];
     }
   };
 
@@ -227,7 +217,7 @@ const LiveRunTrackerScreen = props=>{
       }
 
       const currentTime = await Date.now();
-      let updatedLapsedTime = await runTotalTime + (currentTime - startTime);
+      let updatedLapsedTime = await runDetails.runTotalTime + (currentTime - startTime);
       let secondsVar = await ("0" + (Math.floor(updatedLapsedTime / 1000) % 60)).slice(-2);
       let minutesVar = await ("0" + (Math.floor(updatedLapsedTime / 60000) % 60)).slice(-2);
       let hoursVar = await ("0" + Math.floor(updatedLapsedTime / 3600000)).slice(-2);
@@ -238,7 +228,6 @@ const LiveRunTrackerScreen = props=>{
         hours: hoursVar
       });
 
-      runTotalTime = updatedLapsedTime;
       runDetails.runTotalTime = updatedLapsedTime;
       startTime = currentTime;
 
