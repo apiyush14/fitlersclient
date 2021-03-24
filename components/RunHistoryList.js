@@ -28,7 +28,7 @@ return(
    keyExtractor={(item,index)=>item.runId.toString()}
    renderItem={renderRunHistoryItem}
    onEndReachedThreshold={0}
-   onEndReached={()=>{props.onEndReached()}}
+   onEndReached={()=>{console.log('On End Reached');props.onEndReached();}}
    initialNumToRender={10}>
    </FlatList>
  </View>
