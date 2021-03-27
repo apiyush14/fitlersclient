@@ -34,7 +34,6 @@ const RunHistoryScreen = props => {
 
   //Async Method to lazy load Runs from server 
   const loadMoreDataFromServer = () => {
-    console.log('Load More data from server');
     if (isMoreContentAvailableOnServer) {
       setIsLoading(true);
       let pageNumber = Math.floor(runsHistory.length / 3);

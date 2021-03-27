@@ -76,7 +76,6 @@ export const loadEventsFromServer = (pageNumber) => {
         headers: header
       }).then(response => response.json())
       .then((response) => {
-        console.log(response);
         if (response.status >= 400) {
         if (response.message && response.message.includes("UNAUTHORIZED")) {
           dispatch(userActions.cleanUserDataStateAndDB());
