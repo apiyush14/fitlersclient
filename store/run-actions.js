@@ -4,6 +4,7 @@ import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import RunDetails from '../models/rundetails';
+import * as userActions from '../store/user-actions';
 
 export const UPDATE_RUN_DETAILS = 'UPDATE_RUN_DETAILS';
 export const UPDATE_RUN_SUMMARY = 'UPDATE_RUN_SUMMARY';
@@ -180,6 +181,9 @@ export const loadRunsFromServer = (pageNumber) => {
       }).then(response => response.json())
       .then((response) => {
         if (response.status >= 400) {
+        if (response.message && response.message.includes("UNAUTHORIZED")) {
+          dispatch(userActions.cleanUserDataStateAndDB());
+        }
           return new Response(response.status, null);
         } else if (response.runDetailsList.length > 0) {
           //Async Dispatch Runs Update State
@@ -252,6 +256,9 @@ export const loadRunSummaryFromServer = () => {
       }).then(response => response.json())
       .then((response) => {
         if (response.status >= 400) {
+        if (response.message && response.message.includes("UNAUTHORIZED")) {
+          dispatch(userActions.cleanUserDataStateAndDB());
+        }
           return new Response(response.status, null);
         } else if (response.runSummary !== null) {
           //Async Dispatch Run Summary State Update
@@ -306,8 +313,11 @@ export const syncPendingRuns = (pendingRunsForSync) => {
       }).then(response => response.json())
       .then((response) => {
         if (response.status >= 400) {
+        if (response.message && response.message.includes("UNAUTHORIZED")) {
+          dispatch(userActions.cleanUserDataStateAndDB());
+        }
           return new Response(response.status, null);
-        } else if (response === true) {
+        }  else if (response === true) {
           //Async Update Sync Flag in Local DB
           return dispatch(updateSyncStateInDB(pendingRunsForSync)).then((response) => {
             if (response.status >= 400) {

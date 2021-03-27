@@ -64,6 +64,9 @@ export const loadUserDetailsFromServer = () => {
       }).then(response => response.json())
       .then((response) => {
         if (response.status >= 400) {
+        if (response.message && response.message.includes("UNAUTHORIZED")) {
+          dispatch(userActions.cleanUserDataStateAndDB());
+        }
           return new Response(response.status, null);
         } else if (response.userDetails !== null && response.userDetails.userFirstName !== null) {
           //Async Dispatch User Details Update State
@@ -112,6 +115,9 @@ export const updateUserDetails = (firstName, lastName, height, weight) => {
       }).then(response => response.json())
       .then((response) => {
         if (response.status >= 400) {
+        if (response.message && response.message.includes("UNAUTHORIZED")) {
+          dispatch(userActions.cleanUserDataStateAndDB());
+        }
           return new Response(response.status, null);
         } else if (response === true) {
           //Async Update State for User Details
@@ -167,6 +173,17 @@ const updateUserDetailsInDB = (userFirstName, userLastName, userHeight, userWeig
       return new Response(500, null);
     };
   }
+};
+
+//Utility Method to cleanup user state and local DB
+export const cleanUserDataStateAndDB = (navigation, dispatch) => {
+  return async dispatch => {
+    await dispatch({type: 'CLEAN_EVENT_STATE'});
+    await dispatch({type: 'CLEAN_RUN_STATE'});
+    await dispatch({type: 'CLEAN_USER_STATE'});
+    await dispatch({type: 'CLEAN_AUTH_STATE'});
+    return await dispatch(cleanUpUserData());
+  };
 };
 
 //Method to clean up All User Data from Async Store and Local DB

@@ -7,6 +7,8 @@ export const UPDATE_EVENTS_FROM_SERVER='UPDATE_EVENTS_FROM_SERVER';
 export const UPDATE_EVENT_REGISTRATION_DETAILS='UPDATE_EVENT_REGISTRATION_DETAILS';
 export const UPDATE_EVENT_RESULT_DETAILS='UPDATE_EVENT_RESULT_DETAILS';
 
+import * as userActions from '../store/user-actions';
+
 export const registerUserForEvent=(eventDetails)=>{
  return async dispatch=>{
     var header= await dispatch(getUserAuthenticationToken());
@@ -74,7 +76,11 @@ export const loadEventsFromServer = (pageNumber) => {
         headers: header
       }).then(response => response.json())
       .then((response) => {
+        console.log(response);
         if (response.status >= 400) {
+        if (response.message && response.message.includes("UNAUTHORIZED")) {
+          dispatch(userActions.cleanUserDataStateAndDB());
+        }
           return new Response(response.status, null);
         } else if (response.eventDetails.length > 0) {
           dispatch({

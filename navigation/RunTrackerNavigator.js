@@ -38,7 +38,7 @@ const RunTrackerNavigator=()=>{
     listeners={({ navigation }) => ({
         state: (e) => {
         if (e.data.state.index === 3) {
-          dispatch(cleanUserData(navigation, dispatch));
+          dispatch(userActions.cleanUserDataStateAndDB());
         }
         }
     })}
@@ -224,15 +224,4 @@ const getActiveScreenName = (route) => {
   }
 };
  
-   //Private Utility Method to cleanup user state and local DB
-   const cleanUserData = (navigation, dispatch) => {
-     return async dispatch => {
-       await dispatch({type: 'CLEAN_EVENT_STATE'});
-       await dispatch({type: 'CLEAN_RUN_STATE'});
-       await dispatch({type: 'CLEAN_USER_STATE'});
-       await dispatch({type: 'CLEAN_AUTH_STATE'});
-       return await dispatch(userActions.cleanUpUserData());
-     };
-   };
-
-   export default RunTrackerNavigator;
+export default RunTrackerNavigator;
