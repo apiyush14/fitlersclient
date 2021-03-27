@@ -289,7 +289,7 @@
       padding: '2%'
     },
     hyperLinkTextStyle: {
-      fontSize: moderateScale(15, 0.8),
+      fontSize: moderateScale(14, 0.8),
       color: 'white',
       fontWeight: 'bold',
       textDecorationLine: 'underline'
