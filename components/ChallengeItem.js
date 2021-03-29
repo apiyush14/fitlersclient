@@ -16,7 +16,7 @@ const [daysLeft, setDaysLeft] = useState(0);
     (async () => {
       let currentDate = new Date();
       let eventStartDate = new Date(props.eventStartDate);
-      setDaysLeft((currentDate.getTime() - eventStartDate.getTime()) / (1000 * 3600 * 24));
+      setDaysLeft(((eventStartDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24))+1);
     })();
   }, []);
 
@@ -30,8 +30,9 @@ return(
       style={styles.imageStyle}>
     </Image>
     <View style={styles.textViewHeaderStyle}>
-     {props.isRegistered===true?(
+     {props.isRegistered===true?Math.floor(daysLeft)>1?(
       <Text style={styles.textStyle}>Registered : {Math.floor(daysLeft)} days to go</Text>):
+      (<Text style={styles.textStyle}>Registered : {Math.floor(daysLeft)} day to go</Text>):
      (<Text></Text>)
      }
     </View>

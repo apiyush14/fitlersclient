@@ -98,18 +98,50 @@ const RunTrackerHomeScreen = (props) => {
     }
   };
 
+  //Click Event Item Listener
   const onClickEventItem = (eventItem) => {
     setModalEventDetails(eventItem);
     setModalVisible(true);
   };
 
+  //Close Event Item Listener
   const onCloseEventItem = (eventItem) => {
     setModalVisible(false);
   };
 
+  //Register Event Listener
   const onRegisterEventItem = (eventItem) => {
-    dispatch(eventActions.registerUserForEvent(modalEventDetails));
-    setModalVisible(false);
+    dispatch(eventActions.registerUserForEvent(modalEventDetails)).then((response) => {
+      if (response.status === 405) {
+        Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+          text: 'OK',
+          onPress: () => {
+            setModalVisible(false)
+          }
+        }], {
+          cancelable: false
+        });
+      } else
+      if (response.status != 200) {
+        Alert.alert("Registration Failed", "Registration for the event failed, please try again later!!!", [{
+          text: 'OK',
+          onPress: () => {
+            setModalVisible(false)
+          }
+        }], {
+          cancelable: false
+        });
+      } else {
+        Alert.alert("Registration Successful", "You have been registered successfully, see you on Run Day!!!", [{
+          text: 'OK',
+          onPress: () => {
+            setModalVisible(false)
+          }
+        }], {
+          cancelable: false
+        });
+      }
+    });
   };
 
   //Method to lazy load Events from server 

@@ -6,52 +6,60 @@ import configData from "../config/config.json";
 export const UPDATE_EVENTS_FROM_SERVER='UPDATE_EVENTS_FROM_SERVER';
 export const UPDATE_EVENT_REGISTRATION_DETAILS='UPDATE_EVENT_REGISTRATION_DETAILS';
 export const UPDATE_EVENT_RESULT_DETAILS='UPDATE_EVENT_RESULT_DETAILS';
+export const CLEAN_EVENT_STATE='CLEAN_EVENT_STATE';
 
 import * as userActions from '../store/user-actions';
 
-export const registerUserForEvent=(eventDetails)=>{
- return async dispatch=>{
-    var header= await dispatch(getUserAuthenticationToken());
+//Method to Register User For Event and Update details to server
+export const registerUserForEvent = (eventDetails) => {
+  return async dispatch => {
+    var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
- return new Promise((resolve,reject)=>{
-    NetInfo.fetch().then(state => {
-        if (!state.isConnected) {
-          //reject(201);
-        }
-      });
-    var URL=configData.SERVER_URL +"event-registration/registerForEvent/"+eventDetails.eventId+"?userId="+userId;
-    fetch(URL, { 
-    method: 'POST', 
-    headers: header
-  }).then(response => response.json())
-    .then((response)=> {
-     //console.log('POST API results');
-     //console.log(response);
-     dispatch(updateEventRegistrationDetails(eventDetails));
-     var eventRegistrationDetailsList=[];
-     var eventRegistrationDetails={
-      eventId: eventDetails.eventId,
-      eventName: eventDetails.eventName,
-      eventDescription: eventDetails.eventDescription,
-      eventStartDate: eventDetails.eventStartDate,
-      eventEndDate: eventDetails.eventEndDate
-     };
-     eventRegistrationDetailsList=eventRegistrationDetailsList.concat(eventRegistrationDetails);
-     dispatch({type: UPDATE_EVENT_REGISTRATION_DETAILS,eventRegistrationDetails: eventRegistrationDetailsList});
-     resolve();
-    }).catch(err=>{
-      //reject(err);
-    });
-});
-}
-};
 
-export const updateEventRegistrationDetails=(eventDetails)=>{
- return async dispatch=>{
-    return new Promise((resolve,reject)=>{
-     insertEventRegistrationDetails(eventDetails.eventId,eventDetails.eventName,eventDetails.eventDescription,eventDetails.eventStartDate,eventDetails.eventEndDate);
-});
-}
+    var networkStatus = await NetInfo.fetch().then(state => {
+      if (!state.isConnected) {
+        return new Response(405, null);
+      }
+    });
+    if (networkStatus) {
+      return networkStatus;
+    }
+
+    var URL = configData.SERVER_URL + "event-registration/registerForEvent/" + eventDetails.eventId + "?userId=" + userId;
+    return fetch(URL, {
+        method: 'POST',
+        headers: header
+      }).then(response => response.json())
+      .then((response) => {
+        if (response.status >= 400) {
+          if (response.message && response.message.includes("UNAUTHORIZED")) {
+            dispatch(userActions.cleanUserDataStateAndDB());
+          }
+          return new Response(response.status, null);
+        } else {
+          //Async Dispatch Update Event Registration Details in Local DB
+          insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate);
+
+          var eventRegistrationDetailsList = [];
+          /*var eventRegistrationDetails={
+           eventId: eventDetails.eventId,
+           eventName: eventDetails.eventName,
+           eventDescription: eventDetails.eventDescription,
+           eventStartDate: eventDetails.eventStartDate,
+           eventEndDate: eventDetails.eventEndDate
+          };*/
+          eventRegistrationDetailsList = eventRegistrationDetailsList.concat(eventDetails);
+          //Async Dispatch Update Event Registration State
+          dispatch({
+            type: UPDATE_EVENT_REGISTRATION_DETAILS,
+            eventRegistrationDetails: eventRegistrationDetailsList
+          });
+          return new Response(200, eventDetails);
+        }
+      }).catch(err => {
+        return new Response(500, null);
+      });
+  }
 };
 
 //Method to Load Available Events from Server
@@ -77,9 +85,9 @@ export const loadEventsFromServer = (pageNumber) => {
       }).then(response => response.json())
       .then((response) => {
         if (response.status >= 400) {
-        if (response.message && response.message.includes("UNAUTHORIZED")) {
-          dispatch(userActions.cleanUserDataStateAndDB());
-        }
+          if (response.message && response.message.includes("UNAUTHORIZED")) {
+            dispatch(userActions.cleanUserDataStateAndDB());
+          }
           return new Response(response.status, null);
         } else if (response.eventDetails.length > 0) {
           dispatch({
@@ -123,7 +131,7 @@ export const loadEventRegistrationDetails = () => {
           dispatch(loadEventRegistrationDetailsFromServer(0)).then((response) => {
             if (response.status >= 400) {
               //Do nothing
-            } else if (response.data&&response.data.eventDetails.length > 0) {
+            } else if (response.data && response.data.eventDetails.length > 0) {
               response.data.eventDetails.map((eventDetails) => {
                 //Hydrate Local DB
                 insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate);
