@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Platform} from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Platform, ImageBackground} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import { useDispatch } from 'react-redux';
@@ -118,7 +118,13 @@ return (
    <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
    {runPath[runPath.length-1]!==undefined?(
    <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
-  </MapView>):<View style={styles.mapContainerStyle}></View>}
+  </MapView>):
+   <View style={styles.mapContainerStyle}>
+    <ImageBackground 
+      source={require('../assets/images/no_location.jpg')} 
+      style={styles.bgImage}>
+     </ImageBackground>
+   </View>}
 
  <View style={styles.scrollViewContainerStyle}>
   <ScrollView style={styles.runMetricsContainerStyle}>
@@ -188,6 +194,9 @@ const styles = StyleSheet.create({
   runMetricsContainerStyle: {
     flexDirection: 'column',
     alignSelf: 'center'
+  },
+  bgImage: {
+   flex: 1
   },
 
   rowStyle: {

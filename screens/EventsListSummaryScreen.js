@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity,Modal,ActivityIndicator} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,Modal,ActivityIndicator, Alert} from 'react-native';
 import {useDispatch,useSelector} from 'react-redux';
 import EventItemsList from '../components/EventItemsList';
 import EventHistoryList from '../components/EventHistoryList';

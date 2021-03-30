@@ -1,5 +1,5 @@
 import React,{ useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Platform} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Platform, ImageBackground} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import { Ionicons } from '@expo/vector-icons';
@@ -44,6 +44,7 @@ const [runPath, setRunPath] = useState([]);
 return(
  	<View style={styles.runHistoryItemContainerStyle}>
  	<TouchableOpacity onPress={props.onSelectRunItem}>
+  
  	 <View style={styles.mapContainerViewStyle}>
    {runPath&&runPath.length>0?(
    <MapView style={styles.mapContainerStyle} region={mapRegion}
@@ -56,7 +57,13 @@ return(
      <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
       {runPath[runPath.length-1]!==undefined?(
      <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
-   </MapView>):<View style={styles.mapContainerStyle}></View>}
+   </MapView>):
+    <View style={styles.mapContainerStyle}>
+     <ImageBackground 
+      source={require('../assets/images/no_location.jpg')} 
+      style={styles.bgImage}>
+     </ImageBackground>
+    </View>}
    </View>
 
    <View style={styles.runDetailsContainerStyle}>
@@ -114,6 +121,9 @@ const styles = StyleSheet.create({
   },
   mapContainerStyle: {
     flex: 1
+  },
+  bgImage: {
+   flex: 1
   },
 
   runDetailsContainerStyle: {

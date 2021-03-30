@@ -30,7 +30,7 @@ const SplashScreen = props => {
 return (
   <View style={styles.splashScreenContainer}>
   <ImageBackground 
-  source={require('../assets/images/splash.jpg')} 
+  source={require('../assets/images/splash.png')} 
   style={styles.bgImage}>
    <ActivityIndicator
         animating={animating}
