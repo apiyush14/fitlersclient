@@ -4,6 +4,7 @@ import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import RoundButton from '../components/RoundButton';
 import {useDispatch,useSelector} from 'react-redux';
+import {useIsFocused} from "@react-navigation/native";
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import * as Permissions from 'expo-permissions';
@@ -14,9 +15,10 @@ import EventView from '../components/EventView';
 
 const RunTrackerHomeScreen = (props) => {
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
 
   // State Selectors
-  const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
+  const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails).filter(event => event.runId === 0);
   const eventDetails = useSelector(state => state.events.eventDetails);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +32,14 @@ const RunTrackerHomeScreen = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalEventDetails, setModalEventDetails] = useState(null);
   const [ongoingEventDetails, setOngoingEventDetails] = useState(null);
+
+  // Use Effect Hook to be loaded everytime the screen loads
+  useEffect(() => {
+    if (isFocused) {
+      setOngoingEventDetails(null);
+      checkAndUpdateOngoingEvent();
+    }
+  }, [props, isFocused]);
 
   //Async Load User Data upon initialization
   useEffect(() => {
@@ -79,6 +89,7 @@ const RunTrackerHomeScreen = (props) => {
   //Use effect for Event Registration Changes
   useEffect(() => {
     (async () => {
+      setOngoingEventDetails(null);
       checkAndUpdateOngoingEvent();
     })();
   }, [eventRegistrationDetails]);

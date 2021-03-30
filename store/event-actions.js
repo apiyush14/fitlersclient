@@ -1,10 +1,11 @@
 import NetInfo from '@react-native-community/netinfo';
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
-import {insertEventRegistrationDetails,fetchEventRegistrationDetails} from '../utils/DBUtils';
+import {insertEventRegistrationDetails,fetchEventRegistrationDetails,updateEventRegistrationDetails} from '../utils/DBUtils';
 import configData from "../config/config.json";
 
 export const UPDATE_EVENTS_FROM_SERVER='UPDATE_EVENTS_FROM_SERVER';
 export const UPDATE_EVENT_REGISTRATION_DETAILS='UPDATE_EVENT_REGISTRATION_DETAILS';
+export const UPDATE_RUN_IN_EVENT_REGISTRATION='UPDATE_RUN_IN_EVENT_REGISTRATION';
 export const UPDATE_EVENT_RESULT_DETAILS='UPDATE_EVENT_RESULT_DETAILS';
 export const CLEAN_EVENT_STATE='CLEAN_EVENT_STATE';
 
@@ -38,16 +39,10 @@ export const registerUserForEvent = (eventDetails) => {
           return new Response(response.status, null);
         } else {
           //Async Dispatch Update Event Registration Details in Local DB
-          insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate);
+          insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate, 0);
 
           var eventRegistrationDetailsList = [];
-          /*var eventRegistrationDetails={
-           eventId: eventDetails.eventId,
-           eventName: eventDetails.eventName,
-           eventDescription: eventDetails.eventDescription,
-           eventStartDate: eventDetails.eventStartDate,
-           eventEndDate: eventDetails.eventEndDate
-          };*/
+          eventDetails.runId=0;
           eventRegistrationDetailsList = eventRegistrationDetailsList.concat(eventDetails);
           //Async Dispatch Update Event Registration State
           dispatch({
@@ -114,7 +109,8 @@ export const loadEventRegistrationDetails = () => {
               eventName: eventRegistrationDetails.EVENT_NAME,
               eventDescription: eventRegistrationDetails.EVENT_DESCRIPTION,
               eventStartDate: eventRegistrationDetails.EVENT_START_DATE,
-              eventEndDate: eventRegistrationDetails.EVENT_END_DATE
+              eventEndDate: eventRegistrationDetails.EVENT_END_DATE,
+              runId: eventRegistrationDetails.runId
             };
             return updatedEventRegisration;
           });
@@ -134,7 +130,7 @@ export const loadEventRegistrationDetails = () => {
             } else if (response.data && response.data.eventDetails.length > 0) {
               response.data.eventDetails.map((eventDetails) => {
                 //Hydrate Local DB
-                insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate);
+                insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate, eventDetails.runId);
               });
             }
           });
@@ -170,13 +166,14 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
         if (response.status >= 400) {
           return new Response(response.status, null);
         } else if (response.eventDetails.length > 0) {
-          var updatedEventRegistrationDetails = response.eventDetails.map((eventRegistrationDetails) => {
+          var updatedEventRegistrationDetails = response.eventDetails.map((eventDetails) => {
             var updatedEventRegisration = {
               eventId: eventRegistrationDetails.eventId,
               eventName: eventRegistrationDetails.eventName,
               eventDescription: eventRegistrationDetails.eventDescription,
               eventStartDate: eventRegistrationDetails.eventStartDate,
-              eventEndDate: eventRegistrationDetails.eventEndDate
+              eventEndDate: eventRegistrationDetails.eventEndDate,
+              runId: eventRegistrationDetails.runId
             };
             return updatedEventRegisration;
           });
@@ -247,5 +244,23 @@ export const loadEventResultDetailsFromServer = () => {
       }).catch(err => {
         return new Response(500, null);
       });
+  }
+};
+
+//Method to Update Run Id in Event Registration
+export const updateRunDetailsInEventRegistration = (eventId, runId) => {
+  return async dispatch => {
+    var updatedEventRegistrationDetails = {
+      eventId: eventId,
+      runId: runId
+    };
+    //Async Dispatch Update Event Registration Details in Local DB
+    updateEventRegistrationDetails(eventId, runId);
+
+    //Async Dispatch Update Event Registration State
+    dispatch({
+      type: UPDATE_RUN_IN_EVENT_REGISTRATION,
+      updatedEventRegistrationDetails: updatedEventRegistrationDetails
+    });
   }
 };

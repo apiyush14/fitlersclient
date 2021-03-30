@@ -97,7 +97,16 @@ const RunDetailsScreen = props=>{
   const saveRun = () => {
     if ((!isCalledFromHistoryScreen)) {
       dispatch(runActions.addRun(runDetails)).then((response) => {
-        if (response.status >= 400) {
+        if (runDetails.eventId > 0) {
+          if (response.status === 405) {
+            Alert.alert("Internet Issue", "Your Event Run is not yet submitted due to connectivity issue, please check the internet connection and reload the application to submit this run!!!");
+          } else if (response.status >= 400) {
+            Alert.alert("Technical Issue", "Your Event Run is not yet submitted due to technical issue, please reload the application to submit this run!!!");
+          } else {
+            Alert.alert("Success", "Your Event Run has been submitted successfully!!!");
+          }
+        }
+        else if (response.status >= 400) {
           Alert.alert("Run Not Saved", "Sorry, we could not save this Run!!!");
         }
       });

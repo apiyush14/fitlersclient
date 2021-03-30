@@ -5,6 +5,7 @@ import configData from "../config/config.json";
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import RunDetails from '../models/rundetails';
 import * as userActions from '../store/user-actions';
+import * as eventActions from '../store/event-actions';
 
 export const UPDATE_RUN_DETAILS = 'UPDATE_RUN_DETAILS';
 export const UPDATE_RUN_SUMMARY = 'UPDATE_RUN_SUMMARY';
@@ -38,8 +39,22 @@ export const addRun = (runDetails) => {
         });
         //Async Dispatch Add Run Summary
         dispatch(addRunSummary(runDetails));
-        //Async Dispatch Sync New Run to Server
-        dispatch(syncPendingRuns(updatedRuns));
+
+        if (runDetails.eventId > 0) {
+          //Async Update Run Details in Event Registration
+          dispatch(eventActions.updateRunDetailsInEventRegistration(runDetails.eventId, runDetails.runId));
+          //Async Dispatch Sync New Run to Server
+          return dispatch(syncPendingRuns(updatedRuns)).then((response) => {
+            if (response.status >= 400) {
+              return new Response(response.status, null);
+            } else {
+              return new Response(200, updatedRuns);
+            }
+          });
+        } else {
+          //Async Dispatch Sync New Run to Server
+          dispatch(syncPendingRuns(updatedRuns));
+        }
         return new Response(200, updatedRuns);
       }
     ).catch(err => {

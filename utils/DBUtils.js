@@ -26,7 +26,7 @@ export const init = () => {
           reject(err);
         });
 
-      tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_REGISTRATION_DETAILS (EVENT_ID INTEGER PRIMARY KEY NOT NULL, EVENT_NAME TEXT NOT NULL, EVENT_DESCRIPTION TEXT,EVENT_START_DATE TEXT NOT NULL,EVENT_END_DATE TEXT NOT NULL);',
+        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_REGISTRATION_DETAILS (EVENT_ID INTEGER PRIMARY KEY NOT NULL, EVENT_NAME TEXT NOT NULL, EVENT_DESCRIPTION TEXT,EVENT_START_DATE TEXT NOT NULL,EVENT_END_DATE TEXT NOT NULL, RUN_ID INTEGER);',
         //tx.executeSql('DROP TABLE EVENT_REGISTRATION_DETAILS;',
         //tx.executeSql('DELETE FROM EVENT_REGISTRATION_DETAILS;',
         [],
@@ -170,10 +170,26 @@ export const fetchRunSummary = () => {
 };
 
 //Method to Insert Event Registration Details in EVENT_REGISTRATION_DETAILS
-export const insertEventRegistrationDetails = (eventId, eventName, eventDescription, eventStartDate, eventEndDate) => {
+export const insertEventRegistrationDetails = (eventId, eventName, eventDescription, eventStartDate, eventEndDate, runId) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
-      tx.executeSql('INSERT INTO EVENT_REGISTRATION_DETAILS (EVENT_ID,EVENT_NAME,EVENT_DESCRIPTION,EVENT_START_DATE,EVENT_END_DATE) VALUES (?,?,?,?,?);', [eventId, eventName, eventDescription, eventStartDate, eventEndDate],
+      tx.executeSql('INSERT INTO EVENT_REGISTRATION_DETAILS (EVENT_ID,EVENT_NAME,EVENT_DESCRIPTION,EVENT_START_DATE,EVENT_END_DATE,RUN_ID) VALUES (?,?,?,?,?,?);', [eventId, eventName, eventDescription, eventStartDate, eventEndDate, runId],
+        (_, result) => {
+          resolve(result);
+        },
+        (_, err) => {
+          reject(err);
+        });
+    });
+  });
+  return promise;
+};
+
+//Method to Update Event Registration Details in EVENT_REGISTRATION_DETAILS
+export const updateEventRegistrationDetails = (eventId, runId) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql('UPDATE EVENT_REGISTRATION_DETAILS SET RUN_ID=? where EVENT_ID in (' + eventId + ');', [runId],
         (_, result) => {
           resolve(result);
         },

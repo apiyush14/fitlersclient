@@ -15,10 +15,9 @@ const EventsListSummaryScreen = props => {
   // State Selectors
   const eventDetails = useSelector(state => state.events.eventDetails);
   const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails).filter((event) => {
-    let currentDate = new Date();
-    let eventStartDate = new Date(event.eventStartDate);
-    let numberOfDaysLeft = Math.floor((currentDate.getTime() - eventStartDate.getTime()) / (1000 * 3600 * 24));
-    return numberOfDaysLeft <= 0;
+    let currentTime = new Date().getTime();
+    var eventEndDateTime = new Date(event.eventEndDate);
+    return currentTime <= eventEndDateTime.getTime() && event.runId === 0;
   });
   const runsHistoryDetails = useSelector(state => state.runs.runs);
   const eventRunsHistoryDetails = useSelector(state => state.runs.runs).filter((run) => run.eventId > 0);
