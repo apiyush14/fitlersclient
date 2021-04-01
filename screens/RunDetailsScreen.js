@@ -43,7 +43,6 @@ const RunDetailsScreen = props=>{
 
   //Load Screen Use Effect hook used to populate state variables
   useEffect(() => {
-
     runDetails = props.route.params.runDetails;
     if (props.route.params.sourceScreen) {
       if (props.route.params.sourceScreen === 'RunHistoryScreen') {
@@ -51,7 +50,7 @@ const RunDetailsScreen = props=>{
       }
     }
 
-    if (runDetails.eventId > 0) {
+    if (parseInt(runDetails.eventId) > 0) {
       var eventResult = eventResultDetails.find(eventResult => eventResult.runId === runDetails.runId);
       setUserRank(eventResult !== undefined ? eventResult.userRank : 0);
       setIsEvent(true);
@@ -100,13 +99,14 @@ const RunDetailsScreen = props=>{
         if (runDetails.eventId > 0) {
           if (response.status === 405) {
             Alert.alert("Internet Issue", "Your Event Run is not yet submitted due to connectivity issue, please check the internet connection and reload the application to submit this run!!!");
+          } else if (response.status === 453) {
+            Alert.alert("Run Not Eligible", "Your Event Run is not eligible for submission, we have saved it as a normal run!!!");
           } else if (response.status >= 400) {
             Alert.alert("Technical Issue", "Your Event Run is not yet submitted due to technical issue, please reload the application to submit this run!!!");
           } else {
             Alert.alert("Success", "Your Event Run has been submitted successfully!!!");
           }
-        }
-        else if (response.status >= 400) {
+        } else if (response.status >= 400) {
           Alert.alert("Run Not Saved", "Sorry, we could not save this Run!!!");
         }
       });

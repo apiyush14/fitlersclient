@@ -1,4 +1,4 @@
-import {insertRun,fetchRuns,fetchRunSummary,updateRunSummary,insertRunSummary,updateRunsSyncState,deleteRuns} from '../utils/DBUtils';
+import {insertRun,fetchRuns,fetchRunSummary,updateRunSummary,insertRunSummary,updateRunsSyncState,deleteRuns,fetchEventDetailsBasedOnEventId} from '../utils/DBUtils';
 import NetInfo from '@react-native-community/netinfo';
 import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
@@ -13,12 +13,24 @@ export const UPDATE_RUN_SYNC_STATE = 'UPDATE_RUN_SYNC_STATE';
 export const CLEAN_RUN_STATE = 'CLEAN_RUN_STATE';
 
 //Method to add a new Run to Local DB and to server
-export const addRun = (runDetails) => {
+export const addRun = (runDetailsVar) => {
   return async dispatch => {
+    var runDetails = new RunDetails(runDetailsVar.runId, runDetailsVar.runTotalTime, runDetailsVar.runDistance, runDetailsVar.runPace, runDetailsVar.runCaloriesBurnt, runDetailsVar.runCredits, runDetailsVar.runStartDateTime, runDetailsVar.runDate, runDetailsVar.runDay, runDetailsVar.runPath, runDetailsVar.runTrackSnapUrl, runDetailsVar.eventId, runDetailsVar.isSyncDone);
     var userId = await AsyncStorage.getItem('USER_ID');
+
+    var isEventRun = runDetails.eventId > 0;
+    var isRunEligibleForSubmissionStatus = 200;
 
     //Async Method to Delete Runs from Local DB if required
     dispatch(checkAndDeleteRunsIfNeeded());
+
+    if (isEventRun) {
+      var isRunEligibleResponse = await dispatch(validateIfRunEligibleForEventSubmission(runDetails));
+      if (isRunEligibleResponse.status >= 400) {
+        isRunEligibleForSubmissionStatus = isRunEligibleResponse.status;
+        runDetails.eventId = 0;
+      }
+    }
 
     var pathString = "";
     if (runDetails.runPath.length > 0) {
@@ -40,22 +52,27 @@ export const addRun = (runDetails) => {
         //Async Dispatch Add Run Summary
         dispatch(addRunSummary(runDetails));
 
-        if (runDetails.eventId > 0) {
+        if (isEventRun && isRunEligibleForSubmissionStatus === 200) {
           //Async Update Run Details in Event Registration
           dispatch(eventActions.updateRunDetailsInEventRegistration(runDetails.eventId, runDetails.runId));
-          //Async Dispatch Sync New Run to Server
-          return dispatch(syncPendingRuns(updatedRuns)).then((response) => {
-            if (response.status >= 400) {
-              return new Response(response.status, null);
-            } else {
-              return new Response(200, updatedRuns);
-            }
-          });
-        } else {
-          //Async Dispatch Sync New Run to Server
-          dispatch(syncPendingRuns(updatedRuns));
+
         }
-        return new Response(200, updatedRuns);
+        //Async Dispatch Sync New Run to Server
+        return dispatch(syncPendingRuns(updatedRuns)).then((response) => {
+          if (response.status >= 400) {
+            return {
+              status: response.status
+            };
+          } else if (isRunEligibleForSubmissionStatus >= 400) {
+            return {
+              status: isRunEligibleForSubmissionStatus
+            };
+          } else {
+            return {
+              status: 200
+            };
+          }
+        });
       }
     ).catch(err => {
       //Return New Response not working here, WA applied
@@ -307,15 +324,24 @@ export const syncPendingRuns = (pendingRunsForSync) => {
       return networkStatus;
     }
 
+    var eventEligibleStatus = 200;
+
     var pendingRunsForSyncRequest = pendingRunsForSync.map(pendingRun => {
       var pathString = pendingRun.runPath;
       if (Array.isArray(pendingRun.runPath)) {
         pathString = pendingRun.runPath.map((path) => "" + path.latitude + "," + path.longitude).join(';');
       }
+      var isEventRun = pendingRun.eventId > 0;
+      if (isEventRun) {
+        var isRunEligibleResponse = dispatch(validateIfRunEligibleForEventSubmission(pendingRun));
+        if (isRunEligibleResponse.status >= 400) {
+          eventEligibleStatus = isRunEligibleResponse.status;
+          pendingRun.eventId = 0;
+        }
+      }
       var runDetails = new RunDetails(pendingRun.runId, pendingRun.runTotalTime, pendingRun.runDistance, pendingRun.runPace, pendingRun.runCaloriesBurnt, pendingRun.runCredits, pendingRun.runStartDateTime, pendingRun.runDate, pendingRun.runDay, pathString, pendingRun.runTrackSnapUrl, pendingRun.eventId, pendingRun.isSyncDone);
       runDetails.userId = userId;
       return runDetails;
-
     });
 
     var URL = configData.SERVER_URL + "run-details/addRuns/" + userId;
@@ -328,27 +354,40 @@ export const syncPendingRuns = (pendingRunsForSync) => {
       }).then(response => response.json())
       .then((response) => {
         if (response.status >= 400) {
-        if (response.message && response.message.includes("UNAUTHORIZED")) {
-          dispatch(userActions.cleanUserDataStateAndDB());
-        }
-          return new Response(response.status, null);
-        }  else if (response === true) {
+          if (response.message && response.message.includes("UNAUTHORIZED")) {
+            dispatch(userActions.cleanUserDataStateAndDB());
+          }
+          return {
+            status: response.status
+          };
+        } else if (response === true) {
           //Async Update Sync Flag in Local DB
           return dispatch(updateSyncStateInDB(pendingRunsForSync)).then((response) => {
             if (response.status >= 400) {
-              return new Response(response.status, null);
+              return {
+                status: response.status
+              };
             } else {
               //Async Run State Update
               dispatch({
                 type: UPDATE_RUN_SYNC_STATE,
                 pendingRunsForSync
               });
+              if (eventEligibleStatus >= 400) {
+                return {
+                  status: eventEligibleStatus
+                };
+              }
+              return {
+                status: 200
+              };
             }
           });
         }
-        return new Response(200, response);
       }).catch(err => {
-        return new Response(500, null);
+        return {
+          status: 500
+        };
       });
   }
 };
@@ -401,5 +440,36 @@ const checkAndDeleteRunsIfNeeded = () => {
     }).catch(err => {
       return new Response(500, null);
     });
+  };
+};
+
+//Private Method to Check whether current run is eligible for Event Submission based on Event Metric Value
+const validateIfRunEligibleForEventSubmission = (runDetails) => {
+  return async dispatch => {
+    try {
+      return fetchEventDetailsBasedOnEventId(runDetails.eventId).then((response) => {
+        var currentTime = new Date().getTime();
+        var eventEndDateTime = new Date(response.rows._array[0].EVENT_END_DATE);
+        var eventMetricValue = response.rows._array[0].EVENT_METRIC_VALUE;
+
+        if (parseFloat(runDetails.runDistance / 1000) < parseFloat(eventMetricValue)) {
+          return {
+            status: 453
+          };
+        }
+        else if (currentTime > eventEndDateTime) {
+          return {
+            status: 454
+          };
+        }
+        return {
+          status: 200
+        };
+      });
+    } catch (err) {
+      return {
+        status: 500
+      };
+    }
   };
 };

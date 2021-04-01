@@ -39,7 +39,7 @@ export const registerUserForEvent = (eventDetails) => {
           return new Response(response.status, null);
         } else {
           //Async Dispatch Update Event Registration Details in Local DB
-          insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate, 0);
+          insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate, eventDetails.eventMetricType, eventDetails.eventMetricValue, 0);
 
           var eventRegistrationDetailsList = [];
           eventDetails.runId=0;
@@ -104,15 +104,17 @@ export const loadEventRegistrationDetails = () => {
     fetchEventRegistrationDetails().then(response => {
         if (response.rows._array.length > 0) {
           var updatedEventRegistrationDetails = response.rows._array.map((eventRegistrationDetails) => {
-            var updatedEventRegisration = {
+            var updatedEventRegistration = {
               eventId: eventRegistrationDetails.EVENT_ID,
               eventName: eventRegistrationDetails.EVENT_NAME,
               eventDescription: eventRegistrationDetails.EVENT_DESCRIPTION,
               eventStartDate: eventRegistrationDetails.EVENT_START_DATE,
               eventEndDate: eventRegistrationDetails.EVENT_END_DATE,
-              runId: eventRegistrationDetails.runId
+              eventMetricType: eventRegistrationDetails.EVENT_METRIC_TYPE,
+              eventMetricValue: eventRegistrationDetails.EVENT_METRIC_VALUE,
+              runId: eventRegistrationDetails.RUN_ID
             };
-            return updatedEventRegisration;
+            return updatedEventRegistration;
           });
 
           //Async Dispatch Event Registration State Update
@@ -130,7 +132,7 @@ export const loadEventRegistrationDetails = () => {
             } else if (response.data && response.data.eventDetails.length > 0) {
               response.data.eventDetails.map((eventDetails) => {
                 //Hydrate Local DB
-                insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate, eventDetails.runId);
+                insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate, eventDetails.eventMetricType, eventDetails.eventMetricValue, eventDetails.runId);
               });
             }
           });
@@ -173,6 +175,8 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
               eventDescription: eventRegistrationDetails.eventDescription,
               eventStartDate: eventRegistrationDetails.eventStartDate,
               eventEndDate: eventRegistrationDetails.eventEndDate,
+              eventMetricType: eventRegistrationDetails.eventMetricType,
+              eventMetricValue: eventRegistrationDetails.eventMetricValue,
               runId: eventRegistrationDetails.runId
             };
             return updatedEventRegisration;

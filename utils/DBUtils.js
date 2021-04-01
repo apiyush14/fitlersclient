@@ -26,7 +26,7 @@ export const init = () => {
           reject(err);
         });
 
-        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_REGISTRATION_DETAILS (EVENT_ID INTEGER PRIMARY KEY NOT NULL, EVENT_NAME TEXT NOT NULL, EVENT_DESCRIPTION TEXT,EVENT_START_DATE TEXT NOT NULL,EVENT_END_DATE TEXT NOT NULL, RUN_ID INTEGER);',
+        tx.executeSql('CREATE TABLE IF NOT EXISTS EVENT_REGISTRATION_DETAILS (EVENT_ID INTEGER PRIMARY KEY NOT NULL, EVENT_NAME TEXT NOT NULL, EVENT_DESCRIPTION TEXT,EVENT_START_DATE TEXT NOT NULL,EVENT_END_DATE TEXT NOT NULL, EVENT_METRIC_TYPE TEXT NOT NULL, EVENT_METRIC_VALUE TEXT NOT NULL, RUN_ID INTEGER);',
         //tx.executeSql('DROP TABLE EVENT_REGISTRATION_DETAILS;',
         //tx.executeSql('DELETE FROM EVENT_REGISTRATION_DETAILS;',
         [],
@@ -170,10 +170,10 @@ export const fetchRunSummary = () => {
 };
 
 //Method to Insert Event Registration Details in EVENT_REGISTRATION_DETAILS
-export const insertEventRegistrationDetails = (eventId, eventName, eventDescription, eventStartDate, eventEndDate, runId) => {
+export const insertEventRegistrationDetails = (eventId, eventName, eventDescription, eventStartDate, eventEndDate, eventMetricType, eventMetricValue, runId) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
-      tx.executeSql('INSERT INTO EVENT_REGISTRATION_DETAILS (EVENT_ID,EVENT_NAME,EVENT_DESCRIPTION,EVENT_START_DATE,EVENT_END_DATE,RUN_ID) VALUES (?,?,?,?,?,?);', [eventId, eventName, eventDescription, eventStartDate, eventEndDate, runId],
+      tx.executeSql('INSERT INTO EVENT_REGISTRATION_DETAILS (EVENT_ID,EVENT_NAME,EVENT_DESCRIPTION,EVENT_START_DATE,EVENT_END_DATE,EVENT_METRIC_TYPE,EVENT_METRIC_VALUE,RUN_ID) VALUES (?,?,?,?,?,?,?,?);', [eventId, eventName, eventDescription, eventStartDate, eventEndDate, eventMetricType, eventMetricValue, runId],
         (_, result) => {
           resolve(result);
         },
@@ -206,6 +206,22 @@ export const fetchEventRegistrationDetails = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql('SELECT * FROM EVENT_REGISTRATION_DETAILS', [],
+        (_, result) => {
+          resolve(result);
+        },
+        (_, err) => {
+          reject(err);
+        });
+    });
+  });
+  return promise;
+};
+
+//Method to Get Event Registration Details from EVENT_REGISTRATION_DETAILS based on eventId
+export const fetchEventDetailsBasedOnEventId = (eventId) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql('SELECT * FROM EVENT_REGISTRATION_DETAILS where EVENT_ID in (' + eventId + ');', [],
         (_, result) => {
           resolve(result);
         },

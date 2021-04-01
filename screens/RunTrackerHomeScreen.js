@@ -81,8 +81,6 @@ const RunTrackerHomeScreen = (props) => {
           });
         }
       });
-
-
     })();
   }, []);
 
