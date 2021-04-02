@@ -1,4 +1,4 @@
-import {insertRun,fetchRuns,fetchRunSummary,updateRunSummary,insertRunSummary,updateRunsSyncState,deleteRuns,fetchEventDetailsBasedOnEventId} from '../utils/DBUtils';
+import {insertRun,fetchRuns,fetchRunSummary,updateRunSummary,insertRunSummary,updateRunsSyncState,deleteRuns,fetchEventDetailsBasedOnEventId,updateEventIdInRunDetails} from '../utils/DBUtils';
 import NetInfo from '@react-native-community/netinfo';
 import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
@@ -11,6 +11,7 @@ export const UPDATE_RUN_DETAILS = 'UPDATE_RUN_DETAILS';
 export const UPDATE_RUN_SUMMARY = 'UPDATE_RUN_SUMMARY';
 export const UPDATE_RUN_SYNC_STATE = 'UPDATE_RUN_SYNC_STATE';
 export const CLEAN_RUN_STATE = 'CLEAN_RUN_STATE';
+export const UPDATE_EVENT_ID_RUN_DETAILS = 'UPDATE_EVENT_ID_RUN_DETAILS';
 
 //Method to add a new Run to Local DB and to server
 export const addRun = (runDetailsVar) => {
@@ -59,13 +60,13 @@ export const addRun = (runDetailsVar) => {
         }
         //Async Dispatch Sync New Run to Server
         return dispatch(syncPendingRuns(updatedRuns)).then((response) => {
-          if (response.status >= 400) {
-            return {
-              status: response.status
-            };
-          } else if (isRunEligibleForSubmissionStatus >= 400) {
+          if (isRunEligibleForSubmissionStatus >= 400) {
             return {
               status: isRunEligibleForSubmissionStatus
+            };
+          } else if (response.status >= 400) {
+            return {
+              status: response.status
             };
           } else {
             return {
@@ -198,11 +199,15 @@ export const loadRunsFromServer = (pageNumber) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return false;
+      } else {
+        return true;
       }
     });
-    if (networkStatus) {
-      return networkStatus;
+    if (!networkStatus) {
+      return {
+        status: 452
+      };
     }
 
     var URL = configData.SERVER_URL + "run-details/getRuns/" + userId + "?page=";
@@ -213,10 +218,12 @@ export const loadRunsFromServer = (pageNumber) => {
       }).then(response => response.json())
       .then((response) => {
         if (response.status >= 400) {
-        if (response.message && response.message.includes("UNAUTHORIZED")) {
-          dispatch(userActions.cleanUserDataStateAndDB());
-        }
-          return new Response(response.status, null);
+          if (response.message && response.message.includes("UNAUTHORIZED")) {
+            dispatch(userActions.cleanUserDataStateAndDB());
+          }
+          return {
+            status: response.status
+          };
         } else if (response.runDetailsList.length > 0) {
           //Async Dispatch Runs Update State
           dispatch({
@@ -231,7 +238,9 @@ export const loadRunsFromServer = (pageNumber) => {
         };
         return result;
       }).catch(err => {
-        return new Response(500, null);
+        return {
+          status: 500
+        };
       });
   }
 };
@@ -274,11 +283,16 @@ export const loadRunSummaryFromServer = () => {
     var userId = header.USER_ID;
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return false;
+      }
+      else{
+        return true;
       }
     });
-    if (networkStatus) {
-      return networkStatus;
+    if (!networkStatus) {
+      return {
+            status: 452
+          };
     }
 
     var URL = configData.SERVER_URL + "run-details/getRunSummary/" + userId;
@@ -317,11 +331,16 @@ export const syncPendingRuns = (pendingRunsForSync) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return false;
+      }
+      else{
+        return true;
       }
     });
-    if (networkStatus) {
-      return networkStatus;
+    if (!networkStatus) {
+      return {
+            status: 452
+          };
     }
 
     var eventEligibleStatus = 200;
@@ -337,6 +356,13 @@ export const syncPendingRuns = (pendingRunsForSync) => {
         if (isRunEligibleResponse.status >= 400) {
           eventEligibleStatus = isRunEligibleResponse.status;
           pendingRun.eventId = 0;
+          //Update Local Run Details State
+          dispatch(updateEventIdInDB(pendingRun, 0));
+          //Async Run State Update
+          dispatch({
+            type: UPDATE_EVENT_ID_RUN_DETAILS,
+            pendingRunForSync: pendingRun
+          });
         }
       }
       var runDetails = new RunDetails(pendingRun.runId, pendingRun.runTotalTime, pendingRun.runDistance, pendingRun.runPace, pendingRun.runCaloriesBurnt, pendingRun.runCredits, pendingRun.runStartDateTime, pendingRun.runDate, pendingRun.runDay, pathString, pendingRun.runTrackSnapUrl, pendingRun.eventId, pendingRun.isSyncDone);
@@ -403,6 +429,19 @@ const updateSyncStateInDB = (pendingRunsForSync) => {
       pendingRunIds = pendingRunIds.replace(/(^[,\s]+)|([,\s]+$)/g, '');
       return updateRunsSyncState(pendingRunIds).then((response) => {
         return new Response(200, pendingRunsForSync);
+      });
+    } catch (err) {
+      return new Response(500, null);
+    }
+  }
+};
+
+//Private method to Update Event Id for Run in Local DB
+const updateEventIdInDB = (runDetails, eventId) => {
+  return async dispatch => {
+    try {
+      return updateEventIdInRunDetails(runDetails.runId.toString(), eventId).then((response) => {
+        return new Response(200, runDetails);
       });
     } catch (err) {
       return new Response(500, null);

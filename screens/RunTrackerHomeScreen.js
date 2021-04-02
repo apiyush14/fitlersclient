@@ -121,7 +121,7 @@ const RunTrackerHomeScreen = (props) => {
   //Register Event Listener
   const onRegisterEventItem = (eventItem) => {
     dispatch(eventActions.registerUserForEvent(modalEventDetails)).then((response) => {
-      if (response.status === 405) {
+      if (response.status === 452) {
         Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
           text: 'OK',
           onPress: () => {

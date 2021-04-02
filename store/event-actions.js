@@ -19,7 +19,7 @@ export const registerUserForEvent = (eventDetails) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return new Response(452, null);
       }
     });
     if (networkStatus) {
@@ -65,7 +65,7 @@ export const loadEventsFromServer = (pageNumber) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return new Response(452, null);
       }
     });
     if (networkStatus) {
@@ -152,7 +152,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return new Response(452, null);
       }
     });
     if (networkStatus) {
@@ -208,7 +208,7 @@ export const loadEventResultDetailsFromServer = () => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return new Response(452, null);
       }
     });
     if (networkStatus) {

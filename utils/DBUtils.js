@@ -137,6 +137,22 @@ export const insertRunSummary = (totalDistance, totalRuns, totalCredits, average
   return promise;
 };
 
+//Method to Update Event Id In RUN_DETAILS
+export const updateEventIdInRunDetails = (runId, eventId) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql('UPDATE RUN_DETAILS SET EVENT_ID=? where RUN_ID in (' + runId + ');', [eventId],
+        (_, result) => {
+          resolve(result);
+        },
+        (_, err) => {
+          reject(err);
+        });
+    });
+  });
+  return promise;
+};
+
 //Method to Update Run Summary in RUN_SUMMARY
 export const updateRunSummary = (totalDistance, totalRuns, totalCredits, averagePace, averageDistance, averageCaloriesBurnt) => {
   const promise = new Promise((resolve, reject) => {

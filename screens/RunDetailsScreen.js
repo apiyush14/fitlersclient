@@ -97,7 +97,7 @@ const RunDetailsScreen = props=>{
     if ((!isCalledFromHistoryScreen)) {
       dispatch(runActions.addRun(runDetails)).then((response) => {
         if (runDetails.eventId > 0) {
-          if (response.status === 405) {
+          if (response.status === 452) {
             Alert.alert("Internet Issue", "Your Event Run is not yet submitted due to connectivity issue, please check the internet connection and reload the application to submit this run!!!");
           } else if (response.status === 453) {
             Alert.alert("Run Not Eligible", "Your Event Run is not eligible for submission, we have saved it as a normal run!!!");
@@ -106,7 +106,7 @@ const RunDetailsScreen = props=>{
           } else {
             Alert.alert("Success", "Your Event Run has been submitted successfully!!!");
           }
-        } else if (response.status >= 400) {
+        } else if (response.status === 500) {
           Alert.alert("Run Not Saved", "Sorry, we could not save this Run!!!");
         }
       });

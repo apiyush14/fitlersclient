@@ -50,7 +50,7 @@ export const loadUserDetailsFromServer = () => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return new Response(452, null);
       }
     });
     if (networkStatus) {
@@ -91,7 +91,7 @@ export const updateUserDetails = (firstName, lastName, height, weight) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return new Response(452, null);
       }
     });
     if (networkStatus) {

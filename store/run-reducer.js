@@ -1,4 +1,4 @@
-import {UPDATE_RUN_DETAILS,UPDATE_RUN_SUMMARY,LOAD_RUN_SUMMARY,UPDATE_RUN_SYNC_STATE,CLEAN_RUN_STATE} from './run-actions';
+import {UPDATE_RUN_DETAILS,UPDATE_RUN_SUMMARY,LOAD_RUN_SUMMARY,UPDATE_RUN_SYNC_STATE,CLEAN_RUN_STATE,UPDATE_EVENT_ID_RUN_DETAILS} from './run-actions';
 import RunDetails from '../models/rundetails';
 import RunSummary from '../models/runsummary';
 
@@ -48,6 +48,12 @@ export default (state = initialState, action) => {
                 let runToBeUpdatedIndex = state.runs.findIndex(run => run.runId === pendingRunsForSync[i].runId);
                 state.runs[runToBeUpdatedIndex].isSyncDone = "1";
             }
+            return state;
+
+        case UPDATE_EVENT_ID_RUN_DETAILS:
+            var updatedRun = action.pendingRunForSync;
+            let runDetailsIndex = state.runs.findIndex(run => run.runId === updatedRun.runId);
+            state.runs[runDetailsIndex].eventId = updatedRun.eventId;
             return state;
 
         case CLEAN_RUN_STATE:

@@ -29,7 +29,7 @@
   //Get OTP event handler
   const onClickGetOTP = () => {
     dispatch(authActions.generateOTPForMSISDN(MSISDN)).then(response => {
-      if (response.status === 405) {
+      if (response.status === 452) {
         Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
           text: 'OK',
           onPress: () => {}
@@ -68,7 +68,7 @@
   //Submit OTP event handler
   const onClickSubmitOTP = () => {
     dispatch(authActions.validateOTPForMSISDN(MSISDN, otpCode)).then((response) => {
-      if (response.status === 405) {
+      if (response.status === 452) {
         setOtpCode("");
         dispatch(cleanUserData());
         clearInterval(retryTimerId);

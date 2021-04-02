@@ -36,7 +36,7 @@ export const generateOTPForMSISDN = (msisdn) => {
   return async dispatch => {
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return new Response(452, null);
       }
     });
     if (networkStatus) {
@@ -67,7 +67,7 @@ export const validateOTPForMSISDN = (msisdn, otpCode) => {
   return async dispatch => {
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(405, null);
+        return new Response(452, null);
       }
     });
     if (networkStatus) {
