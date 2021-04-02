@@ -1,6 +1,7 @@
 import React, {useState,useEffect} from 'react';
 import {View,Text,StyleSheet,ActivityIndicator,Platform} from 'react-native';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
+import StatusCodes from "../utils/StatusCodes.json";
 import {useIsFocused} from "@react-navigation/native";
 import {useSelector,useDispatch} from 'react-redux';
 import {Ionicons} from '@expo/vector-icons';
@@ -38,7 +39,7 @@ const RunHistoryScreen = props => {
       setIsLoading(true);
       let pageNumber = Math.floor(runsHistory.length / 3);
       dispatch(runActions.loadRunsFromServer(pageNumber)).then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           setIsMoreContentAvailable(false);
         } else if (response.data&&(!response.data.moreContentAvailable)) {
           setIsMoreContentAvailable(false);

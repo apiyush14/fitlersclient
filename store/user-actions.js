@@ -1,6 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
 import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
+import StatusCodes from "../utils/StatusCodes.json";
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import UserDetails from '../models/userDetails';
 import Response from '../models/response';
@@ -14,7 +15,7 @@ export const loadUserDetails = () => {
   return async dispatch => {
     //Sync Fetch User Details from Local DB
     return dispatch(fetchUserDetails()).then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           return new Response(response.status, null);
         } else if (response.data.userFirstName !== null) {
           //Async Dispatch User Details Update State
@@ -22,22 +23,22 @@ export const loadUserDetails = () => {
             type: UPDATE_USER_DETAILS,
             userDetails: response.data
           });
-          return new Response(200, response.data);
+          return new Response(StatusCodes.OK, response.data);
         } else {
           //Sync Dispatch Load User Details from Server Action
           return dispatch(loadUserDetailsFromServer()).then((response) => {
-            if (response.status >= 400) {
+            if (response.status >= StatusCodes.BAD_REQUEST) {
               return new Response(response.status, null);
             } else if (response.data.userFirstName !== null) {
               //Hydrate Local DB Async
               dispatch(updateUserDetailsInDB(response.data.userFirstName, response.data.userLastName, response.data.userHeight, response.data.userWeight));
             }
-            return new Response(200, response.data);
+            return new Response(StatusCodes.OK, response.data);
           });
         }
       })
       .catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -50,7 +51,7 @@ export const loadUserDetailsFromServer = () => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -63,7 +64,7 @@ export const loadUserDetailsFromServer = () => {
         headers: header
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
         if (response.message && response.message.includes("UNAUTHORIZED")) {
           dispatch(userActions.cleanUserDataStateAndDB());
         }
@@ -75,9 +76,9 @@ export const loadUserDetailsFromServer = () => {
             userDetails: response.userDetails
           });
         }
-        return new Response(200, response.userDetails);
+        return new Response(StatusCodes.OK, response.userDetails);
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -91,7 +92,7 @@ export const updateUserDetails = (firstName, lastName, height, weight) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -114,7 +115,7 @@ export const updateUserDetails = (firstName, lastName, height, weight) => {
         })
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
         if (response.message && response.message.includes("UNAUTHORIZED")) {
           dispatch(userActions.cleanUserDataStateAndDB());
         }
@@ -128,17 +129,17 @@ export const updateUserDetails = (firstName, lastName, height, weight) => {
 
           //Sync Update User Details in Async DB
           return dispatch(updateUserDetailsInDB(firstName, lastName, height, weight)).then((response) => {
-            if (response.status >= 400) {
+            if (response.status >= StatusCodes.BAD_REQUEST) {
               return new Response(response.status, null);
             } else {
-              return new Response(200, response.data);
+              return new Response(StatusCodes.OK, response.data);
             }
           });
         } else {
-          return new Response(200, userDetails);
+          return new Response(StatusCodes.OK, userDetails);
         }
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -152,9 +153,9 @@ const fetchUserDetails = () => {
       var userHeight = await AsyncStorage.getItem('USER_HEIGHT');
       var userWeight = await AsyncStorage.getItem('USER_WEIGHT');
       var userDetails = new UserDetails(userFirstName, userLastName, userHeight, userWeight);
-      return new Response(200, userDetails);
+      return new Response(StatusCodes.OK, userDetails);
     } catch (err) {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }
 };
@@ -168,9 +169,9 @@ const updateUserDetailsInDB = (userFirstName, userLastName, userHeight, userWeig
       await AsyncStorage.setItem('USER_HEIGHT', userHeight.toString());
       await AsyncStorage.setItem('USER_WEIGHT', userWeight.toString());
       var userDetails = new UserDetails(userFirstName, userLastName, userHeight, userWeight);
-      return new Response(200, userDetails);
+      return new Response(StatusCodes.OK, userDetails);
     } catch (err) {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }
 };
@@ -197,9 +198,9 @@ export const cleanUpUserData = () => {
       await AsyncStorage.removeItem('USER_HEIGHT');
       await AsyncStorage.removeItem('USER_WEIGHT');
       await cleanUpAllData();
-      new Response(200, true);
+      new Response(StatusCodes.OK, true);
     } catch (err) {
-      new Response(500, null);
+      new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }
 };

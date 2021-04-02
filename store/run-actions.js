@@ -2,6 +2,7 @@ import {insertRun,fetchRuns,fetchRunSummary,updateRunSummary,insertRunSummary,up
 import NetInfo from '@react-native-community/netinfo';
 import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
+import StatusCodes from "../utils/StatusCodes.json";
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import RunDetails from '../models/rundetails';
 import Response from '../models/response';
@@ -21,14 +22,14 @@ export const addRun = (runDetailsVar) => {
     var userId = await AsyncStorage.getItem('USER_ID');
 
     var isEventRun = runDetails.eventId > 0;
-    var isRunEligibleForSubmissionStatus = 200;
+    var isRunEligibleForSubmissionStatus = StatusCodes.OK;
 
     //Async Method to Delete Runs from Local DB if required
     dispatch(checkAndDeleteRunsIfNeeded());
 
     if (isEventRun) {
       var isRunEligibleResponse = await dispatch(validateIfRunEligibleForEventSubmission(runDetails));
-      if (isRunEligibleResponse.status >= 400) {
+      if (isRunEligibleResponse.status >= StatusCodes.BAD_REQUEST) {
         isRunEligibleForSubmissionStatus = isRunEligibleResponse.status;
         runDetails.eventId = 0;
       }
@@ -54,24 +55,24 @@ export const addRun = (runDetailsVar) => {
         //Async Dispatch Add Run Summary
         dispatch(addRunSummary(runDetails));
 
-        if (isEventRun && isRunEligibleForSubmissionStatus === 200) {
+        if (isEventRun && isRunEligibleForSubmissionStatus === StatusCodes.OK) {
           //Async Update Run Details in Event Registration
           dispatch(eventActions.updateRunDetailsInEventRegistration(runDetails.eventId, runDetails.runId));
 
         }
         //Async Dispatch Sync New Run to Server
         return dispatch(syncPendingRuns(updatedRuns)).then((response) => {
-          if (isRunEligibleForSubmissionStatus >= 400) {
+          if (isRunEligibleForSubmissionStatus >= StatusCodes.BAD_REQUEST) {
             return new Response(isRunEligibleForSubmissionStatus, null);
-          } else if (response.status >= 400) {
+          } else if (response.status >= StatusCodes.BAD_REQUEST) {
             return new Response(response.status, null);
           } else {
-            return new Response(200, updatedRuns);
+            return new Response(StatusCodes.OK, updatedRuns);
           }
         });
       }
     ).catch(err => {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     });
   }
 };
@@ -123,9 +124,9 @@ export const addRunSummary = (run) => {
           });
         });
       }
-      return new Response(200, run);
+      return new Response(StatusCodes.OK, run);
     }).catch(err => {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     });
   }
 };
@@ -166,7 +167,7 @@ export const loadRuns = () => {
         else {
           //Async Dispatch Load Runs from Server Action
           dispatch(loadRunsFromServer(0)).then((response) => {
-            if (response.status >= 400) {
+            if (response.status >= StatusCodes.BAD_REQUEST) {
               //Do nothing
             } else if (response.data.runDetailsList.length > 0) {
               response.data.runDetailsList.map((run) => {
@@ -191,7 +192,7 @@ export const loadRunsFromServer = (pageNumber) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -205,7 +206,7 @@ export const loadRunsFromServer = (pageNumber) => {
         headers: header
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           if (response.message && response.message.includes("UNAUTHORIZED")) {
             dispatch(userActions.cleanUserDataStateAndDB());
           }
@@ -219,9 +220,9 @@ export const loadRunsFromServer = (pageNumber) => {
             runs: response.runDetailsList
           })
         }
-        return new Response(200, response);
+        return new Response(StatusCodes.OK, response);
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -265,7 +266,7 @@ export const loadRunSummaryFromServer = () => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -278,7 +279,7 @@ export const loadRunSummaryFromServer = () => {
         headers: header
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           if (response.message && response.message.includes("UNAUTHORIZED")) {
             dispatch(userActions.cleanUserDataStateAndDB());
           }
@@ -292,9 +293,9 @@ export const loadRunSummaryFromServer = () => {
           //Async Hydrate the database
           insertRunSummary(response.runSummary.totalDistance, response.runSummary.totalRuns, response.runSummary.totalCredits, response.runSummary.averagePace, response.runSummary.averageDistance, response.runSummary.averageCaloriesBurnt);
         }
-        return new Response(200, response);
+        return new Response(StatusCodes.OK, response);
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -308,14 +309,14 @@ export const syncPendingRuns = (pendingRunsForSync) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
       return networkStatus;
     }
 
-    var eventEligibleStatus = 200;
+    var eventEligibleStatus = StatusCodes.OK;
 
     var pendingRunsForSyncRequest = pendingRunsForSync.map(pendingRun => {
       var pathString = pendingRun.runPath;
@@ -325,7 +326,7 @@ export const syncPendingRuns = (pendingRunsForSync) => {
       var isEventRun = pendingRun.eventId > 0;
       if (isEventRun) {
         var isRunEligibleResponse = dispatch(validateIfRunEligibleForEventSubmission(pendingRun));
-        if (isRunEligibleResponse.status >= 400) {
+        if (isRunEligibleResponse.status >= StatusCodes.BAD_REQUEST) {
           eventEligibleStatus = isRunEligibleResponse.status;
           pendingRun.eventId = 0;
           //Update Local Run Details State
@@ -351,7 +352,7 @@ export const syncPendingRuns = (pendingRunsForSync) => {
         })
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           if (response.message && response.message.includes("UNAUTHORIZED")) {
             dispatch(userActions.cleanUserDataStateAndDB());
           }
@@ -359,7 +360,7 @@ export const syncPendingRuns = (pendingRunsForSync) => {
         } else if (response === true) {
           //Async Update Sync Flag in Local DB
           return dispatch(updateSyncStateInDB(pendingRunsForSync)).then((response) => {
-            if (response.status >= 400) {
+            if (response.status >= StatusCodes.BAD_REQUEST) {
               return new Response(response.status, null);
             } else {
               //Async Run State Update
@@ -367,15 +368,15 @@ export const syncPendingRuns = (pendingRunsForSync) => {
                 type: UPDATE_RUN_SYNC_STATE,
                 pendingRunsForSync
               });
-              if (eventEligibleStatus >= 400) {
+              if (eventEligibleStatus >= StatusCodes.BAD_REQUEST) {
                 return new Response(eventEligibleStatus, null);
               }
-              return new Response(200, null);
+              return new Response(StatusCodes.OK, null);
             }
           });
         }
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -390,10 +391,10 @@ const updateSyncStateInDB = (pendingRunsForSync) => {
       });
       pendingRunIds = pendingRunIds.replace(/(^[,\s]+)|([,\s]+$)/g, '');
       return updateRunsSyncState(pendingRunIds).then((response) => {
-        return new Response(200, pendingRunsForSync);
+        return new Response(StatusCodes.OK, pendingRunsForSync);
       });
     } catch (err) {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     }
   }
 };
@@ -403,10 +404,10 @@ const updateEventIdInDB = (runDetails, eventId) => {
   return async dispatch => {
     try {
       return updateEventIdInRunDetails(runDetails.runId.toString(), eventId).then((response) => {
-        return new Response(200, runDetails);
+        return new Response(StatusCodes.OK, runDetails);
       });
     } catch (err) {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     }
   }
 };
@@ -432,14 +433,14 @@ const checkAndDeleteRunsIfNeeded = () => {
         if (runIdsToBeDeleted !== "") {
           runIdsToBeDeleted = runIdsToBeDeleted.replace(/(^[,\s]+)|([,\s]+$)/g, '');
           return deleteRuns(runIdsToBeDeleted).then((response) => {
-            return new Response(200, response);
+            return new Response(StatusCodes.OK, response);
           }).catch(err => {
-            return new Response(500, null);
+            return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
           });
         }
       }
     }).catch(err => {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     });
   };
 };
@@ -454,14 +455,14 @@ const validateIfRunEligibleForEventSubmission = (runDetails) => {
         var eventMetricValue = response.rows._array[0].EVENT_METRIC_VALUE;
 
         if (parseFloat(runDetails.runDistance / 1000) < parseFloat(eventMetricValue)) {
-          return new Response(453, null);
+          return new Response(StatusCodes.DISTANCE_NOT_ELIGIBLE, null);
         } else if (currentTime > eventEndDateTime) {
-          return new Response(454, null);
+          return new Response(StatusCodes.TIME_NOT_ELIGIBLE, null);
         }
-        return new Response(200, null);
+        return new Response(StatusCodes.OK, null);
       });
     } catch (err) {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     }
   };
 };

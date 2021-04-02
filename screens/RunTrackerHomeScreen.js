@@ -8,6 +8,7 @@ import {useIsFocused} from "@react-navigation/native";
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import * as Permissions from 'expo-permissions';
+import StatusCodes from "../utils/StatusCodes.json";
 
 import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
@@ -121,7 +122,7 @@ const RunTrackerHomeScreen = (props) => {
   //Register Event Listener
   const onRegisterEventItem = (eventItem) => {
     dispatch(eventActions.registerUserForEvent(modalEventDetails)).then((response) => {
-      if (response.status === 452) {
+      if (response.status === StatusCodes.NO_INTERNET) {
         Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
           text: 'OK',
           onPress: () => {
@@ -131,7 +132,7 @@ const RunTrackerHomeScreen = (props) => {
           cancelable: false
         });
       } else
-      if (response.status != 200) {
+      if (response.status != StatusCodes.OK) {
         Alert.alert("Registration Failed", "Registration for the event failed, please try again later!!!", [{
           text: 'OK',
           onPress: () => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Platform, ImageBackground} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
+import StatusCodes from "../utils/StatusCodes.json";
 import { useDispatch } from 'react-redux';
 import * as runActions from '../store/run-actions';
 import Card from '../components/Card';
@@ -97,16 +98,16 @@ const RunDetailsScreen = props=>{
     if ((!isCalledFromHistoryScreen)) {
       dispatch(runActions.addRun(runDetails)).then((response) => {
         if (runDetails.eventId > 0) {
-          if (response.status === 452) {
+          if (response.status === StatusCodes.NO_INTERNET) {
             Alert.alert("Internet Issue", "Your Event Run is not yet submitted due to connectivity issue, please check the internet connection and reload the application to submit this run!!!");
-          } else if (response.status === 453) {
+          } else if (response.status === StatusCodes.DISTANCE_NOT_ELIGIBLE) {
             Alert.alert("Run Not Eligible", "Your Event Run is not eligible for submission, we have saved it as a normal run!!!");
-          } else if (response.status >= 400) {
+          } else if (response.status >= StatusCodes.BAD_REQUEST) {
             Alert.alert("Technical Issue", "Your Event Run is not yet submitted due to technical issue, please reload the application to submit this run!!!");
           } else {
             Alert.alert("Success", "Your Event Run has been submitted successfully!!!");
           }
-        } else if (response.status === 500) {
+        } else if (response.status === StatusCodes.INTERNAL_SERVER_ERROR) {
           Alert.alert("Run Not Saved", "Sorry, we could not save this Run!!!");
         }
       });

@@ -7,6 +7,7 @@ import EventView from '../components/EventView';
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
+import StatusCodes from "../utils/StatusCodes.json";
 
 const EventsListSummaryScreen = props => {
 
@@ -64,7 +65,7 @@ const EventsListSummaryScreen = props => {
 
   const onRegisterEventItem = (eventItem) => {
     dispatch(eventActions.registerUserForEvent(modalEventDetails)).then((response) => {
-      if (response.status === 452) {
+      if (response.status === StatusCodes.NO_INTERNET) {
         Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
           text: 'OK',
           onPress: () => {
@@ -74,7 +75,7 @@ const EventsListSummaryScreen = props => {
           cancelable: false
         });
       } else
-      if (response.status != 200) {
+      if (response.status != StatusCodes.OK) {
         Alert.alert("Registration Failed", "Registration for the event failed, please try again later!!!", [{
           text: 'OK',
           onPress: () => {

@@ -1,6 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
 import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
+import StatusCodes from "../utils/StatusCodes.json";
 import * as userActions from './user-actions';
 import Response from '../models/response';
 import UserAuthenticationDetails from '../models/userAuthenticationDetails';
@@ -13,7 +14,7 @@ export const loadUserAuthDetails = () => {
   return async dispatch => {
     //Sync Fetch Auth Details from Local DB
     return dispatch(fetchUserAuthDetails()).then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           return new Response(response.status, null);
         } else if (response.data.userId !== null) {
           //Async Dispatch User Auth Details Update State
@@ -22,10 +23,10 @@ export const loadUserAuthDetails = () => {
             authDetails: response.data
           });
         }
-        return new Response(200, response.data);
+        return new Response(StatusCodes.OK, response.data);
       })
       .catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -36,7 +37,7 @@ export const generateOTPForMSISDN = (msisdn) => {
   return async dispatch => {
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -51,13 +52,13 @@ export const generateOTPForMSISDN = (msisdn) => {
         }
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           return new Response(response.status, null);
         } else {
-          return new Response(200, response);
+          return new Response(StatusCodes.OK, response);
         }
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -67,7 +68,7 @@ export const validateOTPForMSISDN = (msisdn, otpCode) => {
   return async dispatch => {
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -82,7 +83,7 @@ export const validateOTPForMSISDN = (msisdn, otpCode) => {
         }
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           return new Response(response.status, null);
         } else if (response.isValid === true) {
           //Async dispatch to update state for Auth Details
@@ -92,17 +93,17 @@ export const validateOTPForMSISDN = (msisdn, otpCode) => {
           });
           //Sync dispatch to update Auth Details in Async Storage
           return dispatch(updateUserAuthenticationDetailsInDB(response)).then((response) => {
-            if (response.status >= 400) {
+            if (response.status >= StatusCodes.BAD_REQUEST) {
               return new Response(response.status, null);
             } else {
-              return new Response(200, response.data);
+              return new Response(StatusCodes.OK, response.data);
             }
           });
         } else {
-          return new Response(200, response);
+          return new Response(StatusCodes.OK, response);
         }
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -113,9 +114,9 @@ const updateUserAuthenticationDetailsInDB = (userAuthenticationDetails) => {
     try {
       await AsyncStorage.setItem('USER_ID', userAuthenticationDetails.userId);
       await AsyncStorage.setItem('USER_SECRET_KEY', userAuthenticationDetails.secret);
-      return new Response(200, userAuthenticationDetails);
+      return new Response(StatusCodes.OK, userAuthenticationDetails);
     } catch (err) {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }
 };
@@ -127,10 +128,9 @@ const fetchUserAuthDetails = () => {
       var userId = await AsyncStorage.getItem('USER_ID');
       var userSecretKey = await AsyncStorage.getItem('USER_SECRET_KEY');
       var userAuthDetails = new UserAuthenticationDetails(userId, userSecretKey);
-      return new Response(200, userAuthDetails);
+      return new Response(StatusCodes.OK, userAuthDetails);
     } catch (err) {
-      return new Response(500, null);
+      return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }
 };
-

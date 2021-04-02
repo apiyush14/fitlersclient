@@ -2,6 +2,7 @@ import NetInfo from '@react-native-community/netinfo';
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import {insertEventRegistrationDetails,fetchEventRegistrationDetails,updateEventRegistrationDetails} from '../utils/DBUtils';
 import configData from "../config/config.json";
+import StatusCodes from "../utils/StatusCodes.json";
 import Response from '../models/response';
 
 export const UPDATE_EVENTS_FROM_SERVER='UPDATE_EVENTS_FROM_SERVER';
@@ -20,7 +21,7 @@ export const registerUserForEvent = (eventDetails) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -33,7 +34,7 @@ export const registerUserForEvent = (eventDetails) => {
         headers: header
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           if (response.message && response.message.includes("UNAUTHORIZED")) {
             dispatch(userActions.cleanUserDataStateAndDB());
           }
@@ -50,10 +51,10 @@ export const registerUserForEvent = (eventDetails) => {
             type: UPDATE_EVENT_REGISTRATION_DETAILS,
             eventRegistrationDetails: eventRegistrationDetailsList
           });
-          return new Response(200, eventDetails);
+          return new Response(StatusCodes.OK, eventDetails);
         }
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -66,7 +67,7 @@ export const loadEventsFromServer = (pageNumber) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -80,7 +81,7 @@ export const loadEventsFromServer = (pageNumber) => {
         headers: header
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           if (response.message && response.message.includes("UNAUTHORIZED")) {
             dispatch(userActions.cleanUserDataStateAndDB());
           }
@@ -91,9 +92,9 @@ export const loadEventsFromServer = (pageNumber) => {
             eventDetails: response.eventDetails
           });
         }
-        return new Response(200, response);
+        return new Response(StatusCodes.OK, response);
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -128,7 +129,7 @@ export const loadEventRegistrationDetails = () => {
         else {
           //Async Dispatch Load Event Registration from Server Action
           dispatch(loadEventRegistrationDetailsFromServer(0)).then((response) => {
-            if (response.status >= 400) {
+            if (response.status >= StatusCodes.BAD_REQUEST) {
               //Do nothing
             } else if (response.data && response.data.eventDetails.length > 0) {
               response.data.eventDetails.map((eventDetails) => {
@@ -153,7 +154,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -166,7 +167,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
         headers: header
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           return new Response(response.status, null);
         } else if (response.eventDetails.length > 0) {
           var updatedEventRegistrationDetails = response.eventDetails.map((eventDetails) => {
@@ -189,9 +190,9 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
             eventRegistrationDetails: updatedEventRegistrationDetails
           })
         }
-        return new Response(200, response);
+        return new Response(StatusCodes.OK, response);
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };
@@ -204,7 +205,7 @@ export const loadEventResultDetailsFromServer = () => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return new Response(452, null);
+        return new Response(StatusCodes.NO_INTERNET, null);
       }
     });
     if (networkStatus) {
@@ -217,7 +218,7 @@ export const loadEventResultDetailsFromServer = () => {
         headers: header
       }).then(response => response.json())
       .then((response) => {
-        if (response.status >= 400) {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
           return new Response(response.status, null);
         } else if (response.eventResultDetails && response.eventResultDetails.length > 0) {
           var updatedEventResultDetails = response.eventResultDetails.map((eventResultDetails) => {
@@ -235,9 +236,9 @@ export const loadEventResultDetailsFromServer = () => {
             eventResultDetails: updatedEventResultDetails
           })
         }
-        return new Response(200, response);
+        return new Response(StatusCodes.OK, response);
       }).catch(err => {
-        return new Response(500, null);
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
 };

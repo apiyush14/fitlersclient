@@ -1,6 +1,7 @@
   import React, {useState, useRef} from 'react';
   import {View,Text,Alert,StyleSheet,Modal,TouchableWithoutFeedback,Keyboard,ImageBackground,TouchableOpacity} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
+  import StatusCodes from "../utils/StatusCodes.json";
   import RoundButton from '../components/RoundButton';
   import TextInputItem from '../components/TextInputItem';
   import * as authActions from '../store/auth-actions';
@@ -29,14 +30,14 @@
   //Get OTP event handler
   const onClickGetOTP = () => {
     dispatch(authActions.generateOTPForMSISDN(MSISDN)).then(response => {
-      if (response.status === 452) {
+      if (response.status === StatusCodes.NO_INTERNET) {
         Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
           text: 'OK',
           onPress: () => {}
         }], {
           cancelable: false
         });
-      } else if (response.status !== 200) {
+      } else if (response.status !== StatusCodes.OK) {
         Alert.alert("Try Again", "Please try again later!!!", [{
           text: 'OK',
           onPress: () => {}
@@ -68,7 +69,7 @@
   //Submit OTP event handler
   const onClickSubmitOTP = () => {
     dispatch(authActions.validateOTPForMSISDN(MSISDN, otpCode)).then((response) => {
-      if (response.status === 452) {
+      if (response.status === StatusCodes.NO_INTERNET) {
         setOtpCode("");
         dispatch(cleanUserData());
         clearInterval(retryTimerId);
@@ -82,7 +83,7 @@
         }], {
           cancelable: false
         });
-      } else if (response.status !== 200) {
+      } else if (response.status !== StatusCodes.OK) {
         setOtpCode("");
         dispatch(cleanUserData());
         clearInterval(retryTimerId);
@@ -140,7 +141,7 @@
   //Load User Details from local or server and navigate either to User Details screen or Home Screen
   const loadUserDetailsAndNavigate = () => {
     dispatch(userActions.loadUserDetails()).then((userDetails) => {
-      userDetails.status !== 200 || userDetails.data.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
+      userDetails.status !== StatusCodes.OK || userDetails.data.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
     });
   };
 

@@ -1,6 +1,7 @@
   import React, {useState} from 'react';
   import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard,Switch} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
+  import StatusCodes from "../utils/StatusCodes.json";
   import RoundButton from '../components/RoundButton';
   import TextInputItem from '../components/TextInputItem';
   import * as userActions from '../store/user-actions';
@@ -60,14 +61,14 @@
       });
     } else {
       dispatch(userActions.updateUserDetails(firstName, lastName, heightVar, weightVar)).then(response => {
-        if (response.status === 452) {
+        if (response.status === StatusCodes.NO_INTERNET) {
           Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
             text: 'OK',
             onPress: () => {}
           }], {
             cancelable: false
           });
-        } else if (response.status !== 200) {
+        } else if (response.status !== StatusCodes.OK) {
           Alert.alert("Try Again", "Please try again later!!!", [{
             text: 'OK',
             onPress: () => {}
