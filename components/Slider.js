@@ -86,7 +86,8 @@ const styles = StyleSheet.create({
     bottom: '30%',
     marginLeft: '30%',
     color: 'darkgreen',
-    fontSize: scale(15)
+    fontSize: scale(15),
+    fontFamily: 'open-sans'
   },
   sliderButtonStyle: {
     marginLeft: 3,

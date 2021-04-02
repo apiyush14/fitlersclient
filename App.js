@@ -21,7 +21,7 @@ const rootReducer= combineReducers({
 const store=createStore(rootReducer, applyMiddleware(ReduxThunk));
 
 init().then(()=>{
-  
+  fetchFonts();
 })
 .catch(err=>{
   

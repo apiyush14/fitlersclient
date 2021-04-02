@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
     textStyle: {
         paddingVertical: '5%',
         color: 'springgreen',
-        fontSize: moderateScale(13, 0.8)
+        fontSize: moderateScale(13, 0.8),
+        fontFamily: 'open-sans'
     }
 });
 

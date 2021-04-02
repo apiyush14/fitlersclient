@@ -160,13 +160,15 @@ const styles = StyleSheet.create({
   runDetailsTextStyle: {
     fontSize: moderateScale(16, 0.8),
     color: 'black',
-    paddingHorizontal: '7%'
+    paddingHorizontal: '7%',
+    fontFamily: 'open-sans'
   },
   calendarTextStyle: {
     fontSize: moderateScale(14, 0.8),
     color: 'black',
     paddingVertical: '2%',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    fontFamily: 'open-sans'
   }
 });
 

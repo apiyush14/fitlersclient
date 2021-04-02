@@ -262,13 +262,15 @@ const styles = StyleSheet.create({
   },
   textHeaderStyle: {
     fontSize: moderateScale(15, 0.5),
-    alignSelf: 'center'
+    alignSelf: 'center',
+    fontFamily: 'open-sans'
   },
   defaultTextStyle: {
     fontSize: moderateScale(15, 0.5),
     alignSelf: 'center',
     top: '50%',
-    color: 'grey'
+    color: 'grey',
+    fontFamily: 'open-sans'
   }
 });
 

@@ -397,16 +397,19 @@ const styles = StyleSheet.create({
 
   largeTextStyle: {
     fontSize: moderateScale(45, 0.8),
-    color: 'lightgrey'
+    color: 'lightgrey',
+    fontFamily: 'open-sans'
   },
   mediumTextStyle: {
     fontSize: moderateScale(40, 0.8),
-    color: 'lightgrey'
+    color: 'lightgrey',
+    fontFamily: 'open-sans'
   },
   smallTextStyle: {
     padding: '3%',
     fontSize: moderateScale(30, 0.8),
-    color: 'lightgrey'
+    color: 'lightgrey',
+    fontFamily: 'open-sans'
   },
 
   textTest: {

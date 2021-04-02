@@ -140,12 +140,14 @@ const styles = StyleSheet.create({
   },
   eventDateTextStyle: {
     fontSize: moderateScale(22, 1),
-    color: 'white'
+    color: 'white',
+    fontFamily: 'open-sans'
   },
 
   eventDateFormatTextStyle: {
     fontSize: moderateScale(16, 0.5),
-    marginHorizontal: '2%'
+    marginHorizontal: '2%',
+    fontFamily: 'open-sans'
   },
 
   eventDayContainerStyle: {
@@ -154,6 +156,7 @@ const styles = StyleSheet.create({
   },
   eventDayTextStyle: {
     fontSize: moderateScale(16, 0.5),
+    fontFamily: 'open-sans'
   },
 
   eventTimeContainerStyle: {
@@ -163,11 +166,13 @@ const styles = StyleSheet.create({
   },
   eventTimeTextStyle: {
     fontSize: moderateScale(16, 0.5),
+    fontFamily: 'open-sans'
   },
 
   eventHeaderTextStyle: {
     fontSize: moderateScale(20, 0.5),
-    alignSelf: 'center'
+    alignSelf: 'center',
+    fontFamily: 'open-sans'
   },
 
   buttonContainerStyle: {

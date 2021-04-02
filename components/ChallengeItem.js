@@ -100,7 +100,8 @@ const styles = StyleSheet.create({
     color: 'white',
     backgroundColor: 'rgba(0,0,0,0.5)',
     paddingVertical: verticalScale(5),
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'open-sans'
   }
 });
 

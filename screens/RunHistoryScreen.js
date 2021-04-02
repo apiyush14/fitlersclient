@@ -197,7 +197,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: '3%',
     color: 'springgreen',
     fontSize: moderateScale(18, 0.8),
-    alignSelf: 'center'
+    alignSelf: 'center',
+    fontFamily: 'open-sans'
   }
 
 });

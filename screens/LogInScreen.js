@@ -269,9 +269,10 @@
       top: '40%'
     },
     errorTextStyle: {
-      color: 'red',
+      color: 'white',
       top: '42%',
       alignSelf: 'center',
+      fontFamily: 'open-sans'
     },
     otpButtonStyle: {
       alignSelf: 'center',
@@ -287,12 +288,13 @@
     footerTextStyle: {
       fontSize: moderateScale(13, 0.8),
       color: 'white',
-      padding: '2%'
+      padding: '2%',
+      fontFamily: 'open-sans'
     },
     hyperLinkTextStyle: {
       fontSize: moderateScale(14, 0.8),
       color: 'white',
-      fontWeight: 'bold',
+      fontFamily: 'open-sans-bold',
       textDecorationLine: 'underline'
     },
 
@@ -306,7 +308,8 @@
     retryOtpTimerTextStyle: {
       color: 'red',
       top: '35%',
-      alignSelf: 'center'
+      alignSelf: 'center',
+      fontFamily: 'open-sans'
     },
     buttonSubmitOtpStyle: {
       alignSelf: 'center',
