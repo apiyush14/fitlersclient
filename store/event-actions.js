@@ -2,6 +2,7 @@ import NetInfo from '@react-native-community/netinfo';
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import {insertEventRegistrationDetails,fetchEventRegistrationDetails,updateEventRegistrationDetails} from '../utils/DBUtils';
 import configData from "../config/config.json";
+import Response from '../models/response';
 
 export const UPDATE_EVENTS_FROM_SERVER='UPDATE_EVENTS_FROM_SERVER';
 export const UPDATE_EVENT_REGISTRATION_DETAILS='UPDATE_EVENT_REGISTRATION_DETAILS';
@@ -42,7 +43,7 @@ export const registerUserForEvent = (eventDetails) => {
           insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate, eventDetails.eventMetricType, eventDetails.eventMetricValue, 0);
 
           var eventRegistrationDetailsList = [];
-          eventDetails.runId=0;
+          eventDetails.runId = 0;
           eventRegistrationDetailsList = eventRegistrationDetailsList.concat(eventDetails);
           //Async Dispatch Update Event Registration State
           dispatch({
@@ -188,12 +189,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
             eventRegistrationDetails: updatedEventRegistrationDetails
           })
         }
-        //Pending to check alternative, used to format response correctly
-        var result = {
-          status: 200,
-          data: response
-        };
-        return result;
+        return new Response(200, response);
       }).catch(err => {
         return new Response(500, null);
       });
@@ -239,12 +235,7 @@ export const loadEventResultDetailsFromServer = () => {
             eventResultDetails: updatedEventResultDetails
           })
         }
-        //Pending to check alternative, used to format response correctly
-        var result = {
-          status: 200,
-          data: response
-        };
-        return result;
+        return new Response(200, response);
       }).catch(err => {
         return new Response(500, null);
       });

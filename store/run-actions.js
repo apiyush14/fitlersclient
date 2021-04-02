@@ -4,6 +4,7 @@ import {AsyncStorage} from 'react-native';
 import configData from "../config/config.json";
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import RunDetails from '../models/rundetails';
+import Response from '../models/response';
 import * as userActions from '../store/user-actions';
 import * as eventActions from '../store/event-actions';
 
@@ -61,25 +62,16 @@ export const addRun = (runDetailsVar) => {
         //Async Dispatch Sync New Run to Server
         return dispatch(syncPendingRuns(updatedRuns)).then((response) => {
           if (isRunEligibleForSubmissionStatus >= 400) {
-            return {
-              status: isRunEligibleForSubmissionStatus
-            };
+            return new Response(isRunEligibleForSubmissionStatus, null);
           } else if (response.status >= 400) {
-            return {
-              status: response.status
-            };
+            return new Response(response.status, null);
           } else {
-            return {
-              status: 200
-            };
+            return new Response(200, updatedRuns);
           }
         });
       }
     ).catch(err => {
-      //Return New Response not working here, WA applied
-      return {
-        status: 500
-      };
+      return new Response(500, null);
     });
   }
 };
@@ -199,15 +191,11 @@ export const loadRunsFromServer = (pageNumber) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return false;
-      } else {
-        return true;
+        return new Response(452, null);
       }
     });
-    if (!networkStatus) {
-      return {
-        status: 452
-      };
+    if (networkStatus) {
+      return networkStatus;
     }
 
     var URL = configData.SERVER_URL + "run-details/getRuns/" + userId + "?page=";
@@ -231,16 +219,9 @@ export const loadRunsFromServer = (pageNumber) => {
             runs: response.runDetailsList
           })
         }
-        //Pending to check alternative, used to format response correctly
-        var result = {
-          status: 200,
-          data: response
-        };
-        return result;
+        return new Response(200, response);
       }).catch(err => {
-        return {
-          status: 500
-        };
+        return new Response(500, null);
       });
   }
 };
@@ -281,18 +262,14 @@ export const loadRunSummaryFromServer = () => {
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
+
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return false;
-      }
-      else{
-        return true;
+        return new Response(452, null);
       }
     });
-    if (!networkStatus) {
-      return {
-            status: 452
-          };
+    if (networkStatus) {
+      return networkStatus;
     }
 
     var URL = configData.SERVER_URL + "run-details/getRunSummary/" + userId;
@@ -302,9 +279,9 @@ export const loadRunSummaryFromServer = () => {
       }).then(response => response.json())
       .then((response) => {
         if (response.status >= 400) {
-        if (response.message && response.message.includes("UNAUTHORIZED")) {
-          dispatch(userActions.cleanUserDataStateAndDB());
-        }
+          if (response.message && response.message.includes("UNAUTHORIZED")) {
+            dispatch(userActions.cleanUserDataStateAndDB());
+          }
           return new Response(response.status, null);
         } else if (response.runSummary !== null) {
           //Async Dispatch Run Summary State Update
@@ -331,16 +308,11 @@ export const syncPendingRuns = (pendingRunsForSync) => {
 
     var networkStatus = await NetInfo.fetch().then(state => {
       if (!state.isConnected) {
-        return false;
-      }
-      else{
-        return true;
+        return new Response(452, null);
       }
     });
-    if (!networkStatus) {
-      return {
-            status: 452
-          };
+    if (networkStatus) {
+      return networkStatus;
     }
 
     var eventEligibleStatus = 200;
@@ -383,16 +355,12 @@ export const syncPendingRuns = (pendingRunsForSync) => {
           if (response.message && response.message.includes("UNAUTHORIZED")) {
             dispatch(userActions.cleanUserDataStateAndDB());
           }
-          return {
-            status: response.status
-          };
+          return new Response(response.status, null);
         } else if (response === true) {
           //Async Update Sync Flag in Local DB
           return dispatch(updateSyncStateInDB(pendingRunsForSync)).then((response) => {
             if (response.status >= 400) {
-              return {
-                status: response.status
-              };
+              return new Response(response.status, null);
             } else {
               //Async Run State Update
               dispatch({
@@ -400,20 +368,14 @@ export const syncPendingRuns = (pendingRunsForSync) => {
                 pendingRunsForSync
               });
               if (eventEligibleStatus >= 400) {
-                return {
-                  status: eventEligibleStatus
-                };
+                return new Response(eventEligibleStatus, null);
               }
-              return {
-                status: 200
-              };
+              return new Response(200, null);
             }
           });
         }
       }).catch(err => {
-        return {
-          status: 500
-        };
+        return new Response(500, null);
       });
   }
 };
@@ -492,23 +454,14 @@ const validateIfRunEligibleForEventSubmission = (runDetails) => {
         var eventMetricValue = response.rows._array[0].EVENT_METRIC_VALUE;
 
         if (parseFloat(runDetails.runDistance / 1000) < parseFloat(eventMetricValue)) {
-          return {
-            status: 453
-          };
+          return new Response(453, null);
+        } else if (currentTime > eventEndDateTime) {
+          return new Response(454, null);
         }
-        else if (currentTime > eventEndDateTime) {
-          return {
-            status: 454
-          };
-        }
-        return {
-          status: 200
-        };
+        return new Response(200, null);
       });
     } catch (err) {
-      return {
-        status: 500
-      };
+      return new Response(500, null);
     }
   };
 };
