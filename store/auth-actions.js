@@ -5,6 +5,8 @@ import StatusCodes from "../utils/StatusCodes.json";
 import * as userActions from './user-actions';
 import Response from '../models/response';
 import UserAuthenticationDetails from '../models/userAuthenticationDetails';
+import ExceptionDetails from '../models/exceptionDetails';
+import * as loggingActions from '../store/logging-actions';
 
 export const UPDATE_USER_AUTH_DETAILS = 'UPDATE_USER_AUTH_DETAILS';
 export const CLEAN_AUTH_STATE = 'CLEAN_AUTH_STATE';
@@ -26,6 +28,7 @@ export const loadUserAuthDetails = () => {
         return new Response(StatusCodes.OK, response.data);
       })
       .catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -58,6 +61,7 @@ export const generateOTPForMSISDN = (msisdn) => {
           return new Response(StatusCodes.OK, response);
         }
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -103,6 +107,7 @@ export const validateOTPForMSISDN = (msisdn, otpCode) => {
           return new Response(StatusCodes.OK, response);
         }
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -116,6 +121,7 @@ const updateUserAuthenticationDetailsInDB = (userAuthenticationDetails) => {
       await AsyncStorage.setItem('USER_SECRET_KEY', userAuthenticationDetails.secret);
       return new Response(StatusCodes.OK, userAuthenticationDetails);
     } catch (err) {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }
@@ -130,6 +136,7 @@ const fetchUserAuthDetails = () => {
       var userAuthDetails = new UserAuthenticationDetails(userId, userSecretKey);
       return new Response(StatusCodes.OK, userAuthDetails);
     } catch (err) {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }

@@ -4,6 +4,8 @@ import {insertEventRegistrationDetails,fetchEventRegistrationDetails,updateEvent
 import configData from "../config/config.json";
 import StatusCodes from "../utils/StatusCodes.json";
 import Response from '../models/response';
+import ExceptionDetails from '../models/exceptionDetails';
+import * as loggingActions from '../store/logging-actions';
 
 export const UPDATE_EVENTS_FROM_SERVER='UPDATE_EVENTS_FROM_SERVER';
 export const UPDATE_EVENT_REGISTRATION_DETAILS='UPDATE_EVENT_REGISTRATION_DETAILS';
@@ -54,6 +56,7 @@ export const registerUserForEvent = (eventDetails) => {
           return new Response(StatusCodes.OK, eventDetails);
         }
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -94,6 +97,7 @@ export const loadEventsFromServer = (pageNumber) => {
         }
         return new Response(StatusCodes.OK, response);
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -141,7 +145,7 @@ export const loadEventRegistrationDetails = () => {
         }
       })
       .catch(err => {
-
+         dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       });
   }
 };
@@ -192,6 +196,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
         }
         return new Response(StatusCodes.OK, response);
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -238,6 +243,7 @@ export const loadEventResultDetailsFromServer = () => {
         }
         return new Response(StatusCodes.OK, response);
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }

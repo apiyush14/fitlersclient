@@ -6,6 +6,8 @@ import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import UserDetails from '../models/userDetails';
 import Response from '../models/response';
 import {cleanUpAllData} from '../utils/DBUtils';
+import ExceptionDetails from '../models/exceptionDetails';
+import * as loggingActions from '../store/logging-actions';
 
 export const UPDATE_USER_DETAILS = 'UPDATE_USER_DETAILS';
 export const CLEAN_USER_STATE = 'CLEAN_USER_STATE';
@@ -38,6 +40,7 @@ export const loadUserDetails = () => {
         }
       })
       .catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -78,6 +81,7 @@ export const loadUserDetailsFromServer = () => {
         }
         return new Response(StatusCodes.OK, response.userDetails);
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -139,6 +143,7 @@ export const updateUserDetails = (firstName, lastName, height, weight) => {
           return new Response(StatusCodes.OK, userDetails);
         }
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -155,6 +160,7 @@ const fetchUserDetails = () => {
       var userDetails = new UserDetails(userFirstName, userLastName, userHeight, userWeight);
       return new Response(StatusCodes.OK, userDetails);
     } catch (err) {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }
@@ -171,6 +177,7 @@ const updateUserDetailsInDB = (userFirstName, userLastName, userHeight, userWeig
       var userDetails = new UserDetails(userFirstName, userLastName, userHeight, userWeight);
       return new Response(StatusCodes.OK, userDetails);
     } catch (err) {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }
@@ -200,6 +207,7 @@ export const cleanUpUserData = () => {
       await cleanUpAllData();
       new Response(StatusCodes.OK, true);
     } catch (err) {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     };
   }

@@ -10,6 +10,7 @@ import LiveRunTracker from '../screens/LiveRunTracker';
 import RunDetailsScreen from '../screens/RunDetailsScreen';
 import RunHistoryScreen from '../screens/RunHistoryScreen';
 import LogInScreen from '../screens/LogInScreen';
+import FeedbackScreen from '../screens/FeedbackScreen';
 import LogOutScreen from '../screens/LogOutScreen';
 import SplashScreen from '../screens/SplashScreen';
 import TermsAndConditions from '../screens/TermsAndConditions';
@@ -32,8 +33,10 @@ const RunTrackerNavigator=()=>{
       swipeEnabled: false
     }}>
     <drawerNavigator.Screen name="Home" component={RunTrackerTabNavigator}/>
+    <drawerNavigator.Screen name="Profile" component={UserDetailsScreen}/>
     <drawerNavigator.Screen name="Terms & Conditions" component={TermsAndConditions}/>
     <drawerNavigator.Screen name="Privacy" component={Privacy}/>
+    <drawerNavigator.Screen name="Feedback" component={FeedbackScreen}/>
     <drawerNavigator.Screen name="LogOut" component={LogOutScreen}
     listeners={({ navigation }) => ({
         state: (e) => {

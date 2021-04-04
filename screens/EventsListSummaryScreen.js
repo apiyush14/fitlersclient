@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity,Modal,ActivityIndicator, Alert} from 'react-native';
+import {useIsFocused} from "@react-navigation/native";
 import {useDispatch,useSelector} from 'react-redux';
 import EventItemsList from '../components/EventItemsList';
 import EventHistoryList from '../components/EventHistoryList';
@@ -12,6 +13,7 @@ import StatusCodes from "../utils/StatusCodes.json";
 const EventsListSummaryScreen = props => {
 
   const dispatch = useDispatch();
+  const isFocused = useIsFocused();
 
   // State Selectors
   const eventDetails = useSelector(state => state.events.eventDetails);
@@ -30,12 +32,20 @@ const EventsListSummaryScreen = props => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalEventDetails, setModalEventDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMoreContentAvailableOnServer, setIsMoreContentAvailableOnServer] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   //Load Time useEffect hook
   useEffect(() => {
     setUpcomingEventsSelected(true);
   }, []);
+
+  // Use Effect Hook to be loaded everytime the screen loads
+  useEffect(() => {
+    if (isFocused) {
+      setIsMoreContentAvailableOnServer(true);
+    }
+  }, [props, isFocused]);
 
   //Toggle Events Option
   const onToggleSelection = (selectedOption) => {
@@ -108,13 +118,20 @@ const EventsListSummaryScreen = props => {
 
   //Method to lazy load Runs from server 
   const loadMoreRunsHistoryFromServer = () => {
-    setIsLoading(true);
-    let pageNumber = Math.floor(runsHistoryDetails.length / 3);
-    dispatch(runActions.loadRunsFromServer(pageNumber)).then(() => {
-      setIsLoading(false);
-    }).catch(err => {
-      setIsLoading(false);
-    });
+    if (isMoreContentAvailableOnServer) {
+      setIsLoading(true);
+      let pageNumber = Math.floor(runsHistory.length / 3);
+      dispatch(runActions.loadRunsFromServer(pageNumber)).then((response) => {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
+          setIsMoreContentAvailableOnServer(false);
+        } else if (response.data && (!response.data.moreContentAvailable)) {
+          setIsMoreContentAvailableOnServer(false);
+        } else {
+          setIsMoreContentAvailableOnServer(true);
+        }
+        setIsLoading(false);
+      });
+    }
   };
 
   //Method to lazy load Upcoming Events from server 

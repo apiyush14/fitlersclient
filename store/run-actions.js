@@ -8,6 +8,8 @@ import RunDetails from '../models/rundetails';
 import Response from '../models/response';
 import * as userActions from '../store/user-actions';
 import * as eventActions from '../store/event-actions';
+import ExceptionDetails from '../models/exceptionDetails';
+import * as loggingActions from '../store/logging-actions';
 
 export const UPDATE_RUN_DETAILS = 'UPDATE_RUN_DETAILS';
 export const UPDATE_RUN_SUMMARY = 'UPDATE_RUN_SUMMARY';
@@ -72,6 +74,7 @@ export const addRun = (runDetailsVar) => {
         });
       }
     ).catch(err => {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     });
   }
@@ -126,6 +129,7 @@ export const addRunSummary = (run) => {
       }
       return new Response(StatusCodes.OK, run);
     }).catch(err => {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     });
   }
@@ -179,7 +183,7 @@ export const loadRuns = () => {
         }
       })
       .catch(err => {
-
+         dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       });
   }
 };
@@ -222,6 +226,7 @@ export const loadRunsFromServer = (pageNumber) => {
         }
         return new Response(StatusCodes.OK, response);
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -253,7 +258,7 @@ export const loadRunSummary = () => {
         }
       })
       .catch(err => {
-
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       });
   }
 };
@@ -295,6 +300,7 @@ export const loadRunSummaryFromServer = () => {
         }
         return new Response(StatusCodes.OK, response);
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -376,6 +382,7 @@ export const syncPendingRuns = (pendingRunsForSync) => {
           });
         }
       }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });
   }
@@ -394,6 +401,7 @@ const updateSyncStateInDB = (pendingRunsForSync) => {
         return new Response(StatusCodes.OK, pendingRunsForSync);
       });
     } catch (err) {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     }
   }
@@ -407,6 +415,7 @@ const updateEventIdInDB = (runDetails, eventId) => {
         return new Response(StatusCodes.OK, runDetails);
       });
     } catch (err) {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     }
   }
@@ -435,11 +444,13 @@ const checkAndDeleteRunsIfNeeded = () => {
           return deleteRuns(runIdsToBeDeleted).then((response) => {
             return new Response(StatusCodes.OK, response);
           }).catch(err => {
+            dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
             return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
           });
         }
       }
     }).catch(err => {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     });
   };
@@ -462,6 +473,7 @@ const validateIfRunEligibleForEventSubmission = (runDetails) => {
         return new Response(StatusCodes.OK, null);
       });
     } catch (err) {
+      dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     }
   };
