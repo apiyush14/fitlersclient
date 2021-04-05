@@ -20,6 +20,7 @@ return(
        textAlign = {props.textAlign}
        textContentType = {props.textContentType}
        maxLength = {props.maxLength}
+       multiline = {props.multiline}
        onBlur = {()=>setIsFocussed(false)}
        onFocus = {()=>setIsFocussed(true)}
        onChangeText = {props.onChangeText}>

@@ -149,6 +149,50 @@ export const updateUserDetails = (firstName, lastName, height, weight) => {
   }
 };
 
+//Method to Update User Feedback on Server
+export const updateUserFeedback = (userFeedbackRating, userFeedbackComments) => {
+  return async dispatch => {
+    var header = await dispatch(getUserAuthenticationToken());
+    var userId = header.USER_ID;
+
+    var networkStatus = await NetInfo.fetch().then(state => {
+      if (!state.isConnected) {
+        return new Response(StatusCodes.NO_INTERNET, null);
+      }
+    });
+    if (networkStatus) {
+      return networkStatus;
+    }
+
+    var userFeedBack = {
+      userFeedbackRating: userFeedbackRating,
+      userFeedbackComments: userFeedbackComments
+    }
+
+    var URL = configData.SERVER_URL + "user/feedback/" + userId;
+    return fetch(URL, {
+        method: 'POST',
+        headers: header,
+        body: JSON.stringify({
+          userFeedBack: userFeedBack
+        })
+      }).then(response => response.json())
+      .then((response) => {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
+          if (response.message && response.message.includes("UNAUTHORIZED")) {
+            dispatch(userActions.cleanUserDataStateAndDB());
+          }
+          return new Response(response.status, null);
+        } else {
+          return new Response(StatusCodes.OK, userFeedBack);
+        }
+      }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
+      });
+  }
+};
+
 //Private Method to load User Details from Async Storage
 const fetchUserDetails = () => {
   return async dispatch => {

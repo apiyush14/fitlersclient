@@ -1,5 +1,5 @@
   import React, {useState} from 'react';
-  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard,Switch,TouchableOpacity} from 'react-native';
+  import {View,StyleSheet,TouchableWithoutFeedback,Keyboard,TouchableOpacity,Alert} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import StatusCodes from "../utils/StatusCodes.json";
   import RoundButton from '../components/RoundButton';
@@ -13,97 +13,96 @@
 
   const dispatch = useDispatch();
 
-  const [lastName, setLastName] = useState("");
+  const [userFeedbackComments, setUserFeedbackComments] = useState("");
   const [userFeedbackRating, setUserFeedbackRating] = useState(0);
 
-  const onRatingChange = (rating) =>{
-   setUserFeedbackRating(parseInt(rating));
+  //Rating Change Listener
+  const onRatingChange = (rating) => {
+    setUserFeedbackRating(parseInt(rating));
   };
 
   //Submit User Feedback Event Handler
   const onClickSubmit = () => {
-      dispatch(userActions.updateUserDetails(firstName, lastName, heightVar, weightVar)).then(response => {
-        if (response.status === StatusCodes.NO_INTERNET) {
-          Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
-            text: 'OK',
-            onPress: () => {}
-          }], {
-            cancelable: false
-          });
-        } else if (response.status !== StatusCodes.OK) {
-          Alert.alert("Try Again", "Please try again later!!!", [{
-            text: 'OK',
-            onPress: () => {}
-          }], {
-            cancelable: false
-          });
-        } else {
-          props.navigation.navigate('Home');
-        }
-      });
+    dispatch(userActions.updateUserFeedback(userFeedbackRating, userFeedbackComments)).then(response => {
+      if (response.status === StatusCodes.NO_INTERNET) {
+        Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+          text: 'OK',
+          onPress: () => {}
+        }], {
+          cancelable: false
+        });
+      } else if (response.status !== StatusCodes.OK) {
+        Alert.alert("Try Again", "Please try again later!!!", [{
+          text: 'OK',
+          onPress: () => {}
+        }], {
+          cancelable: false
+        });
+      } else {
+        Alert.alert("Success", "Your feedback submitted successfully!!!", [{
+          text: 'OK',
+          onPress: () => {}
+        }], {
+          cancelable: false
+        });
+        props.navigation.navigate('Home');
+      }
+    });
   };
-
+    //View
     return (
-     <View style={styles.userDetailsScreenContainerStyle}>
-      <View style={styles.userDetailsSubContainerStyle}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+     <View style={styles.userFeedbackScreenContainerStyle}>
+      <View style={styles.userFeedbackSubContainerStyle}>
        
        <View style={styles.userFeedbackRatingContainerStyle}>
        <TouchableOpacity onPress={()=>onRatingChange(1)}>
         {userFeedbackRating>0?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='black'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
         (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
        </TouchableOpacity>
        <TouchableOpacity onPress={()=>onRatingChange(2)}>
         {userFeedbackRating>1?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='black'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
         (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
        </TouchableOpacity>
        <TouchableOpacity onPress={()=>onRatingChange(3)}> 
         {userFeedbackRating>2?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='black'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
         (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
        </TouchableOpacity>
        <TouchableOpacity onPress={()=>onRatingChange(4)}> 
         {userFeedbackRating>3?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='black'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
         (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
        </TouchableOpacity>
        <TouchableOpacity onPress={()=>onRatingChange(5)}>
         {userFeedbackRating>4?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='black'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
         (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
        </TouchableOpacity>
        </View>
-
-       <TextInput style = {styles.nameInputStyle}
-       textContentType = "name"
-       keyboardType = "default"
-       placeholder = "Comments"
-       textAlign = "center"
-       maxLength = {200}
-       multiline = {true}
-       onChangeText = {()=>{}}>
-     </TextInput>
-
-       <TextInputItem style = {styles.nameInputStyle}
-       textContentType = "name"
-       keyboardType = "default"
-       placeholder = "Last Name"
-       textAlign = "center"
-       maxLength = {200}
-       onChangeText = {(text)=>{setLastName(text)}}>
+      
+       <TextInputItem style = {styles.commentsInputStyle}
+        textContentType = "none"
+        keyboardType = "default"
+        placeholder = "Comments"
+        textAlign = "center"
+        maxLength = {200}
+        multiline = {true}
+        onChangeText = {(text)=>{setUserFeedbackComments(text)}}>
        </TextInputItem>
 
       <RoundButton style = {styles.buttonSubmitStyle}
-      title = "Submit"
-      disabled = {false}
-      onPress = {onClickSubmit}/> 
+       title = "Submit"
+       disabled = {false}
+       onPress = {onClickSubmit}/> 
       </View>
 
-      <View style={styles.buttonContainerStyle}>
-     <RoundButton 
+      <View style={styles.closeButtonContainerStyle}>
+       <RoundButton 
                  title="Close" 
-                 style={styles.buttonStyle} 
+                 style={styles.closeButtonStyle} 
                  onPress={()=>{
                   if(props.onClose){
                         props.onClose();
@@ -113,18 +112,18 @@
                   }
                 }}/>
         </View>
-
      </View>
+     </TouchableWithoutFeedback>
     );
   };
 
   const styles = StyleSheet.create({
-    userDetailsScreenContainerStyle: {
+    userFeedbackScreenContainerStyle: {
       flex: 1,
       flexDirection: 'column',
       alignItems: 'center'
     },
-    userDetailsSubContainerStyle: {
+    userFeedbackSubContainerStyle: {
       flex: 1
     },
     userFeedbackRatingContainerStyle: {
@@ -133,29 +132,28 @@
       alignSelf: 'center',
       alignItems: 'center'
     },
-    nameInputStyle: {
-      marginTop: '6%',
-      top: '10%'
+    commentsInputStyle: {
+      height: verticalScale(200),
+      width: verticalScale(350)
     },
     buttonSubmitStyle: {
+      marginTop: '5%',
+      alignSelf: 'center'
+    },
+    closeButtonContainerStyle: {
+      padding: '4%',
+      width: '100%',
       alignSelf: 'center',
-      top: '20%'
+      alignItems: 'center'
     },
-
-    buttonContainerStyle: {
-                padding: '4%',
-                width: '100%',
-                alignSelf: 'center',
-                alignItems: 'center'
+    closeButtonStyle: {
+      width: '100%',
+      height: verticalScale(70),
+      borderRadius: 25,
+      bottom: '2%',
+      backgroundColor: 'black',
+      opacity: 0.7
     },
-        buttonStyle: {
-                width: '100%',
-                height: verticalScale(70),
-                borderRadius: 25,
-                bottom: '2%',
-                backgroundColor: 'grey',
-                opacity: 0.4
-        },
   });
 
   export default FeedbackScreen;
