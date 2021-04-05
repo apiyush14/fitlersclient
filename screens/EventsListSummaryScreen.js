@@ -120,8 +120,9 @@ const EventsListSummaryScreen = props => {
   const loadMoreRunsHistoryFromServer = () => {
     if (isMoreContentAvailableOnServer) {
       setIsLoading(true);
-      let pageNumber = Math.floor(runsHistory.length / 3);
-      dispatch(runActions.loadRunsFromServer(pageNumber)).then((response) => {
+      let pageNumber = Math.floor(eventRunsHistoryDetails.length / 3);
+      dispatch(runActions.loadRunsFromServer(true, pageNumber)).then((response) => {
+        console.log(response);
         if (response.status >= StatusCodes.BAD_REQUEST) {
           setIsMoreContentAvailableOnServer(false);
         } else if (response.data && (!response.data.moreContentAvailable)) {

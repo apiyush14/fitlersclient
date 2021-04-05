@@ -170,7 +170,7 @@ export const loadRuns = () => {
         //In case there is no data in local store, go to server
         else {
           //Async Dispatch Load Runs from Server Action
-          dispatch(loadRunsFromServer(0)).then((response) => {
+          dispatch(loadRunsFromServer(false,0)).then((response) => {
             if (response.status >= StatusCodes.BAD_REQUEST) {
               //Do nothing
             } else if (response.data.runDetailsList.length > 0) {
@@ -189,7 +189,7 @@ export const loadRuns = () => {
 };
 
 //Method to Load Runs from server based on pageNumber provided
-export const loadRunsFromServer = (pageNumber) => {
+export const loadRunsFromServer = (isOnlyEventRunsRequired, pageNumber) => {
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
@@ -203,8 +203,8 @@ export const loadRunsFromServer = (pageNumber) => {
       return networkStatus;
     }
 
-    var URL = configData.SERVER_URL + "run-details/getRuns/" + userId + "?page=";
-    URL = URL + pageNumber;
+    var URL = configData.SERVER_URL + "run-details/getRuns/" + userId + "?page=" + pageNumber + "&isOnlyEventRunsRequired=" + isOnlyEventRunsRequired;
+
     return fetch(URL, {
         method: 'GET',
         headers: header
@@ -217,7 +217,7 @@ export const loadRunsFromServer = (pageNumber) => {
           return {
             status: response.status
           };
-        } else if (response.runDetailsList.length > 0) {
+        } else if (response.runDetailsList.length > 0 && (!isOnlyEventRunsRequired)) {
           //Async Dispatch Runs Update State
           dispatch({
             type: UPDATE_RUN_DETAILS,

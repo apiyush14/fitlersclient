@@ -38,7 +38,7 @@ const RunHistoryScreen = props => {
     if (isMoreContentAvailableOnServer) {
       setIsLoading(true);
       let pageNumber = Math.floor(runsHistory.length / 3);
-      dispatch(runActions.loadRunsFromServer(pageNumber)).then((response) => {
+      dispatch(runActions.loadRunsFromServer(false,pageNumber)).then((response) => {
         if (response.status >= StatusCodes.BAD_REQUEST) {
           setIsMoreContentAvailable(false);
         } else if (response.data&&(!response.data.moreContentAvailable)) {
