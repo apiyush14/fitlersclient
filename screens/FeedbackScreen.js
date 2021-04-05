@@ -45,7 +45,7 @@
         }], {
           cancelable: false
         });
-        props.navigation.navigate('Home');
+        props.navigation.navigate('HomeScreen');
       }
     });
   };
@@ -153,7 +153,7 @@
       bottom: '2%',
       backgroundColor: 'black',
       opacity: 0.7
-    },
+    }
   });
 
   export default FeedbackScreen;

@@ -16,6 +16,7 @@ import SplashScreen from '../screens/SplashScreen';
 import TermsAndConditions from '../screens/TermsAndConditions';
 import Privacy from '../screens/Privacy';
 import UserDetailsScreen from '../screens/UserDetailsScreen';
+import UserProfileScreen from '../screens/UserProfileScreen';
 import EventsListSummaryScreen from '../screens/EventsListSummaryScreen';
 import {useDispatch,useSelector} from 'react-redux';
 import * as userActions from '../store/user-actions';
@@ -33,7 +34,7 @@ const RunTrackerNavigator=()=>{
       swipeEnabled: false
     }}>
     <drawerNavigator.Screen name="Home" component={RunTrackerTabNavigator}/>
-    <drawerNavigator.Screen name="Profile" component={UserDetailsScreen}/>
+    <drawerNavigator.Screen name="Profile" component={UserProfileScreen}/>
     <drawerNavigator.Screen name="Terms & Conditions" component={TermsAndConditions}/>
     <drawerNavigator.Screen name="Privacy" component={Privacy}/>
     <drawerNavigator.Screen name="Feedback" component={FeedbackScreen}/>
