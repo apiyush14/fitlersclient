@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "onehealthclient",
-    "slug": "onehealthclient",
+    "name": "fitlersclient",
+    "slug": "fitlersclient",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,7 +20,7 @@
       "infoPlist": {
       "NSAppleMusicUsageDescription": "This app uses the camera to scan barcodes on event tickets."
        },
-      "bundleIdentifier": "com.onehealth",
+      "bundleIdentifier": "com.fitlers",
             "config": {
                 "googleMapsApiKey": "AIzaSyA4Ao9L2APODj4cfxm8w_rpMvq_GsIEuJE"
               },

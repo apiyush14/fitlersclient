@@ -41,7 +41,7 @@ We acquire information from other trusted sources to update or supplement the in
          </Text>
         <Text style={styles.mediumTextStyle}>HOW WE USE THE INFORMATION WE COLLECT?</Text>
          <Text style={styles.smallTextStyle}>
-A member of Our Company, which includes many different brands, will be the data controller for Your information. A user can reach out to our data controllers by sending an email to privacy@onehealth.com. Other members of Our Company may have access to Your information where they perform services on behalf of the data controller(s) (as a data processor) and, unless prohibited under applicable law, for use on their own behalf (as a data controller) for the following purposes:
+A member of Our Company, which includes many different brands, will be the data controller for Your information. A user can reach out to our data controllers by sending an email to privacy@fitlers.com. Other members of Our Company may have access to Your information where they perform services on behalf of the data controller(s) (as a data processor) and, unless prohibited under applicable law, for use on their own behalf (as a data controller) for the following purposes:
 deliver and improve Our Platform and manage Our business;
 manage Your account and provide You with customer support;
 tracking of Your physical movement, Fitness and location for distance calculation and credit conversion;
@@ -104,13 +104,13 @@ We may occasionally update this Privacy Policy. When We post changes to this Pri
 In accordance with Information Technology Act, 2000 and rules made there under, the name and contact details of the Grievance Officer are provided below:
 Name: Piyush Arora
 
-Email: support@onehealth.com
+Email: support@fitlers.com
 
 Our Platform may contain links to other sites not owned or controlled by Us and We are not responsible for the privacy practices of those sites. We encourage You to be aware when You leave Our sites or applications and to read the privacy policies of other sites that may collect Your personal information.
          </Text>
         <Text style={styles.mediumTextStyle}>CONTACT US.</Text>
          <Text style={styles.smallTextStyle}>
-Please contact Us by email on support@onehealth.com for any questions or comments regarding this Privacy Policy.
+Please contact Us by email on support@fitlers.com for any questions or comments regarding this Privacy Policy.
 
 Last Updated on: January 24, 2021.
 
@@ -124,7 +124,7 @@ IP address. An IP address is associated with the access point through which you 
 Notice. Notice may be by email to you at the last email address you provided us, by posting notice of such changes on our Platform, or by other means, consistent with applicable law.
 Parents. Parents mean a parent or legal guardian of the Children.
 Personal information. Personal information means and includes information that identifies (whether directly or indirectly) and Sensitive Personal Information. When anonymous information is directly or indirectly associated with personal information, this anonymous information also is treated as personal information.
-Public Forums. Our Platform may offer message boards, conversation pages, blogs, chat rooms, social community environments, profile pages, and other forums that do not have a restricted audience. If you provide personal information when you use any of these features, that personal information may be publicly posted and otherwise disclosed without limitation as to its use by us or by a third party. To request removal of your personal information from a public forum on one of our Platform, please contact support@onehealth.com.
+Public Forums. Our Platform may offer message boards, conversation pages, blogs, chat rooms, social community environments, profile pages, and other forums that do not have a restricted audience. If you provide personal information when you use any of these features, that personal information may be publicly posted and otherwise disclosed without limitation as to its use by us or by a third party. To request removal of your personal information from a public forum on one of our Platform, please contact support@fitlers.com.
 Sensitive Personal Information. Sensitive Personal Information shall have the meaning ascribed to it under the applicable law and is presently defined to mean such personal information which consists of information relating to (i) passwords; (ii) financial information such as bank accounts or credit card or debit card or other payment instrument details; (iii) physical, physiological and mental health conditions; (iv) sexual orientation; (v) medical records and history; (vi) Biometric information; (vii) any detail relating to the above clauses as provided to body corporate for providing service; and (viii) any of the information received under above clauses by body corporate for processing, stored or processed under lawful contract or otherwise; provided that any information that is freely available or accessible in public domain or furnished under the Right to Information Act, 2005 or any other law for the time being in force shall not be regarded as sensitive personal information.
 Fitness. for the purpose of this Privacy Policy shall means any activities related to health, fitness, or wellness of person including but not limited to physical movements, jumping, running, meditation, jogging etc.
         </Text>

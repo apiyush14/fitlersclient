@@ -122,7 +122,6 @@ const EventsListSummaryScreen = props => {
       setIsLoading(true);
       let pageNumber = Math.floor(eventRunsHistoryDetails.length / 3);
       dispatch(runActions.loadRunsFromServer(true, pageNumber)).then((response) => {
-        console.log(response);
         if (response.status >= StatusCodes.BAD_REQUEST) {
           setIsMoreContentAvailableOnServer(false);
         } else if (response.data && (!response.data.moreContentAvailable)) {

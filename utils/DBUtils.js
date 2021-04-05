@@ -2,7 +2,7 @@ import * as SQLite from 'expo-sqlite';
 import ExceptionDetails from '../models/exceptionDetails';
 import * as loggingActions from '../store/logging-actions';
 
-const db = SQLite.openDatabase('onehealth.db');
+const db = SQLite.openDatabase('fitlers.db');
 
 //Method to initialize the tables for first time usage
 export const init = () => {
