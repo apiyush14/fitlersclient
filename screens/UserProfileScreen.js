@@ -101,41 +101,58 @@
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
      <View style={styles.userDetailsScreenContainerStyle}>
       <View style={styles.userDetailsSubContainerStyle}>
+
+      <View style={styles.inputContainerStyle}>
+      <Text style={styles.smallTextStyle}>First Name</Text>
       <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
        keyboardType = "default"
        placeholder = {firstName}
+       placeholderTextColor = "black"
        textAlign = "center"
        maxLength = {20}
        onChangeText = {(text)=>{setFirstName(text)}}>
        </TextInputItem>
+       </View>
        
+       <View style={styles.inputContainerStyle}>
+       <Text style={styles.smallTextStyle}>Last Name</Text>
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
        keyboardType = "default"
        placeholder = {lastName}
+       placeholderTextColor = "black"
        textAlign = "center"
        maxLength = {20}
        onChangeText = {(text)=>{setLastName(text)}}>
        </TextInputItem>
+       </View>
 
+       <View style={styles.inputContainerStyle}>
+       <Text style={styles.smallTextStyle}>Height (in cms)</Text>
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "none"
        keyboardType = "number-pad"
        placeholder = {height.toString()}
+       placeholderTextColor = "black"
        textAlign = "center"
        maxLength = {3}
        onChangeText = {(text)=>{setHeight(text)}}>
        </TextInputItem>
+       </View>
        
+       <View style={styles.inputContainerStyle}>
+       <Text style={styles.smallTextStyle}>Weight (in kgs)</Text>
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "none"
        keyboardType = "number-pad"
        placeholder = {weight.toString()}
+       placeholderTextColor = "black"
        textAlign = "center"
        maxLength = {3}
        onChangeText = {(text)=>{setWeight(text)}}>
        </TextInputItem>
+       </View>
 
       <RoundButton style = {styles.buttonSubmitStyle}
       title = "Submit"
@@ -169,20 +186,22 @@
     userProfileSubContainerStyle: {
       flex: 1
     },
+    inputContainerStyle: {
+     alignSelf: 'center',
+     marginTop: '5%'
+    },
     nameInputStyle: {
-      marginTop: '6%',
-      top: '10%'
+
     },
     buttonSubmitStyle: {
       alignSelf: 'center',
-      top: '20%'
+      top: '2%'
     },
     closeButtonContainerStyle: {
       padding: '4%',
       width: '100%',
       alignSelf: 'center',
-      alignItems: 'center',
-      top: '30%'
+      alignItems: 'center'
     },
     closeButtonStyle: {
       width: '100%',
@@ -191,6 +210,13 @@
       backgroundColor: 'black',
       opacity: 0.7
     },
+    smallTextStyle: {
+      padding: '3%',
+      fontSize: moderateScale(15, 0.8),
+      color: 'black',
+      fontFamily: 'open-sans',
+      alignSelf: 'center'
+    }
   });
 
   export default UserProfileScreen;

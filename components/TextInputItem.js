@@ -17,6 +17,7 @@ return(
        textContentType = {props.textContentType}
        keyboardType = {props.keyboardType}
        placeholder = {props.placeholder}
+       placeholderTextColor = {props.placeholderTextColor}
        textAlign = {props.textAlign}
        textContentType = {props.textContentType}
        maxLength = {props.maxLength}

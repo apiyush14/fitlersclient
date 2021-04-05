@@ -107,7 +107,7 @@
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "none"
        keyboardType = "number-pad"
-       placeholder = "Height (in cm)"
+       placeholder = "Height (in cms)"
        textAlign = "center"
        maxLength = {3}
        onChangeText = {(text)=>{setHeight(text)}}>
