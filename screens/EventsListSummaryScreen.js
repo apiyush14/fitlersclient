@@ -50,14 +50,17 @@ const EventsListSummaryScreen = props => {
   //Toggle Events Option
   const onToggleSelection = (selectedOption) => {
     if (selectedOption === 'upcomingEvents') {
+      setIsMoreContentAvailableOnServer(true);
       setRegisteredEventsSelected(false);
       setCompletedEventsSelected(false);
       setUpcomingEventsSelected(true);
     } else if (selectedOption === 'registeredEvents') {
+      setIsMoreContentAvailableOnServer(true);
       setUpcomingEventsSelected(false);
       setCompletedEventsSelected(false);
       setRegisteredEventsSelected(true);
     } else if (selectedOption === 'completedEvents') {
+      setIsMoreContentAvailableOnServer(true);
       setUpcomingEventsSelected(false);
       setRegisteredEventsSelected(false);
       setCompletedEventsSelected(true);

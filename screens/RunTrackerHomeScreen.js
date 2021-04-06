@@ -17,6 +17,7 @@ import EventView from '../components/EventView';
 const RunTrackerHomeScreen = (props) => {
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
+  const [isMoreContentAvailableOnServer, setIsMoreContentAvailableOnServer] = useState(true);
 
   // State Selectors
   const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails).filter(event => event.runId === 0);
@@ -37,6 +38,7 @@ const RunTrackerHomeScreen = (props) => {
   // Use Effect Hook to be loaded everytime the screen loads
   useEffect(() => {
     if (isFocused) {
+      setIsMoreContentAvailableOnServer(true);
       setOngoingEventDetails(null);
       checkAndUpdateOngoingEvent();
     }
@@ -159,6 +161,13 @@ const RunTrackerHomeScreen = (props) => {
     setIsLoading(true);
     let pageNumber = Math.floor(eventDetails.length / 3);
     dispatch(eventActions.loadEventsFromServer(pageNumber)).then(() => {
+      if (response.status >= StatusCodes.BAD_REQUEST) {
+        setIsMoreContentAvailableOnServer(false);
+      } else if (response.data && (!response.data.moreContentAvailable)) {
+        setIsMoreContentAvailableOnServer(false);
+      } else {
+        setIsMoreContentAvailableOnServer(true);
+      }
       setIsLoading(false);
     });
   };

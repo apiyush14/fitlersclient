@@ -18,7 +18,7 @@ const RunHistoryScreen = props => {
     const isFocused = useIsFocused();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
-    const [isMoreContentAvailableOnServer, setIsMoreContentAvailable] = useState(true);
+    const [isMoreContentAvailableOnServer, setIsMoreContentAvailableOnServer] = useState(true);
 
     // State Selectors
     const runsHistory = useSelector(state => state.runs.runs);
@@ -27,7 +27,7 @@ const RunHistoryScreen = props => {
 
   // Use Effect Hook to be loaded everytime the screen loads
   useEffect(() => {
-    setIsMoreContentAvailable(true);
+    setIsMoreContentAvailableOnServer(true);
     if (isFocused && pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
       dispatch(runActions.syncPendingRuns(pendingRunsForSync));
     }
@@ -40,11 +40,11 @@ const RunHistoryScreen = props => {
       let pageNumber = Math.floor(runsHistory.length / 3);
       dispatch(runActions.loadRunsFromServer(false,pageNumber)).then((response) => {
         if (response.status >= StatusCodes.BAD_REQUEST) {
-          setIsMoreContentAvailable(false);
+          setIsMoreContentAvailableOnServer(false);
         } else if (response.data&&(!response.data.moreContentAvailable)) {
-          setIsMoreContentAvailable(false);
+          setIsMoreContentAvailableOnServer(false);
         } else {
-          setIsMoreContentAvailable(true);
+          setIsMoreContentAvailableOnServer(true);
         }
         setIsLoading(false);
       });

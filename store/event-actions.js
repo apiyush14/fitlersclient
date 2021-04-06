@@ -77,8 +77,7 @@ export const loadEventsFromServer = (pageNumber) => {
       return networkStatus;
     }
 
-    var URL = configData.SERVER_URL + "event-details/getEvents/" + userId + "?page=";
-    URL = URL + pageNumber;;
+    var URL = configData.SERVER_URL + "event-details/getEvents/" + userId + "?page=" + pageNumber;
     return fetch(URL, {
         method: 'GET',
         headers: header
@@ -165,7 +164,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
       return networkStatus;
     }
 
-    var URL = configData.SERVER_URL + "event-registration/getRegisteredEventsForUser/" + userId;
+    var URL = configData.SERVER_URL + "event-registration/getRegisteredEventsForUser/" + userId + "?page=" + pageNumber;
     return fetch(URL, {
         method: 'GET',
         headers: header
