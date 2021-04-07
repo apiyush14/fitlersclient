@@ -11,6 +11,8 @@ export const UPDATE_EVENTS_FROM_SERVER='UPDATE_EVENTS_FROM_SERVER';
 export const UPDATE_EVENT_REGISTRATION_DETAILS='UPDATE_EVENT_REGISTRATION_DETAILS';
 export const UPDATE_RUN_IN_EVENT_REGISTRATION='UPDATE_RUN_IN_EVENT_REGISTRATION';
 export const UPDATE_EVENT_RESULT_DETAILS='UPDATE_EVENT_RESULT_DETAILS';
+export const UPDATE_EVENT_RESULT_DETAILS_FOR_EVENT='UPDATE_EVENT_RESULT_DETAILS_FOR_EVENT';
+export const CLEAN_RESULT_DETAILS_FOR_EVENT_STATE='CLEAN_RESULT_DETAILS_FOR_EVENT_STATE';
 export const CLEAN_EVENT_STATE='CLEAN_EVENT_STATE';
 
 import * as userActions from '../store/user-actions';
@@ -248,6 +250,56 @@ export const loadEventResultDetailsFromServer = (pageNumber) => {
   }
 };
 
+//Method to Load Event Result Details from server
+export const loadEventResultDetailsFromServerBasedOnEventId = (eventId, pageNumber) => {
+  return async dispatch => {
+    var header = await dispatch(getUserAuthenticationToken());
+    var userId = header.USER_ID;
+
+    var networkStatus = await NetInfo.fetch().then(state => {
+      if (!state.isConnected) {
+        return new Response(StatusCodes.NO_INTERNET, null);
+      }
+    });
+    if (networkStatus) {
+      return networkStatus;
+    }
+
+    var URL = configData.SERVER_URL + "event-results/eventId/" + eventId + "?page=" + pageNumber;
+    return fetch(URL, {
+        method: 'GET',
+        headers: header
+      }).then(response => response.json())
+      .then((response) => {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
+          return new Response(response.status, null);
+        } else if (response.eventResultDetailsWithUserDetails && response.eventResultDetailsWithUserDetails.length > 0) {
+          var updatedEventResultDetails = response.eventResultDetailsWithUserDetails.map((eventResultDetails) => {
+            var updatedEventResult = {
+              eventId: eventResultDetails.eventId,
+              userId: eventResultDetails.userId,
+              userFirstName: eventResultDetails.userFirstName,
+              userLastName: eventResultDetails.userLastName,
+              userRank: eventResultDetails.userRank,
+              runTotalTime: eventResultDetails.runTotalTime
+            };
+            return updatedEventResult;
+          });
+
+          //Async Dispatch Event Result Update State
+          dispatch({
+            type: UPDATE_EVENT_RESULT_DETAILS_FOR_EVENT,
+            eventResultDetailsWithUserDetails: updatedEventResultDetails
+          })
+        }
+        return new Response(StatusCodes.OK, response);
+      }).catch(err => {
+        dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
+      });
+  }
+};
+
 //Method to Update Run Id in Event Registration
 export const updateRunDetailsInEventRegistration = (eventId, runId) => {
   return async dispatch => {
@@ -264,4 +316,11 @@ export const updateRunDetailsInEventRegistration = (eventId, runId) => {
       updatedEventRegistrationDetails: updatedEventRegistrationDetails
     });
   }
+};
+
+//Utility Method to cleanup Event Result Details State
+export const cleanEventResultState= (navigation, dispatch) => {
+  return async dispatch => {
+    dispatch({type: CLEAN_RESULT_DETAILS_FOR_EVENT_STATE});
+  };
 };

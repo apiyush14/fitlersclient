@@ -1,12 +1,14 @@
-import {UPDATE_EVENTS_FROM_SERVER,UPDATE_EVENT_REGISTRATION_DETAILS,UPDATE_RUN_IN_EVENT_REGISTRATION,UPDATE_EVENT_RESULT_DETAILS,CLEAN_EVENT_STATE} from './event-actions';
+import {UPDATE_EVENTS_FROM_SERVER,UPDATE_EVENT_REGISTRATION_DETAILS,UPDATE_RUN_IN_EVENT_REGISTRATION,UPDATE_EVENT_RESULT_DETAILS,CLEAN_EVENT_STATE,UPDATE_EVENT_RESULT_DETAILS_FOR_EVENT,CLEAN_RESULT_DETAILS_FOR_EVENT_STATE} from './event-actions';
 import EventDetails from '../models/eventdetails';
 import EventRegistrationDetails from '../models/eventRegistrationDetails';
 import EventResultDetails from '../models/eventResultDetails';
+import EventResultDetailsWithUserDetails from '../models/eventResultDetailsWithUserDetails';
 
 const initialState={
 	eventDetails:[],
     eventRegistrationDetails:[],
-    eventResultDetails:[]
+    eventResultDetails:[],
+    eventResultDetailsForEvent: []
 };
 
 export default (state = initialState, action) => {
@@ -44,10 +46,24 @@ export default (state = initialState, action) => {
             state.eventResultDetails = state.eventResultDetails.concat(updatedEventResultDetails);
             return state;
 
+        case UPDATE_EVENT_RESULT_DETAILS_FOR_EVENT:
+            var updatedEventResultDetails = action.eventResultDetailsWithUserDetails.map((eventResult) => {
+                if (state.eventResultDetailsForEvent.findIndex(eventResultState => eventResultState.userId === eventResult.userId) < 0) {
+                    return new EventResultDetailsWithUserDetails(eventResult.eventId, eventResult.userId, eventResult.userFirstName, eventResult.userLastName, eventResult.userRank, eventResult.runTotalTime);
+                }
+            }).filter(updatedEventResult => updatedEventResult !== undefined);
+            state.eventResultDetailsForEvent = state.eventResultDetailsForEvent.concat(updatedEventResultDetails);
+            return state;
+
+        case CLEAN_RESULT_DETAILS_FOR_EVENT_STATE:
+            state.eventResultDetailsForEvent = [];
+            return state;
+
         case CLEAN_EVENT_STATE:
             state.eventDetails = [];
             state.eventRegistrationDetails = [];
             state.eventResultDetails = [];
+            state.eventResultDetailsForEvent = [];
             return state;
 
         default:

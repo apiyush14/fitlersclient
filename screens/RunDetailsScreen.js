@@ -5,6 +5,7 @@ import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import StatusCodes from "../utils/StatusCodes.json";
 import { useDispatch } from 'react-redux';
 import * as runActions from '../store/run-actions';
+import * as eventActions from '../store/event-actions';
 import Card from '../components/Card';
 import {Ionicons} from '@expo/vector-icons';
 import {useSelector} from 'react-redux';
@@ -117,15 +118,19 @@ const RunDetailsScreen = props=>{
     }
   };
 
-  const onClickEventResults=()=>{
+  //Event Result Action Listener
+  const onClickEventResults = () => {
+    //Async Dispatch Clean Event Registration State
+    dispatch(eventActions.cleanEventResultState());
     setModalVisible(true);
   };
 
   //Close Event Item Listener
   const onCloseEventResult = () => {
     setModalVisible(false);
+    //Async Dispatch Clean Event Registration State
+    dispatch(eventActions.cleanEventResultState());
   };
-
 //View
 return (
  <View style={styles.runDetailsContainerStyle}>

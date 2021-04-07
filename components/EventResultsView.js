@@ -1,9 +1,12 @@
 import React, { useState, useEffect} from 'react';
-import { StyleSheet,Text, View,ImageBackground, ScrollView} from 'react-native';
+import { StyleSheet,Text, View,ImageBackground, ScrollView,ActivityIndicator} from 'react-native';
 import RoundButton from '../components/RoundButton';
 import configData from "../config/config.json";
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
-import {useSelector} from 'react-redux';
+import {useDispatch,useSelector} from 'react-redux';
+import EventResultList from '../components/EventResultList';
+import * as eventActions from '../store/event-actions';
+import StatusCodes from "../utils/StatusCodes.json";
 
 /*
 Event Result View, Best Resolution found using 1080*1920 image
@@ -11,23 +14,64 @@ Event Result View, Best Resolution found using 1080*1920 image
 
 const EventResultsView=props=>{
 
+  const dispatch = useDispatch();
+
+  //State Variables
+  const [isLoading, setIsLoading] = useState(false);
+  const [isMoreContentAvailableOnServer, setIsMoreContentAvailableOnServer] = useState(true);
+
   // State Selectors
-  const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
+  const eventResultDetailsForEvent = useSelector(state => state.events.eventResultDetailsForEvent);
 
   //Use Effect Load Time Hook
   useEffect(() => {
-    
+    if (isMoreContentAvailableOnServer) {
+      setIsLoading(true);
+      let pageNumber = Math.floor(eventResultDetailsForEvent.length / 3);
+      dispatch(eventActions.loadEventResultDetailsFromServerBasedOnEventId(props.eventId, pageNumber)).then((response) => {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
+          setIsMoreContentAvailableOnServer(false);
+        } else if (response.data && (!response.data.moreContentAvailable)) {
+          setIsMoreContentAvailableOnServer(false);
+        } else {
+          setIsMoreContentAvailableOnServer(true);
+        }
+        setIsLoading(false);
+      });
+    }
   }, []);
+
+    // Event Result Footer for Activity Loader
+  const renderEventResultFooter = () => {
+    return (
+      <View>
+    {isLoading?
+    (
+     <ActivityIndicator size="large" color="green"/>
+     ):
+    (
+     <View></View>
+     )
+   }
+   </View>
+    );
+  };
 
 //View
 return(
- 	 <View style={styles.eventViewContainerStyle}>
+ 	 <View style={styles.eventResultViewContainerStyle}>
      <View style={styles.imageContainerStyle}>
      <ImageBackground
       source={{uri:configData.SERVER_URL+"event-details/getDisplayImage/"+props.eventId+"?imageType=DISPLAY"}} 
       style={styles.imageStyle}>
 
-      <View style={styles.actionPanelContainerStyle}>
+      <View style={styles.scrollViewContainerStyle}>
+
+           <EventResultList
+            onEndReached={renderEventResultFooter}
+            isLoading={isLoading}
+            footer={renderEventResultFooter()}
+            listData={eventResultDetailsForEvent}/>
 
       <View style={styles.buttonContainerStyle}>
        <RoundButton title="Close" style={styles.buttonStyle} onPress={props.onCloseEventResult}/>
@@ -41,10 +85,11 @@ return(
 };
 
 const styles = StyleSheet.create({
-  eventViewContainerStyle: {
+  eventResultViewContainerStyle: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: 'white'
   },
   imageContainerStyle: {
     flex: 1,
@@ -52,18 +97,10 @@ const styles = StyleSheet.create({
   },
   imageStyle: {
     width: '100%',
-    height: '100%'
+    height: '100%',
+    opacity: 1
   },
 
-  actionPanelContainerStyle: {
-    flex: 0.4,
-    top: '60%',
-    backgroundColor: 'white',
-    borderRadius: 25,
-    opacity: 0.7,
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
   scrollViewContainerStyle: {
     flex: 1,
     marginTop: '5%'
