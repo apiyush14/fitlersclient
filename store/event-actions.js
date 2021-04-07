@@ -202,7 +202,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
 };
 
 //Method to Load Event Result Details from server
-export const loadEventResultDetailsFromServer = () => {
+export const loadEventResultDetailsFromServer = (pageNumber) => {
   return async dispatch => {
     var header = await dispatch(getUserAuthenticationToken());
     var userId = header.USER_ID;
@@ -216,7 +216,7 @@ export const loadEventResultDetailsFromServer = () => {
       return networkStatus;
     }
 
-    var URL = configData.SERVER_URL + "event-results/" + userId;
+    var URL = configData.SERVER_URL + "event-results/" + userId + "?page=" + pageNumber;
     return fetch(URL, {
         method: 'GET',
         headers: header

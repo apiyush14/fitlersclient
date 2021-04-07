@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { StyleSheet,Text, View, TouchableOpacity,ImageBackground, ScrollView} from 'react-native';
+import { StyleSheet,Text, View,ImageBackground, ScrollView} from 'react-native';
 import RoundButton from '../components/RoundButton';
 import configData from "../config/config.json";
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
@@ -27,6 +27,7 @@ const EventView=props=>{
   const [eventStartDay, setEventStartDay] = useState("");
   const [eventStartDate, setEventStartDate] = useState(new Date());
   const [eventEndDate, setEventEndDate] = useState(new Date());
+  const [eventMetricValue, setEventMetricValue] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
 
   //Use Effect Load Time Hook
@@ -35,6 +36,7 @@ const EventView=props=>{
     var eventEndDate = new Date(props.eventDetails.eventEndDate);
     setEventStartDate(eventStartDate);
     setEventEndDate(eventEndDate);
+    setEventMetricValue(props.eventDetails.eventMetricValue);
     setIsRegistered(eventRegistrationDetails.findIndex((event)=>event.eventId===props.eventDetails.eventId)>=0);
   }, []);
 
@@ -49,6 +51,7 @@ return(
       <View style={styles.actionPanelContainerStyle}>
         <ScrollView style={styles.scrollViewContainerStyle}>
          <Text style={styles.eventHeaderTextStyle}>{props.eventDetails.eventName}</Text>
+         <Text style={styles.eventDayTextStyle}>    Distance {eventMetricValue} KM</Text>
 
           <View style={styles.eventCalendarContainerStyle}>
            <View style={styles.eventDateContainerStyle}>
@@ -125,6 +128,10 @@ const styles = StyleSheet.create({
 
   eventCalendarContainerStyle: {
     marginVertical: '5%',
+    alignItems: 'center'
+  },
+  eventMetricValueContainerStyle: {
+    flex: 1,
     alignItems: 'center'
   },
   eventDateContainerStyle: {

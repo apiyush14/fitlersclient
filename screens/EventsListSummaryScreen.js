@@ -9,6 +9,7 @@ import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import StatusCodes from "../utils/StatusCodes.json";
+import RunDetails from '../models/rundetails';
 
 const EventsListSummaryScreen = props => {
 
@@ -112,19 +113,17 @@ const EventsListSummaryScreen = props => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    dispatch(eventActions.loadEventResultDetailsFromServer()).then(() => {
-      setRefreshing(false);
-    }).catch(err => {
+    dispatch(eventActions.loadEventResultDetailsFromServer(0)).then((response) => {
       setRefreshing(false);
     });
   };
 
-  //Method to lazy load Runs from server 
-  const loadMoreRunsHistoryFromServer = () => {
+  //Method to lazy load Event Results from server 
+  const loadMoreEventResultsFromServer = () => {
     if (isMoreContentAvailableOnServer) {
       setIsLoading(true);
       let pageNumber = Math.floor(eventRunsHistoryDetails.length / 3);
-      dispatch(runActions.loadRunsFromServer(true, pageNumber)).then((response) => {
+      dispatch(eventActions.loadEventResultDetailsFromServer(pageNumber)).then((response) => {
         if (response.status >= StatusCodes.BAD_REQUEST) {
           setIsMoreContentAvailableOnServer(false);
         } else if (response.data && (!response.data.moreContentAvailable)) {
@@ -139,29 +138,28 @@ const EventsListSummaryScreen = props => {
 
   //Method to lazy load Upcoming Events from server 
   const loadMoreEventsFromServer = () => {
-    setIsLoading(true);
-    let pageNumber = Math.floor(eventDetails.length / 3);
-    dispatch(eventActions.loadEventsFromServer(pageNumber)).then(() => {
-      setIsLoading(false);
-    }).catch(err => {
-      setIsLoading(false);
-    });
+    if (isMoreContentAvailableOnServer) {
+      setIsLoading(true);
+      let pageNumber = Math.floor(eventDetails.length / 3);
+      dispatch(eventActions.loadEventsFromServer(pageNumber)).then((response) => {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
+          setIsMoreContentAvailableOnServer(false);
+        } else if (response.data && (!response.data.moreContentAvailable)) {
+          setIsMoreContentAvailableOnServer(false);
+        } else {
+          setIsMoreContentAvailableOnServer(true);
+        }
+        setIsLoading(false);
+      });
+    }
   };
 
   //Event Listener to be called on selecting Run and to navigate to Run History Screen
   const onSelectRunHistoryItem = (itemdata) => {
+    var runDetails = new RunDetails(itemdata.item.runId, itemdata.item.runTotalTime, itemdata.item.runDistance, itemdata.item.runPace, itemdata.item.runCaloriesBurnt, 0, itemdata.item.runStartDateTime, itemdata.item.runDate, itemdata.item.runDay, itemdata.item.runPath, itemdata.item.runTrackSnapUrl, itemdata.item.eventId, "1");
     props.navigation.navigate('RunDetailsScreen', {
-      runId: itemdata.item.runId,
-      eventId: itemdata.item.eventId,
-      runTrackSnapUrl: itemdata.item.runTrackSnapUrl,
-      runDate: itemdata.item.runDate,
-      runDay: itemdata.item.runDay,
-      runTotalTime: itemdata.item.runTotalTime,
-      runDistance: itemdata.item.runDistance,
-      runPace: itemdata.item.runPace,
-      runCaloriesBurnt: itemdata.item.runCaloriesBurnt,
-      runPath: itemdata.item.runPath,
-      sourceScreen: 'RunHistoryScreen'
+      sourceScreen: 'RunHistoryScreen',
+      runDetails: runDetails
     });
   };
 
@@ -221,6 +219,7 @@ return (
     onClickEventItem={onClickEventItem}
     onEndReached={loadMoreEventsFromServer}
     isLoading={isLoading}
+    footer={renderEventSummaryFooter()}
     listData={eventDetails}/>
    </View>):
 
@@ -234,6 +233,7 @@ return (
     onClickEventItem={onClickEventItem}
     onEndReached={loadMoreEventsFromServer}
     isLoading={isLoading}
+    footer={renderEventSummaryFooter()}
     listData={eventRegistrationDetails}/>
    </View>):
    
@@ -244,7 +244,7 @@ return (
    (<View style={styles.eventItemsListStyle}>
     <EventHistoryList
    onSelectRunItem={onSelectRunHistoryItem}
-   onEndReached={loadMoreRunsHistoryFromServer}
+   onEndReached={loadMoreEventResultsFromServer}
    isLoading={isLoading}
    onRefresh={onRefresh}
    refreshing={refreshing}

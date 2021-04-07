@@ -50,8 +50,8 @@ const RunTrackerHomeScreen = (props) => {
       dispatch(runActions.loadRuns());
       dispatch(runActions.loadRunSummary());
       dispatch(eventActions.loadEventsFromServer(0));
-      dispatch(eventActions.loadEventRegistrationDetails());
-      dispatch(eventActions.loadEventResultDetailsFromServer());
+      dispatch(eventActions.loadEventRegistrationDetails(0));
+      dispatch(eventActions.loadEventResultDetailsFromServer(0));
     }
     fetchData();
   }, []);
@@ -160,7 +160,7 @@ const RunTrackerHomeScreen = (props) => {
   const loadMoreDataFromServer = () => {
     setIsLoading(true);
     let pageNumber = Math.floor(eventDetails.length / 3);
-    dispatch(eventActions.loadEventsFromServer(pageNumber)).then(() => {
+    dispatch(eventActions.loadEventsFromServer(pageNumber)).then((response) => {
       if (response.status >= StatusCodes.BAD_REQUEST) {
         setIsMoreContentAvailableOnServer(false);
       } else if (response.data && (!response.data.moreContentAvailable)) {

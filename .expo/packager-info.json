@@ -1,9 +1,9 @@
 {
   "packagerPort": 19001,
-  "packagerPid": 10404,
+  "packagerPid": 10700,
   "devToolsPort": 19002,
   "expoServerPort": 19000,
   "expoServerNgrokUrl": "https://a5-jda.anonymous.fitlersclient.exp.direct",
   "packagerNgrokUrl": "https://packager.a5-jda.anonymous.fitlersclient.exp.direct",
-  "ngrokPid": 10860
+  "ngrokPid": 10460
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Platform, ImageBackground} from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Platform, ImageBackground,Modal} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import StatusCodes from "../utils/StatusCodes.json";
@@ -10,6 +10,7 @@ import {Ionicons} from '@expo/vector-icons';
 import {useSelector} from 'react-redux';
 import {useIsFocused} from "@react-navigation/native";
 import RunDetails from '../models/rundetails';
+import EventResultsView from '../components/EventResultsView';
 
 var isCalledFromHistoryScreen = false;
 let runStartDateTime = null;
@@ -41,6 +42,8 @@ const RunDetailsScreen = props=>{
     minutes: "00",
     hours: "00"
   });
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   //Load Screen Use Effect hook used to populate state variables
   useEffect(() => {
@@ -114,9 +117,25 @@ const RunDetailsScreen = props=>{
     }
   };
 
+  const onClickEventResults=()=>{
+    setModalVisible(true);
+  };
+
+  //Close Event Item Listener
+  const onCloseEventResult = () => {
+    setModalVisible(false);
+  };
+
 //View
 return (
  <View style={styles.runDetailsContainerStyle}>
+   <Modal animationType="slide" transparent={true} visible={modalVisible}
+    onRequestClose={()=>{}}>
+   <EventResultsView 
+   onCloseEventResult={onCloseEventResult} 
+   eventId={eventId}/>
+  </Modal>
+
   {runPath&&runPath.length>0?(
   <MapView style={styles.mapContainerStyle} region={mapRegion}
    pitchEnabled={true} rotateEnabled={true} zoomEnabled={true} scrollEnabled={true}>
@@ -139,14 +158,16 @@ return (
  <View style={styles.scrollViewContainerStyle}>
   <ScrollView style={styles.runMetricsContainerStyle}>
    {isEvent&&userRank>0?(
-
+   <TouchableOpacity onPress={onClickEventResults}>
    <View style={styles.rowStyle}>
     <Card style={{width:'97%'}}>
       <Ionicons name={Platform.OS === 'android'?"md-trophy":"ios-trophy"} size={25} color='springgreen'/>
-      <Text style={styles.largeTextStyle}>{userRank}</Text>
+      <Text style={styles.mediumTextStyle}>{userRank}</Text>
       <Text style={styles.mediumTextStyle}>Rank</Text>
+      <Text style={styles.smallTextStyle}>Touch to see Results</Text>
     </Card>
-   </View>):(<View></View>)}
+   </View>
+   </TouchableOpacity>):(<View></View>)}
 
    <View style={styles.rowStyle}>
     <Card style={{width:'60%'}}>
