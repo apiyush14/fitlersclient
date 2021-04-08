@@ -32,7 +32,7 @@ return(
    data={props.listData}
    keyExtractor={(item,index)=>item.eventId.toString()}
    renderItem={renderEventItem} 
-   onEndReachedThreshold={0}
+   onEndReachedThreshold={0.5}
    onEndReached={()=>{props.onEndReached()}}
    initialNumToRender={10}>
    </FlatList>

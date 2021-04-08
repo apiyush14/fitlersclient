@@ -159,7 +159,7 @@ const RunTrackerHomeScreen = (props) => {
   //Method to lazy load Events from server 
   const loadMoreDataFromServer = () => {
     setIsLoading(true);
-    let pageNumber = Math.floor(eventDetails.length / 3);
+    let pageNumber = Math.floor(eventDetails.length / 10);
     dispatch(eventActions.loadEventsFromServer(pageNumber)).then((response) => {
       if (response.status >= StatusCodes.BAD_REQUEST) {
         setIsMoreContentAvailableOnServer(false);

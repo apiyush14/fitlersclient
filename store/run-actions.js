@@ -425,14 +425,14 @@ const updateEventIdInDB = (runDetails, eventId) => {
 const checkAndDeleteRunsIfNeeded = () => {
   return async dispatch => {
     return fetchRuns().then((response) => {
-      if (response && response.rows._array.length > 2) {
+      if (response && response.rows._array.length > 9) {
         var runsToBeDeleted;
         let runIdsToBeDeleted = "";
         response.rows._array.sort(function(a, b) {
           return new Date(b.RUN_START_DATE_TIME) - new Date(a.RUN_START_DATE_TIME);
         });
 
-        for (runsToBeDeleted = response.rows._array.length - 1; runsToBeDeleted > 2; runsToBeDeleted--) {
+        for (runsToBeDeleted = response.rows._array.length - 1; runsToBeDeleted > 9; runsToBeDeleted--) {
           //Delete Only if the Run has already been synced to server
           if (response.rows._array[runsToBeDeleted].IS_SYNC_DONE === "1") {
             runIdsToBeDeleted = runIdsToBeDeleted + response.rows._array[runsToBeDeleted].RUN_ID + ",";

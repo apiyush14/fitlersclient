@@ -33,7 +33,7 @@ return(
    data={props.listData}
    keyExtractor={(item,index)=>item.eventId.toString()}
    renderItem={renderChallengeItem} 
-   onEndReachedThreshold={0}
+   onEndReachedThreshold={0.5}
    onEndReached={()=>{props.onEndReached()}}
    initialNumToRender={10}
    >

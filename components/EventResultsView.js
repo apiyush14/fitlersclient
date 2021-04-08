@@ -27,7 +27,7 @@ const EventResultsView=props=>{
   useEffect(() => {
     if (isMoreContentAvailableOnServer) {
       setIsLoading(true);
-      let pageNumber = Math.floor(eventResultDetailsForEvent.length / 3);
+      let pageNumber = Math.floor(eventResultDetailsForEvent.length / 10);
       dispatch(eventActions.loadEventResultDetailsFromServerBasedOnEventId(props.eventId, pageNumber)).then((response) => {
         if (response.status >= StatusCodes.BAD_REQUEST) {
           setIsMoreContentAvailableOnServer(false);

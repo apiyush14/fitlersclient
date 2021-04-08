@@ -122,7 +122,7 @@ const EventsListSummaryScreen = props => {
   const loadMoreEventResultsFromServer = () => {
     if (isMoreContentAvailableOnServer) {
       setIsLoading(true);
-      let pageNumber = Math.floor(eventRunsHistoryDetails.length / 3);
+      let pageNumber = Math.floor(eventRunsHistoryDetails.length / 10);
       dispatch(eventActions.loadEventResultDetailsFromServer(pageNumber)).then((response) => {
         if (response.status >= StatusCodes.BAD_REQUEST) {
           setIsMoreContentAvailableOnServer(false);
@@ -140,7 +140,7 @@ const EventsListSummaryScreen = props => {
   const loadMoreEventsFromServer = () => {
     if (isMoreContentAvailableOnServer) {
       setIsLoading(true);
-      let pageNumber = Math.floor(eventDetails.length / 3);
+      let pageNumber = Math.floor(eventDetails.length / 10);
       dispatch(eventActions.loadEventsFromServer(pageNumber)).then((response) => {
         if (response.status >= StatusCodes.BAD_REQUEST) {
           setIsMoreContentAvailableOnServer(false);

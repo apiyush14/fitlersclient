@@ -35,7 +35,7 @@ return(
    data={props.listData}
    keyExtractor={(item,index)=>item.runId.toString()}
    renderItem={renderEventHistoryItem}
-   onEndReachedThreshold={0}
+   onEndReachedThreshold={0.5}
    onEndReached={()=>{props.onEndReached()}}
    onRefresh={()=>{props.onRefresh()}}
    refreshing={props.refreshing}
