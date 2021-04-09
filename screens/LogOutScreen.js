@@ -6,7 +6,7 @@ const LogOutScreen = props => {
 
 	return ( 
       <View style = {styles.logOutScreenContainerStyle}>
-        <ImageBackground source = {require('../assets/images/login.jpg')} 
+        <ImageBackground source = {require('../assets/images/splash.png')}
         style = {styles.bgImageStyle}>
          <ActivityIndicator
           animating={true}

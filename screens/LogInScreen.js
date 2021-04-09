@@ -306,7 +306,7 @@
       top: '90%'
     },
     retryOtpTimerTextStyle: {
-      color: 'red',
+      color: 'white',
       top: '35%',
       alignSelf: 'center',
       fontFamily: 'open-sans'
