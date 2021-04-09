@@ -175,7 +175,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
         if (response.status >= StatusCodes.BAD_REQUEST) {
           return new Response(response.status, null);
         } else if (response.eventDetails.length > 0) {
-          var updatedEventRegistrationDetails = response.eventDetails.map((eventDetails) => {
+          var updatedEventRegistrationDetails = response.eventDetails.map((eventRegistrationDetails) => {
             var updatedEventRegisration = {
               eventId: eventRegistrationDetails.eventId,
               eventName: eventRegistrationDetails.eventName,

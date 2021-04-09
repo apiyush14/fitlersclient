@@ -148,9 +148,9 @@
   //Method to validate Phone Number Input
   const onChangeMSISDNHandler = (text) => {
     var phoneNumberRegex = /^\d{10}$/;
+    setMSISDN(text);
     if (text.match(phoneNumberRegex)) {
       setIsValidMSISDN(true);
-      setMSISDN(text);
     } else {
       setIsValidMSISDN(false);
     }
@@ -286,13 +286,13 @@
       opacity: 0.5
     },
     footerTextStyle: {
-      fontSize: moderateScale(13, 0.8),
+      fontSize: moderateScale(12, 0.8),
       color: 'white',
       padding: '2%',
       fontFamily: 'open-sans'
     },
     hyperLinkTextStyle: {
-      fontSize: moderateScale(14, 0.8),
+      fontSize: moderateScale(13, 0.8),
       color: 'white',
       fontFamily: 'open-sans-bold',
       textDecorationLine: 'underline'

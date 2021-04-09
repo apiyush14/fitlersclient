@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import RunTrackerNavigator from './navigation/RunTrackerNavigator';
@@ -20,19 +20,18 @@ const rootReducer= combineReducers({
 
 const store=createStore(rootReducer, applyMiddleware(ReduxThunk));
 
-init().then(()=>{
-  fetchFonts();
-})
-.catch(err=>{
-  
-});
+init().then(() => {
+    fetchFonts();
+  })
+  .catch(err => {
 
+  });
 
-const fetchFonts=()=>{
-return Font.loadAsync({
-  'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
-  'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
-});
+const fetchFonts = async () => {
+  return await Font.loadAsync({
+    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
+  });
 };
 
 export default function App() {

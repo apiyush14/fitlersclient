@@ -41,7 +41,7 @@ const RunTrackerNavigator=()=>{
     <drawerNavigator.Screen name="LogOut" component={LogOutScreen}
     listeners={({ navigation }) => ({
         state: (e) => {
-        if (e.data.state.index === 3) {
+        if (e.data.state.index === 5) {
           dispatch(userActions.cleanUserDataStateAndDB());
         }
         }

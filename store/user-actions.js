@@ -242,13 +242,13 @@ export const cleanUserDataStateAndDB = (navigation, dispatch) => {
 export const cleanUpUserData = () => {
   return async dispatch => {
     try {
+      await cleanUpAllData();
       await AsyncStorage.removeItem('USER_ID');
       await AsyncStorage.removeItem('USER_SECRET_KEY');
       await AsyncStorage.removeItem('USER_FIRST_NAME');
       await AsyncStorage.removeItem('USER_LAST_NAME');
       await AsyncStorage.removeItem('USER_HEIGHT');
       await AsyncStorage.removeItem('USER_WEIGHT');
-      await cleanUpAllData();
       new Response(StatusCodes.OK, true);
     } catch (err) {
       dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
