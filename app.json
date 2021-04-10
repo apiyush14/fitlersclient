@@ -26,8 +26,20 @@
               },
       "supportsTablet": true
     },
+    "android": {
+      "config": {
+                "googleMaps": {
+                  "apiKey": "AIzaSyAPPFAlVsPhzCtJPy9Tho_PXK_so32BqYw"
+                }
+              },
+      "package": "com.fitlers.fitlersapp",
+      "versionCode": 1
+    },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "androidNavigationBar": {
+      "visible": "immersive"
     }
   }
 }

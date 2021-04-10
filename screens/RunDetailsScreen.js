@@ -243,18 +243,17 @@ const styles = StyleSheet.create({
   },
 
   largeTextStyle: {
-    fontSize: moderateScale(40, 0.8),
+    fontSize: moderateScale(25, 0.8),
     color: 'springgreen',
     fontFamily: 'open-sans'
   },
   mediumTextStyle: {
-    fontSize: moderateScale(17, 0.8),
+    fontSize: moderateScale(14, 0.8),
     color: 'springgreen',
     fontFamily: 'open-sans'
   },
   smallTextStyle: {
-    padding: '3%',
-    fontSize: moderateScale(10, 0.8),
+    fontSize: moderateScale(9, 0.8),
     color: 'springgreen',
     fontFamily: 'open-sans'
   }

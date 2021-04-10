@@ -20,6 +20,7 @@ import UserProfileScreen from '../screens/UserProfileScreen';
 import EventsListSummaryScreen from '../screens/EventsListSummaryScreen';
 import {useDispatch,useSelector} from 'react-redux';
 import * as userActions from '../store/user-actions';
+import { scale, moderateScale, verticalScale} from '../utils/Utils';
 
 const drawerNavigator = createDrawerNavigator();
 const stackNavigator=createStackNavigator();
@@ -88,8 +89,20 @@ const RunTrackerTabNavigator=({navigation, route})=>{
   })}
 
    tabBarOptions={{
-    activeTintColor: 'tomato',
-    inactiveTintColor: 'gray'
+    activeTintColor: 'royalblue',
+    inactiveTintColor: 'grey',
+    labelStyle: {
+     //fontFamily: 'open-sans'
+    },
+    tabStyle: {
+
+    },
+    style: {
+      backgroundColor: 'white',
+      opacity: 1,
+      borderTopRightRadius: 25,
+      borderTopLeftRadius: 25
+    }
   }}
   >
   <tabNavigator.Screen name="Home" component={RunTrackerStackNavigator} 
@@ -126,12 +139,24 @@ const RunTrackerStackNavigator=({navigation, route})=>{
     <stackNavigator.Screen name="HomeScreen" component={RunTrackerHomeScreen} 
     options={{
       tabBarVisible: false,
-      title: 'Runner Home',
+      title: 'Home',
+      headerStyle: {
+            backgroundColor: 'royalblue',
+            opacity: 1,
+            borderBottomRightRadius: 25,
+            borderBottomLeftRadius: 25
+          },
+      headerTintColor: 'white',
+      headerTitleStyle: {
+            fontSize: moderateScale(13, 0.5),
+            fontFamily: 'open-sans-bold'
+          },
+      headerTitleAlign: 'center',
       headerLeft: ()=>{
         return (
           <View styles={styles.person}>
           <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
-          <Ionicons name={Platform.OS === 'android'?'md-person':'ios-person'} size={40} color='grey'/>
+          <Ionicons name={Platform.OS === 'android'?'md-person':'ios-person'} size={40} color='white'/>
           </TouchableOpacity>
           </View>
           );
@@ -139,7 +164,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
     }}/>
     <stackNavigator.Screen name="RunHistoryScreen" component={RunHistoryScreen} 
     options={{
-      title: 'Wall of Fame'
+      headerShown: false
     }}/>
     <stackNavigator.Screen name="LiveRunTracker" component={LiveRunTracker} 
     options={{
@@ -148,6 +173,18 @@ const RunTrackerStackNavigator=({navigation, route})=>{
     <stackNavigator.Screen name="RunDetailsScreen" component={RunDetailsScreen}
     options={{
       title: 'Run Details',
+      headerStyle: {
+            backgroundColor: 'royalblue',
+            opacity: 1,
+            borderBottomRightRadius: 25,
+            borderBottomLeftRadius: 25
+          },
+      headerTintColor: 'white',
+      headerTitleStyle: {
+            fontSize: moderateScale(13, 0.5),
+            fontFamily: 'open-sans-bold'
+          },
+      headerTitleAlign: 'center',
       headerLeft: null
     }}/>
     </React.Fragment>
@@ -162,11 +199,23 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
       <stackNavigator.Screen name="RunHistoryScreen" component={RunHistoryScreen} 
       options={{
-        title: 'Wall of Fame'
+        headerShown: false
       }}/>
       <stackNavigator.Screen name="RunDetailsScreen" component={RunDetailsScreen}
     options={{
-      title: 'Run Details'
+      title: 'Run Details',
+      headerStyle: {
+            backgroundColor: 'royalblue',
+            opacity: 1,
+            borderBottomRightRadius: 25,
+            borderBottomLeftRadius: 25
+          },
+      headerTintColor: 'white',
+      headerTitleStyle: {
+            fontSize: moderateScale(13, 0.5),
+            fontFamily: 'open-sans-bold'
+          },
+      headerTitleAlign: 'center'
     }}/>
       </stackNavigator.Navigator>
       );
@@ -211,7 +260,19 @@ const RunTrackerStackNavigator=({navigation, route})=>{
        }>
       <stackNavigator.Screen name="EventsListSummaryScreen" component={EventsListSummaryScreen} 
       options={{
-        title: 'Events'
+        title: 'Events',
+        headerStyle: {
+            backgroundColor: 'royalblue',
+            opacity: 1,
+            borderBottomRightRadius: 25,
+            borderBottomLeftRadius: 25
+          },
+        headerTintColor: 'white',
+        headerTitleStyle: {
+            fontSize: moderateScale(13, 0.5),
+            fontFamily: 'open-sans-bold'
+          },
+        headerTitleAlign: 'center'
       }}/>
       </stackNavigator.Navigator>
       );

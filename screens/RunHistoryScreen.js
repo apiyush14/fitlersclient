@@ -144,7 +144,8 @@ const styles = StyleSheet.create({
   runHistoryContainerStyle: {
     flex: 1,
     backgroundColor: 'white',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    marginTop: '2%'
   },
 
   runsHistoryDashboardContainerStyle: {

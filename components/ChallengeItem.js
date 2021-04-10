@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     bottom: 0
   },
   textStyle: {
-    fontSize: moderateScale(15, 0.8),
+    fontSize: moderateScale(10, 0.8),
     color: 'white',
     backgroundColor: 'rgba(0,0,0,0.5)',
     paddingVertical: verticalScale(5),
