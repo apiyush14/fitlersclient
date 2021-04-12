@@ -144,7 +144,8 @@ const RunTrackerStackNavigator=({navigation, route})=>{
             backgroundColor: 'royalblue',
             opacity: 1,
             borderBottomRightRadius: 25,
-            borderBottomLeftRadius: 25
+            borderBottomLeftRadius: 25,
+            height: verticalScale(50)
           },
       headerTintColor: 'white',
       headerTitleStyle: {
@@ -177,7 +178,8 @@ const RunTrackerStackNavigator=({navigation, route})=>{
             backgroundColor: 'royalblue',
             opacity: 1,
             borderBottomRightRadius: 25,
-            borderBottomLeftRadius: 25
+            borderBottomLeftRadius: 25,
+            height: verticalScale(50)
           },
       headerTintColor: 'white',
       headerTitleStyle: {
@@ -208,7 +210,8 @@ const RunTrackerStackNavigator=({navigation, route})=>{
             backgroundColor: 'royalblue',
             opacity: 1,
             borderBottomRightRadius: 25,
-            borderBottomLeftRadius: 25
+            borderBottomLeftRadius: 25,
+            height: verticalScale(50)
           },
       headerTintColor: 'white',
       headerTitleStyle: {
@@ -265,7 +268,8 @@ const RunTrackerStackNavigator=({navigation, route})=>{
             backgroundColor: 'royalblue',
             opacity: 1,
             borderBottomRightRadius: 25,
-            borderBottomLeftRadius: 25
+            borderBottomLeftRadius: 25,
+            height: verticalScale(50)
           },
         headerTintColor: 'white',
         headerTitleStyle: {

@@ -88,12 +88,13 @@ return(
    </View>
   </View>
 
+  {/*
   <View style={styles.runDetailsAdditionalContainerStyle}>
    <View style={styles.runDetailsRowStyle}>
     <Ionicons name={Platform.OS === 'android'?"md-cash":"ios-cash"}  size={24} color='grey'/>
     <Text style={styles.runDetailsTextStyle}>{parseFloat(props.runPace).toFixed(2)}</Text>
    </View>
-  </View>
+  </View>*/}
 
  	<View style={styles.calendarContainerViewStyle}>
  	 <Text style={styles.calendarTextStyle}>{props.runDay}</Text>
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
 
   calendarContainerViewStyle: {
     width: '30%',
-    height: '50%',
+    height: '100%',
     borderRadius: 20,
     position: "absolute",
     alignSelf: 'flex-end',
@@ -180,13 +181,13 @@ const styles = StyleSheet.create({
   },
 
   runDetailsTextStyle: {
-    fontSize: moderateScale(16, 0.8),
+    fontSize: moderateScale(14, 0.8),
     color: 'black',
     paddingHorizontal: '7%',
     fontFamily: 'open-sans'
   },
   calendarTextStyle: {
-    fontSize: moderateScale(14, 0.8),
+    fontSize: moderateScale(12, 0.8),
     color: 'black',
     paddingVertical: '2%',
     alignSelf: 'center',

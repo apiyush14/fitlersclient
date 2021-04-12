@@ -19,6 +19,7 @@
   const [MSISDN, setMSISDN] = useState("");
   const [isValidMSISDN, setIsValidMSISDN] = useState(true);
   const [otpCode, setOtpCode] = useState("");
+  const [isValidOTP, setIsValidOTP] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalForScreenVisible, setModalForScreenVisible] = useState(false);
   const [retryOtpTimer, setRetryOtpTimer] = useState(30);
@@ -156,6 +157,17 @@
     }
   };
 
+  //Method to validate OTP Input
+  const onChangeOTPHandler = (text) => {
+    var otpCodeRegex = /^\d{4}$/;
+    setOtpCode(text);
+    if (text.match(otpCodeRegex)) {
+      setIsValidOTP(true);
+    } else {
+      setIsValidOTP(false);
+    }
+  };
+
   //Method to clean User Data in case of failure while validating OTP
   const cleanUserData = () => {
     return async dispatch => {
@@ -241,9 +253,13 @@
           textAlign = "center"
           textContentType = "oneTimeCode"
           maxLength = {4}
-          onChangeText = {(text) => setOtpCode(text)} >
+          onChangeText = {onChangeOTPHandler}>
          </TextInputItem> 
-         <Text style = {styles.retryOtpTimerTextStyle}>Resend OTP in {retryOtpTimer} seconds < /Text> 
+         <Text style = {styles.retryOtpTimerTextStyle}>Resend OTP in {retryOtpTimer} seconds < /Text>
+         {!isValidOTP && otpCode.length>0 ? ( 
+          <Text style = {styles.errorTextOtpStyle} > Please enter valid OTP < /Text>):
+          (<Text/>)
+         }
          <RoundButton style = {styles.buttonSubmitOtpStyle}
           title = "Submit"
           disabled = {otpCode.length === 0}
@@ -308,6 +324,12 @@
     retryOtpTimerTextStyle: {
       color: 'white',
       top: '35%',
+      alignSelf: 'center',
+      fontFamily: 'open-sans'
+    },
+    errorTextOtpStyle: {
+      color: 'white',
+      top: '90%',
       alignSelf: 'center',
       fontFamily: 'open-sans'
     },
