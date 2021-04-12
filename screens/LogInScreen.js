@@ -262,7 +262,7 @@
          }
          <RoundButton style = {styles.buttonSubmitOtpStyle}
           title = "Submit"
-          disabled = {otpCode.length === 0}
+          disabled = {(!isValidOTP || (otpCode.length === 0))}
           onPress = {onClickSubmitOTP}/> 
         </View> 
        </ImageBackground> 
