@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: '2%',
     borderRadius: 25,
-    height: '50%',
-    bottom: '2%'
+    height: '40%',
+    bottom: 1
   }
 });
 
