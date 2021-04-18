@@ -465,7 +465,7 @@ const validateIfRunEligibleForEventSubmission = (runDetails) => {
         var eventEndDateTime = new Date(response.rows._array[0].EVENT_END_DATE);
         var eventMetricValue = response.rows._array[0].EVENT_METRIC_VALUE;
 
-        if (parseFloat(runDetails.runDistance / 1000) < parseFloat(eventMetricValue)) {
+        if (parseFloat(runDetails.runDistance / 1000) > parseFloat(eventMetricValue)) {
           return new Response(StatusCodes.DISTANCE_NOT_ELIGIBLE, null);
         } else if (currentTime > eventEndDateTime) {
           return new Response(StatusCodes.TIME_NOT_ELIGIBLE, null);

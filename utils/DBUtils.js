@@ -36,7 +36,7 @@ export const init = () => {
           resolve();
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -53,7 +53,7 @@ export const insertRun = (runId, runTotalTime, runDistance, runPace, runCalories
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -70,7 +70,7 @@ export const deleteRuns = (runIds) => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -87,7 +87,7 @@ export const fetchRuns = () => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -104,7 +104,7 @@ export const fetchRunsToSync = () => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -121,7 +121,7 @@ export const updateRunsSyncState = (pendingRunsForSync) => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -138,7 +138,7 @@ export const insertRunSummary = (totalDistance, totalRuns, totalCredits, average
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -155,7 +155,7 @@ export const updateEventIdInRunDetails = (runId, eventId) => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -172,7 +172,7 @@ export const updateRunSummary = (totalDistance, totalRuns, totalCredits, average
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -189,7 +189,7 @@ export const fetchRunSummary = () => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -206,7 +206,7 @@ export const insertEventRegistrationDetails = (eventId, eventName, eventDescript
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -223,7 +223,7 @@ export const updateEventRegistrationDetails = (eventId, runId) => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -240,7 +240,7 @@ export const fetchEventRegistrationDetails = () => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -257,7 +257,7 @@ export const fetchEventDetailsBasedOnEventId = (eventId) => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });
@@ -274,7 +274,7 @@ export const cleanUpAllData = () => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
       tx.executeSql('DELETE FROM RUN_SUMMARY;', [],
@@ -282,7 +282,7 @@ export const cleanUpAllData = () => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
       tx.executeSql('DELETE FROM EVENT_REGISTRATION_DETAILS;', [],
@@ -290,7 +290,7 @@ export const cleanUpAllData = () => {
           resolve(result);
         },
         (_, err) => {
-          dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
+          loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });
     });

@@ -39,8 +39,12 @@ export default (state = initialState, action) => {
 
         case UPDATE_EVENT_RESULT_DETAILS:
             var updatedEventResultDetails = action.eventResultDetails.map((eventResult) => {
-                if (state.eventResultDetails.findIndex(eventResultState => eventResultState.runId === eventResult.runId) < 0) {
+                var index=state.eventResultDetails.findIndex(eventResultState => eventResultState.runId === eventResult.runId);
+                if (index < 0) {
                     return new EventResultDetails(eventResult.eventId, eventResult.runId, eventResult.userRank);
+                }
+                else{
+                    state.eventResultDetails[index].userRank=eventResult.userRank;
                 }
             }).filter(updatedEventResult => updatedEventResult !== undefined);
             state.eventResultDetails = state.eventResultDetails.concat(updatedEventResultDetails);
