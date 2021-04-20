@@ -69,18 +69,18 @@ const RunTrackerHomeScreen = (props) => {
       });
 
       Location.requestPermissionsAsync().then(response => {
-        if (response.status !== 'granted') {
-          //TODO : To handle alert to change settings
-          Alert.alert("Location Alert", "Location Permission is required!!!");
-          //Linking.openURL('app-settings:');
-        } else {
-          Location.getCurrentPositionAsync({}).then(response => {
-            setMapRegion({
-              latitude: response.coords.latitude,
-              longitude: response.coords.longitude,
-              latitudeDelta: 0.000757,
-              longitudeDelta: 0.0008
-            });
+        if (response.status === 'granted') {
+          Location.hasServicesEnabledAsync().then(response => {
+            if (response) {
+              Location.getCurrentPositionAsync({}).then(response => {
+                setMapRegion({
+                  latitude: response.coords.latitude,
+                  longitude: response.coords.longitude,
+                  latitudeDelta: 0.000757,
+                  longitudeDelta: 0.0008
+                });
+              });
+            }
           });
         }
       });

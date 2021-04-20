@@ -1,5 +1,5 @@
   import React, {useState,useEffect} from 'react';
-  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard,Switch} from 'react-native';
+  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard,Switch,ScrollView,KeyboardAvoidingView,Platform} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import StatusCodes from "../utils/StatusCodes.json";
   import RoundButton from '../components/RoundButton';
@@ -98,17 +98,19 @@
   };
 
     return (
+    <ScrollView>
+     <KeyboardAvoidingView
+      style={styles.userProfileScreenContainerStyle}
+      behavior={Platform.OS == 'ios' ? 'position' : ''}>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-     <View style={styles.userDetailsScreenContainerStyle}>
-      <View style={styles.userDetailsSubContainerStyle}>
-
+     <React.Fragment>
+      <View style={styles.userProfileSubContainerStyle}>
       <View style={styles.inputContainerStyle}>
       <Text style={styles.smallTextStyle}>First Name</Text>
       <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
        keyboardType = "default"
-       placeholder = {firstName}
-       placeholderTextColor = "black"
+       value = {firstName}
        textAlign = "center"
        maxLength = {20}
        onChangeText = {(text)=>{setFirstName(text)}}>
@@ -120,8 +122,7 @@
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
        keyboardType = "default"
-       placeholder = {lastName}
-       placeholderTextColor = "black"
+       value = {lastName}
        textAlign = "center"
        maxLength = {20}
        onChangeText = {(text)=>{setLastName(text)}}>
@@ -133,8 +134,7 @@
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "none"
        keyboardType = "number-pad"
-       placeholder = {height.toString()}
-       placeholderTextColor = "black"
+       value = {height.toString()}
        textAlign = "center"
        maxLength = {3}
        onChangeText = {(text)=>{setHeight(text)}}>
@@ -146,8 +146,7 @@
        <TextInputItem style = {styles.nameInputStyle}
        textContentType = "none"
        keyboardType = "number-pad"
-       placeholder = {weight.toString()}
-       placeholderTextColor = "black"
+       value = {weight.toString()}
        textAlign = "center"
        maxLength = {3}
        onChangeText = {(text)=>{setWeight(text)}}>
@@ -158,8 +157,8 @@
       title = "Submit"
       disabled = {false}
       onPress = {onClickSubmit}/> 
+     
       </View>
-
       <View style={styles.closeButtonContainerStyle}>
        <RoundButton 
                  title="Close" 
@@ -173,8 +172,10 @@
                   }
                 }}/>
         </View>
-     </View>
+      </React.Fragment>
      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+    </ScrollView>
     );
   };
 
@@ -191,7 +192,7 @@
      marginTop: '5%'
     },
     nameInputStyle: {
-
+     
     },
     buttonSubmitStyle: {
       alignSelf: 'center',

@@ -22,6 +22,7 @@ return(
        textContentType = {props.textContentType}
        maxLength = {props.maxLength}
        multiline = {props.multiline}
+       value = {props.value}
        onBlur = {()=>setIsFocussed(false)}
        onFocus = {()=>setIsFocussed(true)}
        onChangeText = {props.onChangeText}>

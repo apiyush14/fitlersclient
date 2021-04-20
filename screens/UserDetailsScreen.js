@@ -1,5 +1,5 @@
   import React, {useState} from 'react';
-  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard,Switch} from 'react-native';
+  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard,Switch,ScrollView,KeyboardAvoidingView,Platform} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import StatusCodes from "../utils/StatusCodes.json";
   import RoundButton from '../components/RoundButton';
@@ -83,8 +83,11 @@
   };
 
     return (
+    <ScrollView>
+     <KeyboardAvoidingView
+      style={styles.userDetailsScreenContainerStyle}
+      behavior={Platform.OS == 'ios' ? 'position' : ''}>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-     <View style={styles.userDetailsScreenContainerStyle}>
       <View style={styles.userDetailsSubContainerStyle}>
       <TextInputItem style = {styles.nameInputStyle}
        textContentType = "name"
@@ -127,8 +130,9 @@
       disabled = {false}
       onPress = {onClickSubmit}/> 
       </View>
-     </View>
      </TouchableWithoutFeedback>
+     </KeyboardAvoidingView>
+    </ScrollView>
     );
   };
 
@@ -146,8 +150,8 @@
       top: '10%'
     },
     buttonSubmitStyle: {
-      alignSelf: 'center',
-      top: '20%'
+      marginTop: '30%',
+      alignSelf: 'center'
     }
   });
 

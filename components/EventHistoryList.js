@@ -15,6 +15,7 @@ const renderEventHistoryItem=itemData=>{
  let eventResult=eventResultDetails.find(eventResult=>eventResult.runId===itemData.item.runId);
    
  return <EventHistoryItem
+ eventId={itemData.item.eventId}
  runTrackSnapUrl={itemData.item.runTrackSnapUrl}
  runPath={itemData.item.runPath}
  runDate={itemData.item.runDate}

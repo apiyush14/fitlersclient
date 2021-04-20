@@ -3,6 +3,7 @@ import {StyleSheet, Text, View, TouchableOpacity, Platform, ImageBackground} fro
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import { Ionicons } from '@expo/vector-icons';
+import {useSelector} from 'react-redux';
 
 /*
 Event History Card Item with shadow effects
@@ -17,28 +18,37 @@ const EventHistoryItem = props => {
     });
     const [mapRegion, setMapRegion] = useState(null);
     const [runPath, setRunPath] = useState([]);
+    const [eventName, setEventName] = useState(null);
 
-    //UseEffect Load Time Hook
-    useEffect(() => {
+    // State Selectors
+    const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails);
 
-      setRunPath(props.runPath);
+  //UseEffect Load Time Hook
+  useEffect(() => {
 
-      let secondsVar = ("0" + (Math.floor(props.runTotalTime / 1000) % 60)).slice(-2);
-      let minutesVar = ("0" + (Math.floor(props.runTotalTime / 60000) % 60)).slice(-2);
-      let hoursVar = ("0" + Math.floor(props.runTotalTime / 3600000)).slice(-2);
-      setTrackTimer({
-        seconds: secondsVar,
-        minutes: minutesVar,
-        hours: hoursVar
-      });
+    setRunPath(props.runPath);
 
-      setMapRegion({
-        latitude: props.runPath[Math.floor(props.runPath.length / 2)].latitude,
-        longitude: props.runPath[Math.floor(props.runPath.length / 2)].longitude,
-        latitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].latitude - props.runPath[0].latitude) + 0.002,
-        longitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].longitude - props.runPath[0].longitude) + 0.002
-      });
-    }, []);
+    let secondsVar = ("0" + (Math.floor(props.runTotalTime / 1000) % 60)).slice(-2);
+    let minutesVar = ("0" + (Math.floor(props.runTotalTime / 60000) % 60)).slice(-2);
+    let hoursVar = ("0" + Math.floor(props.runTotalTime / 3600000)).slice(-2);
+    setTrackTimer({
+      seconds: secondsVar,
+      minutes: minutesVar,
+      hours: hoursVar
+    });
+
+    setMapRegion({
+      latitude: props.runPath[Math.floor(props.runPath.length / 2)].latitude,
+      longitude: props.runPath[Math.floor(props.runPath.length / 2)].longitude,
+      latitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].latitude - props.runPath[0].latitude) + 0.002,
+      longitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].longitude - props.runPath[0].longitude) + 0.002
+    });
+
+    var index = eventRegistrationDetails.findIndex((event) => event.eventId === props.eventId);
+    if (index >= 0) {
+      setEventName(eventRegistrationDetails[index].eventName);
+    }
+  }, []);
 
 //View
 return(
@@ -103,6 +113,11 @@ return(
  	 <Text style={styles.calendarTextStyle}>{props.runDate}</Text>
  	</View>
 
+  {eventName!==null?(
+  <View style={styles.textViewFooterStyle}>
+     <Text style={styles.textStyle}>{eventName}</Text>
+  </View>):(<View></View>)}
+
  	</TouchableOpacity>
  	</View>
  	);
@@ -150,7 +165,7 @@ const styles = StyleSheet.create({
   runDetailsRowStyle: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: '3%'
+    paddingVertical: '2%'
   },
 
   runDetailsAdditionalContainerStyle: {
@@ -191,6 +206,23 @@ const styles = StyleSheet.create({
     color: 'black',
     paddingVertical: '2%',
     alignSelf: 'center',
+    fontFamily: 'open-sans'
+  },
+
+  textViewFooterStyle: {
+    position: 'absolute',
+    width: '100%',
+    overflow: 'hidden',
+    borderRadius: 20,
+    alignSelf: 'center',
+    bottom: 0
+  },
+  textStyle: {
+    fontSize: moderateScale(10, 0.8),
+    color: 'white',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingVertical: verticalScale(5),
+    textAlign: 'center',
     fontFamily: 'open-sans'
   }
 });
