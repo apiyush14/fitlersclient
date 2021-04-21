@@ -19,7 +19,7 @@ let updateStepsListener=null;
 let updateLocationListener=null;
 
 let rangeOfAcceleration=[0.3,2,10,15,40,60,80];
-let rangeOfMultiplyingFactor=[0.30,0.40, 0.52, 0.60, 0.68, 0.83, 1.07];
+let rangeOfMultiplyingFactor=[0.30,0.40, 0.60, 0.80, 1.00, 1.10, 1.20];
 let strideMultiplyingFactor=0.30;//Default Multiplier based on 12.5 average pace
 let averageAcceleration=0.3;//Default Acceleration Value based on 12.5 average pace
 let accelerationValues=[];
@@ -40,6 +40,7 @@ const LiveRunTrackerScreen = props=>{
   const [runPace, setRunPace] = useState(12.5);
   //To be removed
   const [stepsCountUI, setStepsCountUI] = useState(0);
+  const [locationAccuracy, setLocationAccuracy] = useState(0);
 
   const [trackTimer, setTrackTimer] = useState({
     seconds: "00",
@@ -166,6 +167,7 @@ const LiveRunTrackerScreen = props=>{
           timeInterval: 1000,
           distanceInterval: 10
         }, (updatedLocation) => {
+          setLocationAccuracy(updatedLocation.coords.accuracy);
           updateLocation(updatedLocation);
         });
       }
@@ -317,8 +319,8 @@ return (
 
     <View style={styles.testPosition}>
      <Text>{stepsCountUI}</Text>
+     <Text>Location {locationAccuracy}</Text>
     </View>
-
  </View>
  );
 };
