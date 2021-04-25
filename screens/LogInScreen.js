@@ -308,7 +308,7 @@
       fontFamily: 'open-sans'
     },
     hyperLinkTextStyle: {
-      fontSize: moderateScale(13, 0.8),
+      fontSize: moderateScale(12, 0.8),
       color: 'white',
       fontFamily: 'open-sans-bold',
       textDecorationLine: 'underline'

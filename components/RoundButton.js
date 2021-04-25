@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   buttonTitleStyle: {
     color: 'white',
-    fontSize: moderateScale(18, 0.8),
+    fontSize: moderateScale(15, 0.8),
     fontFamily: 'open-sans'
   }
 });
