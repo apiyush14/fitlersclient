@@ -19,7 +19,7 @@ let updateStepsListener=null;
 let updateLocationListener=null;
 
 let rangeOfAcceleration=[0.3,2,10,15,40,60,80];
-let rangeOfMultiplyingFactor=[0.30,0.40, 0.60, 0.80, 1.00, 1.10, 1.20];
+let rangeOfMultiplyingFactor=[0.30,0.40, 0.60, 0.75, 0.95, 1.05, 1.15];
 let strideMultiplyingFactor=0.30;//Default Multiplier based on 12.5 average pace
 let averageAcceleration=0.3;//Default Acceleration Value based on 12.5 average pace
 let accelerationValues=[];
@@ -141,7 +141,7 @@ const LiveRunTrackerScreen = props=>{
       //Update average pace
       const lapsedTimeinMinutes = runDetails.runTotalTime / 60000;
       const averagePace = lapsedTimeinMinutes / (runDistance / 1000);
-      if (averagePace < 12.5) {
+      if (averagePace < 12.5 && averagePace>0) {
         runDetails.runPace = averagePace;
         setRunPace(averagePace);
       }
@@ -176,7 +176,7 @@ const LiveRunTrackerScreen = props=>{
 
   //Location Update Listener
   const updateLocation = (updatedLocation) => {
-    if (!isPaused) {
+    if (!isPaused && parseFloat(updatedLocation.coords.accuracy)<=50) {
       let location = updatedLocation;
       let currentLocation = {
         latitude: location.coords.latitude,
@@ -319,7 +319,7 @@ return (
 
     <View style={styles.testPosition}>
      <Text>{stepsCountUI}</Text>
-     <Text>Location {locationAccuracy}</Text>
+     <Text>Location {parseFloat(locationAccuracy).toFixed(2)}</Text>
     </View>
  </View>
  );

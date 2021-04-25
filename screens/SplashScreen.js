@@ -24,7 +24,7 @@ const SplashScreen = props => {
   //Load User Details from local or server and navigate either to User Details screen or Home Screen
   const loadUserDetailsAndNavigate = () => {
     dispatch(userActions.loadUserDetails()).then((userDetails) => {
-      userDetails.status !== StatusCodes.OK || userDetails.data.userFirstName === null ? props.navigation.navigate('UserDetailsScreen') : props.navigation.navigate('Home');
+      userDetails.status !== StatusCodes.OK || userDetails.data.userFirstName === null ? props.navigation.navigate('LogInScreen') : props.navigation.navigate('Home');
     });
   };
 

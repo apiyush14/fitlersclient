@@ -50,9 +50,12 @@ export const insertRun = (runId, runTotalTime, runDistance, runPace, runCalories
     db.transaction((tx) => {
       tx.executeSql('INSERT INTO RUN_DETAILS (RUN_ID,RUN_TOTAL_TIME,RUN_DISTANCE,RUN_PACE,RUN_CALORIES_BURNT,RUN_CREDITS,RUN_START_DATE_TIME ,RUN_DATE, RUN_DAY, RUN_PATH, RUN_TRACK_SNAP_URL,EVENT_ID,IS_SYNC_DONE) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);', [runId, runTotalTime, runDistance, runPace, runCaloriesBurnt, runCredits, runStartDateTime, runDate, runDay, runPath, runTrackSnapUrl, eventId, isSyncDone],
         (_, result) => {
+          console.log('Insert Run Completed');
           resolve(result);
         },
         (_, err) => {
+          console.log('Insert Run Failed');
+          console.log(err);
           loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack));
           reject(err);
         });

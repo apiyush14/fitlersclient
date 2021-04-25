@@ -51,7 +51,7 @@ return(
       <View style={styles.actionPanelContainerStyle}>
         <ScrollView style={styles.scrollViewContainerStyle}>
          <Text style={styles.eventHeaderTextStyle}>{props.eventDetails.eventName}</Text>
-         <Text style={styles.eventDayTextStyle}>    Distance {eventMetricValue} KM</Text>
+         <Text style={styles.mediumTextStyle}>    Distance {eventMetricValue} KM</Text>
 
           <View style={styles.eventCalendarContainerStyle}>
            <View style={styles.eventDateContainerStyle}>
@@ -73,7 +73,7 @@ return(
            </View>
           
             <View style={styles.eventDayContainerStyle}>
-             <Text style={styles.eventDayTextStyle}>{weekday[eventStartDate.getDay()]}</Text>
+             <Text style={styles.mediumTextStyle}>{weekday[eventStartDate.getDay()]}</Text>
             </View>
            
            <View style={styles.eventTimeContainerStyle}>
@@ -161,9 +161,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center'
   },
-  eventDayTextStyle: {
+  mediumTextStyle: {
     fontSize: moderateScale(16, 0.5),
-    fontFamily: 'open-sans'
+    fontFamily: 'open-sans',
+    alignSelf: 'center'
   },
 
   eventTimeContainerStyle: {

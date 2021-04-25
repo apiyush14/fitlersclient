@@ -239,15 +239,18 @@ const RunTrackerStackNavigator=({navigation, route})=>{
        }>
       <stackNavigator.Screen name="SplashScreen" component={SplashScreen} 
       options={{
+        tabBarVisible: false,
         headerShown: false,
         tabBarVisible: false
       }}/>
       <stackNavigator.Screen name="LogInScreen" component={LogInScreen} 
       options={{
+        tabBarVisible: false,
         headerShown: false
       }}/>
       <stackNavigator.Screen name="UserDetailsScreen" component={UserDetailsScreen} 
       options={{
+        tabBarVisible: false,
         headerShown: false
       }}/>
       </stackNavigator.Navigator>

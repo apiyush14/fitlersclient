@@ -33,7 +33,7 @@ By using the App, You hereby represent and warrant to Us that You have all right
          <Text style={styles.smallTextStyle}>
 In order to use the App, You have the option of signing in using Your Mobile Number and Your basic personal details (Name and Weight). If You do so, You authorize Us to access and use these details within the application.
 Your account details You provide to Us must always be kept private and confidential and should not be disclosed to or permitted to be used by anyone else and You are solely responsible and liable for any and all usage and activity on the App that takes place under Your account.
-By agreeing to these App Terms and Conditions, You grant Us the permission to send electronic communications to You as part of Our offering. This includes but is not limited to sending emails, newsletters, notifications and promotional offers from Us and Our partners. Should You no longer wish to receive such electronic communications, You may write to Us at support@fitlers.com
+By agreeing to these App Terms and Conditions, You grant Us the permission to send electronic communications to You as part of Our offering. This includes but is not limited to sending emails, newsletters, notifications and promotional offers from Us and Our partners. Should You no longer wish to receive such electronic communications, You may write to Us at fitlerscommunity@gmail.com
 Any account You open with Us is personal to You and You are prohibited from gifting, lending, transferring or otherwise permitting any other person or entity to access or use Your account in any way whatsoever.
 Each User is only permitted to have one account on this App platform. If the use of multiple accounts/registrations by a single user is found, We reserve the right to investigate, suspend and/or terminate, whether temporarily or permanently, Your App account with Us.
          </Text>
@@ -57,7 +57,7 @@ You agree to take all necessary precautions in all interactions with other App u
          </Text>
         <Text style={styles.mediumTextStyle}>ACCOUNT SECURITY</Text>
          <Text style={styles.smallTextStyle}>
-You shall be solely responsible and liable for maintaining the utmost privacy and confidentiality of Your App log-in (mobile number and otp) details as well as for any and all activities that occur under Your log-in. You agree to immediately notify Us of any disclosure or unauthorized use of Your log-in or any other breach of security by emailing us on support@fitlers.com
+You shall be solely responsible and liable for maintaining the utmost privacy and confidentiality of Your App log-in (mobile number and otp) details as well as for any and all activities that occur under Your log-in. You agree to immediately notify Us of any disclosure or unauthorized use of Your log-in or any other breach of security by emailing us on fitlerscommunity@gmail.com
 
          </Text>
         <Text style={styles.mediumTextStyle}>PROPRIETARY RIGHTS</Text>
@@ -150,7 +150,7 @@ You agree to indemnify, defend and hold Us harmless, as well as Our partners, af
          </Text>
         <Text style={styles.mediumTextStyle}>CAUTION</Text>
          <Text style={styles.smallTextStyle}>
-We may check new user account profiles strictly for verifying accuracy of profile information and any unsuitable, objectionable or inappropriate content. However, We may not be able to verify the identity of all such users or the accuracy of their content, nor can We guarantee that We will be able to identify all unsuitable, objectionable or inappropriate content. Please do not take any user content as fully accurate and/or complete. We will not be liable or responsible for any false and misleading content and information given by any user. If You have any concerns over any user content, please write to us on support@fitlers.com with the details thereof.
+We may check new user account profiles strictly for verifying accuracy of profile information and any unsuitable, objectionable or inappropriate content. However, We may not be able to verify the identity of all such users or the accuracy of their content, nor can We guarantee that We will be able to identify all unsuitable, objectionable or inappropriate content. Please do not take any user content as fully accurate and/or complete. We will not be liable or responsible for any false and misleading content and information given by any user. If You have any concerns over any user content, please write to us on fitlerscommunity@gmail.com with the details thereof.
 You hereby acknowledge and agree that You shall ensure that at all times Your interaction with other users of the App will always be lawful and appropriate and that You alone shall be responsible for all consequences thereof.
          </Text>
         <Text style={styles.mediumTextStyle}>MISCELLANEOUS</Text>
@@ -172,11 +172,11 @@ We may occasionally update these App Terms and Conditions. When We post any chan
          <Text style={styles.smallTextStyle}>
 In accordance with Information Technology Act, 2000 and rules made there under, the name and contact details of the Grievance Officer are provided below:
 
-Name: Mr. Piyush Arora Email: support@fitlers.com
+Name: Mr. Piyush Arora Email: fitlerscommunity@gmail.com
          </Text>
         <Text style={styles.mediumTextStyle}>1. CONTACT US</Text>
          <Text style={styles.smallTextStyle}>
-Please contact Us by email on support@fitlers.com for any questions or comments regarding these App Terms and Conditions.
+Please contact Us by email on fitlerscommunity@gmail.com for any questions or comments regarding these App Terms and Conditions.
 
 Last Updated on: January 24th, 2021.
          </Text>
@@ -238,7 +238,8 @@ const styles = StyleSheet.create({
                 padding: '3%',
                 fontSize: moderateScale(10, 0.8),
                 color: 'springgreen',
-                fontFamily: 'open-sans'
+                fontFamily: 'open-sans',
+                paddingBottom: '10%'
         }
 });
 
