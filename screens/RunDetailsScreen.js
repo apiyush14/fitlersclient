@@ -145,13 +145,13 @@ return (
   <MapView style={styles.mapContainerStyle} region={mapRegion}
    pitchEnabled={true} rotateEnabled={true} zoomEnabled={true} scrollEnabled={true}>
    <Polyline 
-   strokeWidth={5}
+   strokeWidth={3}
    strokeColor='red'
    coordinates={runPath}/>
    {runPath[0]!==undefined?(
-   <Marker pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
+   <Marker opacity={0.8} pinColor='green' coordinate={runPath[0]}/>):(<View></View>)}
    {runPath[runPath.length-1]!==undefined?(
-   <Marker pinColor='red' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
+   <Marker opacity={0.8} pinColor='wheat' coordinate={runPath[runPath.length-1]}/>):(<View></View>)}
   </MapView>):
    <View style={styles.mapContainerStyle}>
     <ImageBackground 

@@ -1,4 +1,5 @@
 import React, {useState,useEffect} from 'react';
+import NetInfo from '@react-native-community/netinfo';
 import {View,StyleSheet,Alert,Modal,ImageBackground,Text} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -23,6 +24,7 @@ const RunTrackerHomeScreen = (props) => {
   const eventRegistrationDetails = useSelector(state => state.events.eventRegistrationDetails).filter(event => event.runId === 0);
   const eventDetails = useSelector(state => state.events.eventDetails);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
 
   // State Variables
   const [mapRegion, setMapRegion] = useState({
@@ -105,6 +107,8 @@ const RunTrackerHomeScreen = (props) => {
         if (currentTime >= eventStartDateTime.getTime() &&
           currentTime < eventEndDateTime.getTime()) {
           setOngoingEventDetails(event);
+          var networkStatus = NetInfo.fetch();
+          setIsOfflineMode(!networkStatus.isConnected);
         }
       });
     }
@@ -213,11 +217,17 @@ return (
   <Marker coordinate={mapRegion}/>
   </MapView>)
   :(
-   <View style={styles.mapContainerStyle}>
+    <View style={styles.mapContainerStyle}>
+    {!isOfflineMode?(
     <ImageBackground
       source={{uri:"http://192.168.1.66:7001/event-details/getDisplayImage/"+ongoingEventDetails.eventId+"?imageType=DISPLAY"}}
       style={styles.bgImageStyle}>
+    </ImageBackground>):(
+    <ImageBackground
+      source={require('../assets/images/login.jpg')}
+      style={styles.bgImageStyle}>
     </ImageBackground>
+   )}
    </View>
   )}
 

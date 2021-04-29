@@ -8,123 +8,110 @@ const Privacy = props => {
 	return ( 
 	 <View style={styles.privacyContainerStyle}>
 	  <ScrollView style={styles.privacyScrollViewStyle}>
-        <Text style={styles.largeTextStyle}>Privacy Policy</Text>
+          <Text style={styles.smallTextStyle}>Last Updated on: April 29, 2021</Text>
+        <Text style={styles.largeTextStyle}>PRIVACY POLICY</Text>
          <Text style={styles.smallTextStyle}>
-This document is an electronic record in terms of Information Technology Act, 2000 and rules made thereunder and the same may be amended from time to time. Being a system generated electronic record, it does not require any physical or digital signature.
-Our privacy policy is designed to provide greater transparency into Our privacy practices and principles, in a format that is easier to navigate, read and understand. We respect the privacy of Our Platform users (“You” or “Your”) and the confidentiality of the information provided by You and have developed this Privacy Policy to demonstrate Our commitment to protecting the same.
-
+This document is an electronic record in terms of Information Technology Act, 2000 and rules made thereunder and the same may be amended from time to time. Being a system generated electronic record, it does not require any physical or digital signature. Our Privacy Policy explains how we collect, use, disclose, and protect your information when you use our mobile application. Please read this Privacy Policy carefully. By accepting this Privacy Policy You are representing that You are eighteen (18) years of age or above. In case You are under the age of eighteen (18) years, then You are requested to not share any Sensitive Personal Information or Personal Information with us without having Your Parents to accept this Privacy Policy on Your behalf. IF YOU DO NOT AGREE WITH THE TERMS OF THIS PRIVACY POLICY, PLEASE DO NOT ACCESS THE APPLICATION.
 </Text>
-        <Text style={styles.mediumTextStyle}>Privacy Policy</Text>
+        <Text style={styles.mediumTextStyle}>CHANGES TO THE PRIVACY POLICY</Text>
          <Text style={styles.smallTextStyle}>
-Effective Date : 26 April 2021
-This Privacy Policy describes the type or treatment of information provided or collected on the Platform where this privacy policy is posted. It also explains the treatment of information provided or collected on Platform. We make available on third-party sites or platforms if disclosed to You in connection with use of the Platform. We follow this privacy policy in accordance with local law in the place where we operate.
-We collect, purpose, usage, storage and handling of such information, and disclosure thereof. We encourage You to read this Privacy Policy carefully when (i) using Our Platform from any mobile, smartphone or any electronic device, or (ii) availing any services offered on or through the Platform.
-By using Our Platform, You are hereby consenting to collection of Your information by Us. The information in some cases may include Personal Information and Sensitive Personal Information. In case of collection of Sensitive Personal Information, You will be required to accept the conditions of this Privacy Policy. By accepting this Privacy Policy You are representing that You are eighteen (18) years of age or above. In case You are under the age of eighteen (18) years, then You are requested to not share any Sensitive Personal Information or Personal Information with us without having Your Parents to accept this Privacy Policy on Your behalf.
-
+We reserve the right to make changes to this Privacy Policy at any time and for any reason. We will alert you about any changes by updating the “Last updated” date of this Privacy Policy. You are encouraged to periodically review this Privacy Policy to stay informed of updates. You will be deemed to have been made aware of, will be subject to, and will be deemed to have accepted the changes in any revised Privacy Policy by your continued use of the Application after the date such revised Privacy Policy is posted.
          </Text>
-        <Text style={styles.mediumTextStyle}>WHAT INFORMATION DO WE COLLECT?</Text>
+        <Text style={styles.mediumTextStyle}>INFORMATION THAT WE COLLECT</Text>
          <Text style={styles.smallTextStyle}>
-At the outset, You are free to refrain from sharing Your information with Us. When You use the Platform, We may collect two basic types of information - Your personal and anonymous information and we may use personal and anonymous information to create a third type of information, aggregate information. We may also collect information which may be Sensitive Personal Information. We collect the following categories of information:
-Registration information You provide when You create an account, including Your first name and surname, weight, height, mobile number and otp.
-Information You provide in public forums on Our Platform.
-Location information when You visit Our Platform, including location information either provided by a mobile device interacting with one of Our Platform, website or Application, or associated with your IP address, where We are permitted by law to process this information.
-Run Data collected while You interact with Our Platform using device sensors
-Usage, viewing and technical data, including Your device identifier or IP address, when You visit Our Platform on third-party sites or platforms or open emails we send.
+         We may collect information about you in a variety of ways. The information we may collect via the Application depends on the content you use, and includes:
+</Text>
+<Text style={styles.smallTextStyle}>Personal Data</Text>
+<Text style={styles.smallTextStyle}>
+Registration information that you provide when you create an account, including your first name and lastname, weight, height, mobile number and otp.
+</Text>
+<Text style={styles.smallTextStyle}>
+Location Information
+</Text>
+<Text style={styles.smallTextStyle}>
+Location information when you use our platform to track the activity using multiple mobile sensors. Location information is based on the platform permissions and is optional, though if disabled, the user experience may get impacted
+</Text>
+<Text style={styles.smallTextStyle}>
+Health Related Information
+</Text>
+<Text style={styles.smallTextStyle}>
+We use Accelerometer and Pedometer sensors to track the activity and to calculate and provide different metrics to the user.
+</Text>
+<Text style={styles.smallTextStyle}>
+We neither knowingly collect any information nor promote our Platform to any minor under the age of 18 (eighteen) years. If you are less than 18 (eighteen) years old or a minor in any other jurisdiction from where you access our Platform, we request that you do not submit information to us. If we become aware that a minor has registered with us and provided us with personal information, we may take steps to terminate such person’s registration and delete their account with us.
+ </Text>
+        <Text style={styles.mediumTextStyle}>USE OF YOUR INFORMATION</Text>
+         <Text style={styles.smallTextStyle}>
+         Having accurate information about you permit us to provide you with a smooth, efficient, and customized experience. We use the collected information for below purposes
+</Text>
+<Text style={styles.smallTextStyle}>
+Create and manage your account.</Text>
+<Text style={styles.smallTextStyle}>
+Tracking of your physical activity, health and location for distance calculation</Text>
+<Text style={styles.smallTextStyle}>
+Create event leader board rankings</Text>
+<Text style={styles.smallTextStyle}>
+Deliver targeted advertising, other information regarding promotions and the application to you.</Text>
+<Text style={styles.smallTextStyle}>
+Generate a personal profile about you to make future visits to the Application more personalized.</Text>
+<Text style={styles.smallTextStyle}>
+Increase the efficiency and operation of the Application.</Text>
+<Text style={styles.smallTextStyle}>
+Offer new products, services, mobile applications, and/or recommendations to you.</Text>
+<Text style={styles.smallTextStyle}>
+Resolve disputes and troubleshoot problems.</Text>
+<Text style={styles.smallTextStyle}>
+Respond to product and customer service requests.</Text>
+<Text style={styles.smallTextStyle}>
+Enforce or exercise any rights in our Platform Terms and Conditions.
+ </Text>
+        <Text style={styles.mediumTextStyle}>DISCLOSURE OF YOUR INFORMATION</Text>
+         <Text style={styles.smallTextStyle}>
+         We may share information we have collected about you in certain situations. Your information may be disclosed as follows:
+</Text>
+<Text style={styles.smallTextStyle}>
+To Protect Rights
+</Text>
+<Text style={styles.smallTextStyle}>
+If we believe the release of information about you is necessary to respond to legal process, to investigate or remedy potential violations of our policies, or to protect the rights, property, and safety of others, we may share your information as permitted or required by any applicable law, rule, or regulation. This includes exchanging information with other entities for fraud protection.
+</Text>
+<Text style={styles.smallTextStyle}>
+Third-Party Service Providers
+</Text>
+<Text style={styles.smallTextStyle}>
+We may share your information with third party parteners to develop and deliver targeted advertising on our Platform. We also may share aggregated, non-personal information, or personal information in hashed, non-human readable form, with third parties, including advisors, advertisers and investors, for the purpose of conducting general business analysis or other business purposes.
+</Text>
+<Text style={styles.smallTextStyle}>
+Sale or Bankruptcy
+</Text>
+<Text style={styles.smallTextStyle}>
+If we reorganize or sell all or a portion of our assets, undergo a merger, or are acquired by another entity, we may transfer your information to the successor entity. If we go out of business or enter bankruptcy, your information would be an asset transferred or acquired by a third party.
+</Text>
+        <Text style={styles.mediumTextStyle}>PROTECTION OF YOUR INFORMATION</Text>
+         <Text style={styles.smallTextStyle}>
+         We adopt reasonable security practices and procedures to help safeguard your personal information under our control from unauthorized access. From time to time, we review our security procedures to consider appropriate new technology and methods. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse.Therefore, we cannot guarantee complete security if you provide personal information.You should always exercise caution while providing, sharing or disclosing your personal information using the Platform.
+ </Text>
+        <Text style={styles.mediumTextStyle}>OPTIONS TO CONTROL YOUR INFORMATION</Text>
+         <Text style={styles.smallTextStyle}>
+Account Information
+</Text>
+<Text style={styles.smallTextStyle}>
+You may at any time review or change the information in your account or terminate your account by sending a mail to "fitlerscommunity@gmail.com". Upon your request to terminate your account, we will deactivate or delete your account and information from our active databases. However, some information may be retained in our files to prevent fraud, troubleshoot problems, assist with any investigations, enforce our Terms of Use and/or comply with legal requirements.
+</Text>
+<Text style={styles.smallTextStyle}>
+Location Information
+</Text>
+<Text style={styles.smallTextStyle}>
+If you don't want to share location information, you can disable the location information from platform settings, however, the same may impact the overall user experience within the application.
          </Text>
-        <Text style={styles.mediumTextStyle}>How We Collect Your Information?</Text>
+        <Text style={styles.mediumTextStyle}>POLICY FOR CHILDREN</Text>
          <Text style={styles.smallTextStyle}>
-In order to register as a user with the Platform, You can create an account on Our Platform. You will also be asked to allow Us to collect Your location and movement, Fitness information from the device when You use the Platform.
-We collect information You provide to Us when You request services or information from Us, register with Us, participate in public forums or other activities on Our Platform, respond to customer surveys, or otherwise interact with Us. Please keep in mind that when You provide information to Us on a third-party site or platform (for example, via Our Platform), the information You provide may be separately collected by the third-party site or platform. The information We collect is covered by this privacy policy and the information the third-party site or platform collects is subject to the third-party site or platform’s privacy practices. Privacy choices You have made on the third-party site or platform will not apply to Our use of the information We have collected directly through Our Platform.
-If You contact Us for customer service or other inquiry, You provide Us with the content of that communication.
-We neither knowingly collect any information nor promote Our Platform to any minor under the age of 18 (eighteen) years. If You are less than 18 (eighteen) years old or a minor in any other jurisdiction from where You access Our Platform, We request that You do not submit information to Us. If We become aware that a minor has registered with Us and provided Us with personal information, We may take steps to terminate such person’s registration and delete their account with Us.
-Advertising networks service providers, web traffic analysis service providers, Our business partners and vendors and other third parties may also use cookies, which is beyond Our control. These would most likely be analytical/performance cookies or targeting cookies. Blocking such cookies is possible by activating the appropriate settings on Your device browser. However, this may affect the functionality of the Platform.
-We acquire information from other trusted sources to update or supplement the information You provided, or We collected automatically. Local law may require that you authorize the third party to share Your information with Us before We can acquire it.
-         </Text>
-        <Text style={styles.mediumTextStyle}>HOW WE USE THE INFORMATION WE COLLECT?</Text>
-         <Text style={styles.smallTextStyle}>
-A member of Our Company, which includes many different brands, will be the data controller for Your information. A user can reach out to our data controllers by sending an email to fitlerscommunity@gmail.com. Other members of Our Company may have access to Your information where they perform services on behalf of the data controller(s) (as a data processor) and, unless prohibited under applicable law, for use on their own behalf (as a data controller) for the following purposes:
-deliver and improve Our Platform and manage Our business;
-manage Your account and provide You with customer support;
-tracking of Your physical movement, Fitness and location for distance calculation and credit conversion;
-creating event leader board rankings;
-perform research and analysis about Your use of, or interest in, Our or third party’s products, services, or content or such products, services, or content as may be available on or through the Platform;
-communicate with You by email, postal mail, telephone and/or mobile devices about products or services that may be of interest to You either from Us or third parties or such products, services, or content as may be available on or through the Website;
-develop, display, and track content and advertising tailored to Your interests on Our App, including providing advertisements to You;
-undertake Platform analytics;
-enforce or exercise any rights in our Platform Terms and Conditions;
-perform functions or services as otherwise described to You at the time of collection; and
-resolve disputes, diagnose errors, troubleshoot problems, detect and protect Us against any activity not expressly authorized under the Platform Terms & Conditions as available
-consistent with local law and choices and controls that may be available to you:
-send you offers and promotions for our products and services or third-party products and services;
-personalize content and experiences on Our Platform;
-provide you with advertising based on your activity on Our Platform and on third-party sites and applications.
-         </Text>
-        <Text style={styles.mediumTextStyle}>WITH WHOM WE SHARE YOUR INFORMATION?</Text>
-         <Text style={styles.smallTextStyle}>
-When You register as a user of Our Platform, Your profile details (information You have provided Us directly will be accessible and viewable by other Platform users and Our business partners, sub-contractors, advertising networks, analytics providers, search information providers.
-We do not share Your personal information with others except as indicated in this Privacy Policy or when We inform You and give You an opportunity to opt out of having Your personal information shared.
-We may also disclose Your personal information:
-for complying with applicable laws, requests or orders from law enforcement agencies, appropriate competent authorities or for any legal process;
-for enforcing the Platform Terms and Conditions;
-for protecting or defending Ours, any Platform user’s or any third party's rights or property;
-for supporting any fraud/ legal investigation/ verification checks; or
-in connection with a corporate transaction, including but not limited to sale of Our business, merger, consolidation, or in the unlikely event of bankruptcy.
-We may use and share Your non-personal information We collect under any of the above circumstances, including with third parties to develop and deliver targeted advertising on Our Platform and on websites and/or applications of third parties, and to undertake analysis thereof. We may combine non-personal information We collect with additional non-personal information collected from other sources. We also may share aggregated, non-personal information, or personal information in hashed, non-human readable form, with third parties, including advisors, advertisers and investors, for the purpose of conducting general business analysis or other business purposes.
-         </Text>
-        <Text style={styles.mediumTextStyle}>HOW CAN YOU ACCESS OR CONTROL YOUR INFORMATION?</Text>
-         <Text style={styles.smallTextStyle}>
-If You have an account with Us on Our Platform, We provide You the ability to exercise certain controls regarding our collection, use and sharing of Your information. In accordance with local law, your controls and choices may include:
-You may correct, update and disable your registration account;
-In addition, We give You the control to opt out of having Your personal information shared, via the Platform settings. If You logout of Your Platform account or uninstall the Platform, We may retain certain information associated with Your account for analytical purposes and recordkeeping purposes or as required by law, as well as to prevent fraud, enforce our Platform Terms and Conditions, take actions We deem necessary to protect the integrity of Our Platform or other Platform users, or take other actions otherwise permitted by law. In addition, if certain information has already been provided to third parties as described in this Privacy Policy, retention of that information will be subject to those third parties' policies.
-You can choose not to provide Us with certain information; however please be aware this may result in You being unable to use certain features of Our Platform. Our Platform may also deliver notifications to Your email or mobile device. You can avoid or disable these notifications by deleting or terminating the Platform or by making changes in the Platform settings.
-You are solely liable and responsible for any information You provide and/or share using the Platform.
-         </Text>
-        <Text style={styles.mediumTextStyle}>HOW DO WE PROTECT YOUR PERSONAL INFORMATION?</Text>
-         <Text style={styles.smallTextStyle}>
-We adopt reasonable security practices and procedures to help safeguard Your personal information under Our control from unauthorized access. However, You acknowledge that no Internet transmission or system or server can be 100% secure. Therefore, although We take all reasonable steps to secure Your personal information, We do not promise or guarantee the same, and You should not expect that Your personal information, or other communications while using the Platform will always remain secure and safeguarded by Us. You should always exercise caution while providing, sharing or disclosing Your personal information using the Platform.
-         </Text>
-        <Text style={styles.mediumTextStyle}>CHILDREN'S PRIVACY</Text>
-         <Text style={styles.smallTextStyle}>
-Although Our Platform is a general audience Platform, We try Our best to restrict the use of Our Platform to individuals aged 18 (eighteen) years and above. We do not knowingly collect, maintain or use personal information from children under the age of 18 (eighteen) years.
-         </Text>
-        <Text style={styles.mediumTextStyle}>DATA SECURITY AND INTEGRITY</Text>
-         <Text style={styles.smallTextStyle}>
-The security, integrity and confidentiality of Your information are extremely important to Us. We have implemented technical, administrative and physical security measures that are designed to protect guest information from unauthorized access, disclosure, use and modification. From time to time, We review Our security procedures to consider appropriate new technology and methods. Please be aware though that, despite Our best efforts, no security measures are perfect or impenetrable.
-         </Text>
-        <Text style={styles.mediumTextStyle}>DATA TRANSFERS, STORAGE AND PROCESSING GLOBALLY</Text>
-         <Text style={styles.smallTextStyle}>
-While We do not operate globally, and We may / may not transfer your Personal Information to any third parties in locations around the world for the purposes described in this Privacy Policy. Wherever your personal information is transferred, stored or processed by us, we will take reasonable steps to safeguard the privacy of your personal information.
-         </Text>
-        <Text style={styles.mediumTextStyle}>CHANGES TO THIS PRIVACY POLICY</Text>
-         <Text style={styles.smallTextStyle}>
-We may occasionally update this Privacy Policy. When We post changes to this Privacy Policy, We will revise the "last updated" date. We recommend that You check Our Platform from time to time to keep Yourself updated of any changes in this Privacy Policy or any of Our other Platform related terms and policies.
-         </Text>
-        <Text style={styles.mediumTextStyle}>GRIEVANCE OFFICER/ COMMENTS AND QUESTIONS</Text>
-         <Text style={styles.smallTextStyle}>
-In accordance with Information Technology Act, 2000 and rules made there under, the name and contact details of the Grievance Officer are provided below:
-Name: Piyush Arora
-
-Email: fitlerscommunity@gmail.com
-         </Text>
-        <Text style={styles.mediumTextStyle}>CONTACT US.</Text>
-         <Text style={styles.smallTextStyle}>
-Please contact Us by email on fitlerscommunity@gmail.com for any questions or comments regarding this Privacy Policy.
-
-Last Updated on: April 24, 2021.
-
-         </Text>
-        <Text style={styles.mediumTextStyle}>DEFINITIONS</Text>
-         <Text style={styles.smallTextStyle}>
-Aggregate Information. Aggregate information means information about groups or categories of guests, which does not identify and cannot reasonably be used to identify an individual guest.
-Anonymous Information. Anonymous information means information that does not directly or indirectly identify, and cannot reasonably be used to identify, an individual guest.
-Children. Children means individuals who we have identified are not of legal age to consent to the collection and processing of their personal information. In the United States and Latin America, the term “children” refers to individuals under 13 years of age. In India, the term “children” refers to individuals under 18 years of age.
-IP address. An IP address is associated with the access point through which you enter the Internet and is typically controlled by your Internet Service Provider (ISP), your company, or your university. We may use IP addresses to collect information regarding the frequency with which our guests visit various parts of our Platform, and we may combine IP addresses with Personal Information.
-Parents. Parents mean a parent or legal guardian of the Children.
-Personal information. Personal information means and includes information that identifies (whether directly or indirectly) and Sensitive Personal Information. When anonymous information is directly or indirectly associated with personal information, this anonymous information also is treated as personal information.
-Public Forums. Our Platform may offer message boards, conversation pages, blogs, chat rooms, social community environments, profile pages, and other forums that do not have a restricted audience. If you provide personal information when you use any of these features, that personal information may be publicly posted and otherwise disclosed without limitation as to its use by us or by a third party. To request removal of your personal information from a public forum on one of our Platform, please contact fitlerscommunity@gmail.com.
-Sensitive Personal Information. Sensitive Personal Information shall have the meaning ascribed to it under the applicable law and is presently defined to mean such personal information which consists of information relating to (i) passwords; (ii) financial information such as bank accounts or credit card or debit card or other payment instrument details; (iii) physical, physiological and mental health conditions; (iv) sexual orientation; (v) medical records and history; (vi) Biometric information; (vii) any detail relating to the above clauses as provided to body corporate for providing service; and (viii) any of the information received under above clauses by body corporate for processing, stored or processed under lawful contract or otherwise; provided that any information that is freely available or accessible in public domain or furnished under the Right to Information Act, 2005 or any other law for the time being in force shall not be regarded as sensitive personal information.
-Fitness. for the purpose of this Privacy Policy shall means any activities related to health, fitness, or wellness of person including but not limited to physical movements, jumping, running, jogging etc.
-        </Text>
+We do not knowingly solicit information from or market to children under the age of 18. If we become aware that a minor has registered with us and provided us with personal information, we may take steps to terminate such person’s registration and delete their account with us.
+</Text>
+        <Text style={styles.mediumTextStyle}>CONTACT US</Text>
+         <Text style={styles.smallTextStyleBottomPadding}>
+         Please contact us by email on fitlerscommunity@gmail.com for any questions or comments regarding this Privacy Policy.
+ </Text>
 	  </ScrollView>
 		<View style={styles.buttonContainerStyle}>
 		 <RoundButton 
@@ -181,6 +168,12 @@ const styles = StyleSheet.create({
                 fontFamily: 'open-sans'
         },
         smallTextStyle: {
+                padding: '3%',
+                fontSize: moderateScale(10, 0.8),
+                color: 'springgreen',
+                fontFamily: 'open-sans'
+        },
+        smallTextStyleBottomPadding: {
                 padding: '3%',
                 fontSize: moderateScale(10, 0.8),
                 color: 'springgreen',

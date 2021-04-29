@@ -2,6 +2,7 @@ import NetInfo from '@react-native-community/netinfo';
 import configData from "../config/config.json";
 import {getUserAuthenticationToken} from '../utils/AuthenticationUtils';
 import {AsyncStorage} from 'react-native';
+import StatusCodes from "../utils/StatusCodes.json";
 
 //Method to send the error logs to server
 export const sendErrorLogsToServer = (exceptionDetails) => {

@@ -18,8 +18,8 @@ let runDetails=null;
 let updateStepsListener=null;
 let updateLocationListener=null;
 
-let rangeOfAcceleration=[0.3,2,10,15,40,60,80];
-let rangeOfMultiplyingFactor=[0.30,0.40, 0.60, 0.75, 0.95, 1.05, 1.15];
+let rangeOfAcceleration=[0.3,6,10,15,40,60,80];
+let rangeOfMultiplyingFactor=[0.30,0.40,0.60,0.75,0.95,1.05,1.15];
 let strideMultiplyingFactor=0.30;//Default Multiplier based on 12.5 average pace
 let averageAcceleration=0.3;//Default Acceleration Value based on 12.5 average pace
 let accelerationValues=[];
@@ -233,13 +233,15 @@ const LiveRunTrackerScreen = props=>{
       runDetails.runTotalTime = updatedLapsedTime;
       startTime = currentTime;
 
-      let magnitude = Math.sqrt(accelerometerData.acceleration.x * accelerometerData.acceleration.x +
+      /*let magnitude = Math.sqrt(accelerometerData.acceleration.x * accelerometerData.acceleration.x +
         accelerometerData.acceleration.y * accelerometerData.acceleration.y +
-        accelerometerData.acceleration.z * accelerometerData.acceleration.z);
+        accelerometerData.acceleration.z * accelerometerData.acceleration.z);*/
 
-      /*let magnitudeIncludeAcclr = Math.sqrt(accelerometerData.accelerationIncludingGravity.x * accelerometerData.accelerationIncludingGravity.x +
+        let magnitude = Math.sqrt(accelerometerData.accelerationIncludingGravity.x * accelerometerData.accelerationIncludingGravity.x +
           accelerometerData.accelerationIncludingGravity.y * accelerometerData.accelerationIncludingGravity.y +
-          accelerometerData.accelerationIncludingGravity.z * accelerometerData.accelerationIncludingGravity.z);*/
+          accelerometerData.accelerationIncludingGravity.z * accelerometerData.accelerationIncludingGravity.z);
+
+      console.log(magnitude);
 
       accelerationValues.push(magnitude);
       const sum = accelerationValues.reduce((a, b) => a + b, 0);
