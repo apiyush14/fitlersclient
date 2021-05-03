@@ -54,7 +54,7 @@ const RunHistoryScreen = props => {
   //Event Listener to be called on selecting Run and to navigate to Run History Screen
   const onSelectRunHistoryItem = (itemdata) => {
     var runDetails = new RunDetails(itemdata.item.runId, itemdata.item.runTotalTime, itemdata.item.runDistance, itemdata.item.runPace, itemdata.item.runCaloriesBurnt, 0, itemdata.item.runStartDateTime, itemdata.item.runDate, itemdata.item.runDay, itemdata.item.runPath, itemdata.item.runTrackSnapUrl, 0, "0");
-    props.navigation.navigate('RunDetailsScreen', {
+    props.navigation.navigate('Run Details', {
       sourceScreen: 'RunHistoryScreen',
       runDetails: runDetails
     });
@@ -85,19 +85,19 @@ const RunHistoryScreen = props => {
       text={runSummary!=null?parseFloat(runSummary.totalDistance/1000).toFixed(2)+" KM":0+" KM"}
       footerText="Total Distance"
       style={styles.totalDistanceDashboardItemStyle} 
-      icon="ios-walk"/>
+      icon={Platform.OS === 'android'?"md-walk":"ios-walk"}/>
 
      <DashboardItem 
       text={runSummary!=null?parseFloat(runSummary.averageDistance/1000).toFixed(2)+" KM":0+" KM"}
       footerText="Avg Distance"
       style={styles.averageDistanceDashboardItemStyle} 
-      icon="ios-stats"/>
+      icon={Platform.OS === 'android'?"md-stats-chart":"ios-stats-chart"}/>
 
      <DashboardItem 
       text={runSummary!=null?parseFloat(runSummary.averagePace).toFixed(2):0.00}
       footerText="Avg Pace"
       style={styles.averagePaceDashboardItemStyle} 
-      icon="ios-stopwatch"/>
+      icon={Platform.OS === 'android'?"md-stopwatch":"ios-stopwatch"}/>
 
     <View style={styles.footerContainerStyle}>
      <View style={styles.footerViewContainerStyle}>

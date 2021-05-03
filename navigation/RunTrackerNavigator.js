@@ -2,7 +2,7 @@ import React from 'react';
 import {Ionicons} from '@expo/vector-icons';
 import { Platform, View, TouchableOpacity, StyleSheet } from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator,HeaderBackButton} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import RunTrackerHomeScreen from '../screens/RunTrackerHomeScreen';
@@ -56,18 +56,10 @@ const RunTrackerNavigator=()=>{
 // Tab Navigator
 const RunTrackerTabNavigator=({navigation, route})=>{
   var currentActiveScreenName=getActiveScreenName(route);
-  var isTabNavigationVisible= currentActiveScreenName==='HomeScreen'
-  ||currentActiveScreenName==='HomeScreen'
-  ||currentActiveScreenName==='History'
-  ||currentActiveScreenName==='RunHistoryScreen'
-  ||currentActiveScreenName==='Events'
-  ||currentActiveScreenName==='RunDetailsScreen'
-  ?true:false;
   
   return (
    <tabNavigator.Navigator 
    screenOptions={(screenRoute) => ({
-    tabBarVisible: isTabNavigationVisible,
     tabBarIcon: ({ focused, color, size }) => {
       let iconName;
       if (screenRoute.route.name === 'Home') {
@@ -76,8 +68,8 @@ const RunTrackerTabNavigator=({navigation, route})=>{
         : Platform.OS === 'android'?'md-home':'ios-home';
       } else if (screenRoute.route.name === 'History') {
         iconName = focused 
-        ? Platform.OS === 'android'?'md-stats':'ios-stats' 
-        : Platform.OS === 'android'?'md-stats':'ios-stats';
+        ? Platform.OS === 'android'?'md-stats-chart':'ios-stats-chart' 
+        : Platform.OS === 'android'?'md-stats-chart':'ios-stats-chart';
       }
         else if (screenRoute.route.name === 'Events') {
         iconName = focused 
@@ -105,7 +97,7 @@ const RunTrackerTabNavigator=({navigation, route})=>{
     }
   }}
   >
-  <tabNavigator.Screen name="Home" component={RunTrackerStackNavigator} 
+  <tabNavigator.Screen name="Home" component={RunTrackerHomeScreen} 
   listeners={{
     tabPress: e=>{
     }
@@ -120,6 +112,7 @@ const RunTrackerTabNavigator=({navigation, route})=>{
 const RunTrackerStackNavigator=({navigation, route})=>{
   const authDetails = useSelector(state => state.authDetails);
   const userDetails = useSelector(state => state.userDetails);
+  var currentActiveScreenName=getActiveScreenName(route);
 
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
@@ -136,15 +129,12 @@ const RunTrackerStackNavigator=({navigation, route})=>{
     /> 
     ): (
     <React.Fragment>
-    <stackNavigator.Screen name="HomeScreen" component={RunTrackerHomeScreen} 
+    <stackNavigator.Screen name="Home" component={RunTrackerTabNavigator} 
     options={{
-      tabBarVisible: false,
-      title: 'Home',
+      title: currentActiveScreenName,
       headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            //borderBottomRightRadius: 25,
-            //borderBottomLeftRadius: 25,
             height: verticalScale(50)
           },
       headerTintColor: 'white',
@@ -155,39 +145,21 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       headerTitleAlign: 'center',
       headerLeft: ()=>{
         return (
-          <View styles={styles.person}>
+          currentActiveScreenName==='Home'?
+          (<View styles={styles.person}>
           <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
           <Ionicons name={Platform.OS === 'android'?'md-person':'ios-person'} size={40} color='white'/>
           </TouchableOpacity>
-          </View>
+          </View>):(
+          currentActiveScreenName==='Run Details'?(
+          <HeaderBackButton tintColor='white' onPress={()=>{navigation.navigate('Runs History')}}>
+          </HeaderBackButton>):(null)
+          )
           );
-      } 
-    }}/>
-    <stackNavigator.Screen name="RunHistoryScreen" component={RunHistoryScreen} 
-    options={{
-      headerShown: false
-    }}/>
+    }}}/>
     <stackNavigator.Screen name="LiveRunTracker" component={LiveRunTracker} 
     options={{
       headerShown: false
-    }}/>
-    <stackNavigator.Screen name="RunDetailsScreen" component={RunDetailsScreen}
-    options={{
-      title: 'Run Details',
-      headerStyle: {
-            backgroundColor: 'royalblue',
-            opacity: 1,
-            //borderBottomRightRadius: 25,
-            //borderBottomLeftRadius: 25,
-            height: verticalScale(50)
-          },
-      headerTintColor: 'white',
-      headerTitleStyle: {
-            fontSize: moderateScale(13, 0.5),
-            fontFamily: 'open-sans-bold'
-          },
-      headerTitleAlign: 'center',
-      headerLeft: null
     }}/>
     </React.Fragment>
      )}
@@ -199,27 +171,8 @@ const RunTrackerStackNavigator=({navigation, route})=>{
   const RunTrackerHistoryStackNavigator=({navigation, route})=>{
     return (
       <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
-      <stackNavigator.Screen name="RunHistoryScreen" component={RunHistoryScreen} 
-      options={{
-        headerShown: false
-      }}/>
-      <stackNavigator.Screen name="RunDetailsScreen" component={RunDetailsScreen}
-    options={{
-      title: 'Run Details',
-      headerStyle: {
-            backgroundColor: 'royalblue',
-            opacity: 1,
-            //borderBottomRightRadius: 25,
-            //borderBottomLeftRadius: 25,
-            height: verticalScale(50)
-          },
-      headerTintColor: 'white',
-      headerTitleStyle: {
-            fontSize: moderateScale(13, 0.5),
-            fontFamily: 'open-sans-bold'
-          },
-      headerTitleAlign: 'center'
-    }}/>
+       <stackNavigator.Screen name="Runs History" component={RunHistoryScreen} />
+       <stackNavigator.Screen name="Run Details" component={RunDetailsScreen}/>
       </stackNavigator.Navigator>
       );
     };
@@ -256,30 +209,14 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       );
     };
 
-  //Events Stack Navigator
+ //Events Stack Navigator
   const EventsStackNavigator=({navigation, route})=>{
     return (
       <stackNavigator.Navigator 
       screenOptions={
         {gestureEnabled: false}
        }>
-      <stackNavigator.Screen name="EventsListSummaryScreen" component={EventsListSummaryScreen} 
-      options={{
-        title: 'Events',
-        headerStyle: {
-            backgroundColor: 'royalblue',
-            opacity: 1,
-            //borderBottomRightRadius: 25,
-            //borderBottomLeftRadius: 25,
-            height: verticalScale(50)
-          },
-        headerTintColor: 'white',
-        headerTitleStyle: {
-            fontSize: moderateScale(13, 0.5),
-            fontFamily: 'open-sans-bold'
-          },
-        headerTitleAlign: 'center'
-      }}/>
+      <stackNavigator.Screen name="Events" component={EventsListSummaryScreen}/>
       </stackNavigator.Navigator>
       );
     };

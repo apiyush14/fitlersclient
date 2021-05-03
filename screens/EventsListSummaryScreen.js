@@ -157,7 +157,7 @@ const EventsListSummaryScreen = props => {
   //Event Listener to be called on selecting Run and to navigate to Run History Screen
   const onSelectRunHistoryItem = (itemdata) => {
     var runDetails = new RunDetails(itemdata.item.runId, itemdata.item.runTotalTime, itemdata.item.runDistance, itemdata.item.runPace, itemdata.item.runCaloriesBurnt, 0, itemdata.item.runStartDateTime, itemdata.item.runDate, itemdata.item.runDay, itemdata.item.runPath, itemdata.item.runTrackSnapUrl, itemdata.item.eventId, "1");
-    props.navigation.navigate('RunDetailsScreen', {
+    props.navigation.navigate('Run Details', {
       sourceScreen: 'RunHistoryScreen',
       runDetails: runDetails
     });

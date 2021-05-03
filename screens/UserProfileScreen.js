@@ -91,7 +91,7 @@
           }], {
             cancelable: false
           });
-          props.navigation.navigate('HomeScreen');
+          props.navigation.navigate('Home');
         }
       });
     }
@@ -168,7 +168,7 @@
                         props.onClose();
                   }
                   else{
-                    props.navigation.navigate('HomeScreen');
+                    props.navigation.navigate('Home');
                   }
                 }}/>
         </View>

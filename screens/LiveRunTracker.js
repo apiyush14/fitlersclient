@@ -1,12 +1,16 @@
 import React, { useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import { View, Text, StyleSheet, TouchableOpacity, Button, Platform} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Button, Platform,Alert} from 'react-native';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import * as Location from 'expo-location';
 import { DeviceMotion, Pedometer } from 'expo-sensors';
 import Slider from '../components/Slider';
 import { Ionicons } from '@expo/vector-icons';
 import RunDetails from '../models/rundetails';
+
+import {NativeModules,NativeEventEmitter} from 'react-native';
+var PedometerModule=NativeModules.PedometerJavaModule;
+const eventEmitter = new NativeEventEmitter(NativeModules.PedometerJavaModule);
 
 let startTime=Date.now();
 let eventId=0;
@@ -72,8 +76,9 @@ const LiveRunTrackerScreen = props=>{
 
   //Subscribe Pedometer to count steps
   const subscribePedometer = () => {
-    updateStepsListener = Pedometer.watchStepCount((updatedSteps) => {
-      updateStepsCount(updatedSteps);
+    PedometerModule.watchStepCount();
+    updateStepsListener=eventEmitter.addListener('pedometerDataDidUpdate',(updatedSteps)=>{
+       updateStepsCount(updatedSteps);
     });
   };
 
@@ -156,7 +161,7 @@ const LiveRunTrackerScreen = props=>{
 
   //Subscriber for Location Updates
   const subscribeLocationUpdates = () => {
-    Location.requestPermissionsAsync().then(response => {
+    Location.requestForegroundPermissionsAsync().then(response => {
       if (response.status !== 'granted') {
         //TODO : To handle alert to change settings
         //Alert.alert("Location Alert", "Location Permission is required!!!");
@@ -236,27 +241,29 @@ const LiveRunTrackerScreen = props=>{
       /*let magnitude = Math.sqrt(accelerometerData.acceleration.x * accelerometerData.acceleration.x +
         accelerometerData.acceleration.y * accelerometerData.acceleration.y +
         accelerometerData.acceleration.z * accelerometerData.acceleration.z);*/
-
+      if (accelerometerData && accelerometerData.accelerationIncludingGravity) {
         let magnitude = Math.sqrt(accelerometerData.accelerationIncludingGravity.x * accelerometerData.accelerationIncludingGravity.x +
           accelerometerData.accelerationIncludingGravity.y * accelerometerData.accelerationIncludingGravity.y +
           accelerometerData.accelerationIncludingGravity.z * accelerometerData.accelerationIncludingGravity.z);
 
-      console.log(magnitude);
+        //console.log(magnitude);
 
-      accelerationValues.push(magnitude);
-      const sum = accelerationValues.reduce((a, b) => a + b, 0);
-      averageAcceleration = (sum / accelerationValues.length) || 0.3;
+        accelerationValues.push(magnitude);
+        const sum = accelerationValues.reduce((a, b) => a + b, 0);
+        averageAcceleration = (sum / accelerationValues.length) || 0.3;
+      }
     })();
   };
 
   //Complete the run if distance more than 10m and load Run Details Screen
   const stopRun = () => {
+    PedometerModule.stopPedometerUpdates();
     if (runDistance > 10) {
-      props.navigation.navigate('RunDetailsScreen', {
+      props.navigation.navigate('Run Details', {
         runDetails: runDetails
       });
     } else {
-      props.navigation.navigate('HomeScreen');
+      props.navigation.navigate('Home');
     }
   };
 
