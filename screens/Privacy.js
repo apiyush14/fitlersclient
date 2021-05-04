@@ -122,7 +122,7 @@ We do not knowingly solicit information from or market to children under the age
                         props.onClose();
                   }
                   else{
-                    props.navigation.navigate('HomeScreen');
+                    props.navigation.navigate('Home');
                   }
                 }}/>
         </View>

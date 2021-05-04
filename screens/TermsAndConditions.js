@@ -186,7 +186,7 @@ Last Updated on: April 24th, 2021.
                         props.onClose();
                   }
                   else{
-                    props.navigation.navigate('HomeScreen');
+                    props.navigation.navigate('Home');
                   }
                 }}/>
         </View>

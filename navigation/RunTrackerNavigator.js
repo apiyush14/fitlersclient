@@ -34,7 +34,7 @@ const RunTrackerNavigator=()=>{
     <drawerNavigator.Navigator screenOptions={{
       swipeEnabled: false
     }}>
-    <drawerNavigator.Screen name="Home" component={RunTrackerTabNavigator}/>
+    <drawerNavigator.Screen name="Home" component={RunTrackerStackNavigator}/>
     <drawerNavigator.Screen name="Profile" component={UserProfileScreen}/>
     <drawerNavigator.Screen name="Terms & Conditions" component={TermsAndConditions}/>
     <drawerNavigator.Screen name="Privacy" component={Privacy}/>
@@ -55,7 +55,6 @@ const RunTrackerNavigator=()=>{
 
 // Tab Navigator
 const RunTrackerTabNavigator=({navigation, route})=>{
-  var currentActiveScreenName=getActiveScreenName(route);
   
   return (
    <tabNavigator.Navigator 
@@ -114,6 +113,8 @@ const RunTrackerStackNavigator=({navigation, route})=>{
   const userDetails = useSelector(state => state.userDetails);
   var currentActiveScreenName=getActiveScreenName(route);
 
+  var isToShowHeader=currentActiveScreenName==='Home';
+
   return (
     <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
     {(authDetails===null)
@@ -131,6 +132,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
     <React.Fragment>
     <stackNavigator.Screen name="Home" component={RunTrackerTabNavigator} 
     options={{
+      headerShown: isToShowHeader,
       title: currentActiveScreenName,
       headerStyle: {
             backgroundColor: 'royalblue',
@@ -171,8 +173,40 @@ const RunTrackerStackNavigator=({navigation, route})=>{
   const RunTrackerHistoryStackNavigator=({navigation, route})=>{
     return (
       <stackNavigator.Navigator screenOptions={{gestureEnabled: false}}>
-       <stackNavigator.Screen name="Runs History" component={RunHistoryScreen} />
-       <stackNavigator.Screen name="Run Details" component={RunDetailsScreen}/>
+       <stackNavigator.Screen name="Runs History" component={RunHistoryScreen}
+        options={{
+        title: 'Runs History',
+        headerStyle: {
+            backgroundColor: 'royalblue',
+            opacity: 1,
+            //borderBottomRightRadius: 25,
+            //borderBottomLeftRadius: 25,
+            height: verticalScale(50)
+          },
+        headerTintColor: 'white',
+        headerTitleStyle: {
+            fontSize: moderateScale(13, 0.5),
+            fontFamily: 'open-sans-bold'
+          },
+        headerTitleAlign: 'center'
+      }}/>
+       <stackNavigator.Screen name="Run Details" component={RunDetailsScreen}
+        options={{
+        title: 'Run Details',
+        headerStyle: {
+            backgroundColor: 'royalblue',
+            opacity: 1,
+            //borderBottomRightRadius: 25,
+            //borderBottomLeftRadius: 25,
+            height: verticalScale(50)
+          },
+        headerTintColor: 'white',
+        headerTitleStyle: {
+            fontSize: moderateScale(13, 0.5),
+            fontFamily: 'open-sans-bold'
+          },
+        headerTitleAlign: 'center'
+    }}/>
       </stackNavigator.Navigator>
       );
     };
@@ -192,17 +226,14 @@ const RunTrackerStackNavigator=({navigation, route})=>{
        }>
       <stackNavigator.Screen name="SplashScreen" component={SplashScreen} 
       options={{
-        tabBarVisible: false,
         headerShown: false
       }}/>
       <stackNavigator.Screen name="LogInScreen" component={LogInScreen} 
       options={{
-        tabBarVisible: false,
         headerShown: false
       }}/>
       <stackNavigator.Screen name="UserDetailsScreen" component={UserDetailsScreen} 
       options={{
-        tabBarVisible: false,
         headerShown: false
       }}/>
       </stackNavigator.Navigator>
@@ -216,7 +247,40 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       screenOptions={
         {gestureEnabled: false}
        }>
-      <stackNavigator.Screen name="Events" component={EventsListSummaryScreen}/>
+      <stackNavigator.Screen name="Events" component={EventsListSummaryScreen}
+       options={{
+       title: 'Events',
+       headerStyle: {
+            backgroundColor: 'royalblue',
+            opacity: 1,
+            //borderBottomRightRadius: 25,
+            //borderBottomLeftRadius: 25,
+            height: verticalScale(50)
+          },
+       headerTintColor: 'white',
+       headerTitleStyle: {
+            fontSize: moderateScale(13, 0.5),
+            fontFamily: 'open-sans-bold'
+          },
+       headerTitleAlign: 'center'
+      }}/>
+      <stackNavigator.Screen name="Run Details" component={RunDetailsScreen}
+      options={{
+      title: 'Run Details',
+      headerStyle: {
+            backgroundColor: 'royalblue',
+            opacity: 1,
+            //borderBottomRightRadius: 25,
+            //borderBottomLeftRadius: 25,
+            height: verticalScale(50)
+          },
+      headerTintColor: 'white',
+      headerTitleStyle: {
+            fontSize: moderateScale(13, 0.5),
+            fontFamily: 'open-sans-bold'
+          },
+      headerTitleAlign: 'center'
+    }}/>
       </stackNavigator.Navigator>
       );
     };

@@ -22,8 +22,8 @@ let runDetails=null;
 let updateStepsListener=null;
 let updateLocationListener=null;
 
-let rangeOfAcceleration=[0.3,6,10,15,40,60,80];
-let rangeOfMultiplyingFactor=[0.30,0.40,0.60,0.75,0.95,1.05,1.15];
+let rangeOfAcceleration=[10, 15, 20, 25, 30, 35, 40];
+let rangeOfMultiplyingFactor=[0.40, 0.60, 0.70, 0.75, 0.80, 0.85, 0.90];
 let strideMultiplyingFactor=0.30;//Default Multiplier based on 12.5 average pace
 let averageAcceleration=0.3;//Default Acceleration Value based on 12.5 average pace
 let accelerationValues=[];
