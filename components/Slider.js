@@ -83,10 +83,10 @@ const styles = StyleSheet.create({
   },
   sliderTextStyle: {
     position: 'absolute',
-    bottom: '30%',
+    bottom: '35%',
     marginLeft: '30%',
     color: 'black',
-    fontSize: scale(15),
+    fontSize: scale(9),
     fontFamily: 'open-sans'
   },
   sliderButtonStyle: {

@@ -11,9 +11,9 @@ const Privacy = props => {
           <Text style={styles.smallTextStyle}>Last Updated on: April 29, 2021</Text>
         <Text style={styles.largeTextStyle}>PRIVACY POLICY</Text>
          <Text style={styles.smallTextStyle}>
-This document is an electronic record in terms of Information Technology Act, 2000 and rules made thereunder and the same may be amended from time to time. Being a system generated electronic record, it does not require any physical or digital signature. Our Privacy Policy explains how we collect, use, disclose, and protect your information when you use our mobile application. Please read this Privacy Policy carefully. By accepting this Privacy Policy You are representing that You are eighteen (18) years of age or above. In case You are under the age of eighteen (18) years, then You are requested to not share any Sensitive Personal Information or Personal Information with us without having Your Parents to accept this Privacy Policy on Your behalf. IF YOU DO NOT AGREE WITH THE TERMS OF THIS PRIVACY POLICY, PLEASE DO NOT ACCESS THE APPLICATION.
+This document is an electronic record in terms of Information Technology Act, 2000 and rules made thereunder and the same may be amended from time to time. Being a system generated electronic record, it does not require any physical or digital signature. Our Privacy Policy explains how we collect, use, disclose, and protect your information when you use our mobile application. Please read this Privacy Policy carefully. By accepting this Privacy Policy You are representing that you are eighteen (18) years of age or above. In case you are under the age of eighteen (18) years, then you are requested to not share any Sensitive Personal Information or Personal Information with us without having your Parents to accept this Privacy Policy on your behalf. IF YOU DO NOT AGREE WITH THE TERMS OF THIS PRIVACY POLICY, PLEASE DO NOT ACCESS THE APPLICATION.
 </Text>
-        <Text style={styles.mediumTextStyle}>CHANGES TO THE PRIVACY POLICY</Text>
+        <Text style={styles.mediumTextStyle}>MODIFICATIONS TO THE PRIVACY POLICY</Text>
          <Text style={styles.smallTextStyle}>
 We reserve the right to make changes to this Privacy Policy at any time and for any reason. We will alert you about any changes by updating the “Last updated” date of this Privacy Policy. You are encouraged to periodically review this Privacy Policy to stay informed of updates. You will be deemed to have been made aware of, will be subject to, and will be deemed to have accepted the changes in any revised Privacy Policy by your continued use of the Application after the date such revised Privacy Policy is posted.
          </Text>
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
         },
         largeTextStyle: {
                 padding: '3%',
-                fontSize: moderateScale(40, 0.8),
+                fontSize: moderateScale(20, 0.8),
                 color: 'springgreen',
                 fontFamily: 'open-sans'
         },

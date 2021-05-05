@@ -90,9 +90,7 @@ const RunTrackerTabNavigator=({navigation, route})=>{
     },
     style: {
       backgroundColor: 'white',
-      opacity: 1,
-      //borderTopRightRadius: 25,
-      //borderTopLeftRadius: 25
+      opacity: 1
     }
   }}
   >
@@ -163,6 +161,30 @@ const RunTrackerStackNavigator=({navigation, route})=>{
     options={{
       headerShown: false
     }}/>
+
+    <stackNavigator.Screen name="Run Details" component={RunDetailsScreen}
+        options={{
+        title: 'Run Details',
+        headerStyle: {
+            backgroundColor: 'royalblue',
+            opacity: 1,
+            height: verticalScale(50)
+          },
+        headerTintColor: 'white',
+        headerTitleStyle: {
+            fontSize: moderateScale(13, 0.5),
+            fontFamily: 'open-sans-bold'
+          },
+        headerTitleAlign: 'center',
+        headerLeft: ()=>{
+        return (
+          <HeaderBackButton 
+           tintColor='white'
+           onPress={()=>{navigation.navigate('Home',{screen: 'Home'})}}>
+          </HeaderBackButton>
+         );}
+    }}/>
+
     </React.Fragment>
      )}
     </stackNavigator.Navigator>
@@ -179,8 +201,6 @@ const RunTrackerStackNavigator=({navigation, route})=>{
         headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            //borderBottomRightRadius: 25,
-            //borderBottomLeftRadius: 25,
             height: verticalScale(50)
           },
         headerTintColor: 'white',
@@ -196,8 +216,6 @@ const RunTrackerStackNavigator=({navigation, route})=>{
         headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            //borderBottomRightRadius: 25,
-            //borderBottomLeftRadius: 25,
             height: verticalScale(50)
           },
         headerTintColor: 'white',
@@ -253,8 +271,6 @@ const RunTrackerStackNavigator=({navigation, route})=>{
        headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            //borderBottomRightRadius: 25,
-            //borderBottomLeftRadius: 25,
             height: verticalScale(50)
           },
        headerTintColor: 'white',
@@ -270,8 +286,6 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            //borderBottomRightRadius: 25,
-            //borderBottomLeftRadius: 25,
             height: verticalScale(50)
           },
       headerTintColor: 'white',
