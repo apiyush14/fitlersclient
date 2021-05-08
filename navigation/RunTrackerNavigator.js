@@ -75,7 +75,7 @@ const RunTrackerTabNavigator=({navigation, route})=>{
         ? Platform.OS === 'android'?'md-trophy':'ios-trophy' 
         : Platform.OS === 'android'?'md-trophy':'ios-trophy';
       }
-      return <Ionicons name={iconName} size={25} color={color} />;
+      return <Ionicons name={iconName} size={verticalScale(21)} color={color} />;
     },
   })}
 
@@ -148,7 +148,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
           currentActiveScreenName==='Home'?
           (<View styles={styles.person}>
           <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
-          <Ionicons name={Platform.OS === 'android'?'md-person':'ios-person'} size={40} color='white'/>
+          <Ionicons name={Platform.OS === 'android'?'md-person':'ios-person'} size={verticalScale(30)} color='white'/>
           </TouchableOpacity>
           </View>):(
           currentActiveScreenName==='Run Details'?(
@@ -176,13 +176,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
             fontFamily: 'open-sans-bold'
           },
         headerTitleAlign: 'center',
-        headerLeft: ()=>{
-        return (
-          <HeaderBackButton 
-           tintColor='white'
-           onPress={()=>{navigation.navigate('Home',{screen: 'Home'})}}>
-          </HeaderBackButton>
-         );}
+        headerLeft: null
     }}/>
 
     </React.Fragment>

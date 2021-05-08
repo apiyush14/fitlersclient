@@ -13,7 +13,7 @@ import {useIsFocused} from "@react-navigation/native";
 import RunDetails from '../models/rundetails';
 import EventResultsView from '../components/EventResultsView';
 
-var isCalledFromHistoryScreen = false;
+let isCalledFromHistoryScreenVar=false;
 let runStartDateTime = null;
 let runId = 0;
 let eventId = 0;
@@ -38,6 +38,7 @@ const RunDetailsScreen = props=>{
   const [runPace, setRunPace] = useState(0.00);
   const [userRank, setUserRank] = useState(0);
   const [isEvent, setIsEvent] = useState(false);
+  const [isCalledFromHistoryScreen, setIsCalledFromHistoryScreen] = useState(false);
   const [trackTimer, setTrackTimer] = useState({
     seconds: "00",
     minutes: "00",
@@ -51,7 +52,8 @@ const RunDetailsScreen = props=>{
     runDetails = props.route.params.runDetails;
     if (props.route.params.sourceScreen) {
       if (props.route.params.sourceScreen === 'RunHistoryScreen') {
-        isCalledFromHistoryScreen = true;
+        isCalledFromHistoryScreenVar=true;
+        setIsCalledFromHistoryScreen(true);
       }
     }
 
@@ -99,7 +101,7 @@ const RunDetailsScreen = props=>{
 
   //Method to save Run In Local DB and Server
   const saveRun = () => {
-    if ((!isCalledFromHistoryScreen)) {
+    if ((!isCalledFromHistoryScreenVar)) {
       dispatch(runActions.addRun(runDetails)).then((response) => {
         if (runDetails.eventId > 0) {
           if (response.status === StatusCodes.NO_INTERNET) {
@@ -166,7 +168,7 @@ return (
    <TouchableOpacity onPress={onClickEventResults}>
    <View style={styles.rowStyle}>
     <Card style={{width:'97%'}}>
-      <Ionicons name={Platform.OS === 'android'?"md-trophy":"ios-trophy"} size={25} color='springgreen'/>
+      <Ionicons name={Platform.OS === 'android'?"md-trophy":"ios-trophy"} size={verticalScale(21)} color='springgreen'/>
       <Text style={styles.mediumTextStyle}>{userRank}</Text>
       <Text style={styles.mediumTextStyle}>Rank</Text>
       <Text style={styles.smallTextStyle}>Touch to see Results</Text>
@@ -176,12 +178,12 @@ return (
 
    <View style={styles.rowStyle}>
     <Card style={{width:'60%'}}>
-     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={30} color='springgreen'/>
+     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={verticalScale(25)} color='springgreen'/>
      <Text style={styles.largeTextStyle}>{parseFloat(runDistance/1000).toFixed(2)} KM</Text>
     </Card>
 
     <Card style={{width:'35%'}}>
-     <Ionicons name={Platform.OS === 'android'?"md-stopwatch":"ios-stopwatch"} size={20} color='springgreen'/>
+     <Ionicons name={Platform.OS === 'android'?"md-stopwatch":"ios-stopwatch"} size={verticalScale(16)} color='springgreen'/>
      <Text style={styles.mediumTextStyle}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
      <Text style={styles.smallTextStyle}>HH:MM:SS</Text>
     </Card>
@@ -189,25 +191,35 @@ return (
 
    <View style={styles.rowStyle}>
     <Card style={{width:'35%'}}>
-      <Ionicons name={Platform.OS === 'android'?"md-calendar":"ios-calendar"} size={25} color='springgreen'/>
+      <Ionicons name={Platform.OS === 'android'?"md-calendar":"ios-calendar"} size={verticalScale(20)} color='springgreen'/>
       <Text style={styles.mediumTextStyle}>{runDate}</Text>
       <Text style={styles.mediumTextStyle}>{runDay}</Text>
     </Card>
 
     <Card style={{width:'25%'}}>
-      <Ionicons name={Platform.OS === 'android'?"md-flame":"ios-flame"} size={25} color='springgreen'/>
+      <Ionicons name={Platform.OS === 'android'?"md-flame":"ios-flame"} size={verticalScale(20)} color='springgreen'/>
       <Text style={styles.mediumTextStyle}>{parseFloat(runCaloriesBurnt).toFixed(2)}</Text>
       <Text style={styles.mediumTextStyle}>Calories</Text>
     </Card>
 
     <Card style={{width:'33%'}}>
-      <Ionicons name={Platform.OS === 'android'?"md-speedometer":"ios-speedometer"} size={25} color='springgreen'/>
+      <Ionicons name={Platform.OS === 'android'?"md-speedometer":"ios-speedometer"} size={verticalScale(20)} color='springgreen'/>
       <Text style={styles.mediumTextStyle}>{parseFloat(runPace).toFixed(2)}</Text>
       <Text style={styles.mediumTextStyle}>Pace</Text>
     </Card>
 
    </View>
   </ScrollView>
+
+  {!isCalledFromHistoryScreen?(
+  <TouchableOpacity onPress={()=>{props.navigation.navigate('Home')}}>
+   <View style={styles.tabViewStyle}>
+    <View style={styles.iconViewStyle}>
+     <Ionicons name={Platform.OS === 'android'?"md-home":"ios-home"} size={verticalScale(21)} color='royalblue'/>
+     <Text style={styles.iconTextStyle}>Home</Text>
+    </View>
+   </View>
+  </TouchableOpacity>):(<View></View>)}
  </View>
  </View>
 );
@@ -227,6 +239,19 @@ const styles = StyleSheet.create({
   scrollViewContainerStyle: {
     flex: 0.6
   },
+
+  tabViewStyle:{
+    bottom: '1%',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    height: verticalScale(70)
+  },
+  iconViewStyle: {
+    flex: 1,
+    top:'20%',
+    alignItems: 'center'
+  },
+
   runMetricsContainerStyle: {
     flexDirection: 'column',
     alignSelf: 'center'
@@ -255,6 +280,12 @@ const styles = StyleSheet.create({
   smallTextStyle: {
     fontSize: moderateScale(9, 0.8),
     color: 'springgreen',
+    fontFamily: 'open-sans'
+  },
+
+  iconTextStyle: {
+    fontSize: moderateScale(10, 0.8),
+    color: 'royalblue',
     fontFamily: 'open-sans'
   }
 

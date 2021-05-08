@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import RunDetails from '../models/rundetails';
 
 import {NativeModules,NativeEventEmitter} from 'react-native';
+
 var PedometerModule=NativeModules.PedometerJavaModule;
 const eventEmitter = new NativeEventEmitter(NativeModules.PedometerJavaModule);
 
@@ -249,6 +250,7 @@ const LiveRunTrackerScreen = props=>{
         //console.log(magnitude);
 
         accelerationValues.push(magnitude);
+
         const sum = accelerationValues.reduce((a, b) => a + b, 0);
         averageAcceleration = (sum / accelerationValues.length) || 0.3;
       }
@@ -289,13 +291,13 @@ return (
    (
     <TouchableOpacity style={styles.pauseResumeRunButtonStyle} onPress={()=>{pauseRun()}}>
      <Ionicons name={Platform.OS === 'android'?"md-pause":"ios-pause"}
-     size={48} color='white'/>
+     size={verticalScale(42)} color='white'/>
     </TouchableOpacity>
     ):
     (
     <TouchableOpacity style={styles.pauseResumeRunButtonStyle} onPress={()=>{resumeRun()}}>
      <Ionicons name={Platform.OS === 'android'?"md-play":"ios-play"}
-     size={48} color='white'/>
+     size={verticalScale(42)} color='white'/>
     </TouchableOpacity>
     )
   }
@@ -311,13 +313,13 @@ return (
 
  <View style={styles.runPaceContainerStyle}>
   <Ionicons name={Platform.OS === 'android'?"md-speedometer":"ios-speedometer"}
-  size={24} color='lightgrey'/>
+  size={verticalScale(20)} color='lightgrey'/>
   <Text style={styles.smallTextStyle}>{parseFloat(runPace).toFixed(2)}</Text>
  </View>
 
  <View style={styles.runTotalTimeContainerStyle}>
   <Ionicons name={Platform.OS === 'android'?"md-stopwatch":"ios-stopwatch"}
-  size={24} color='lightgrey'/>
+  size={verticalScale(20)} color='lightgrey'/>
  <Text style={styles.smallTextStyle}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
  </View>
 

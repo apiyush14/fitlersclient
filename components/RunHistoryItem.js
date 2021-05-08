@@ -68,17 +68,17 @@ return(
 
    <View style={styles.runDetailsContainerStyle}>
     <View style={styles.runDetailsRowStyle}>
-     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={24} color='grey'/>
+     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={verticalScale(20)} color='grey'/>
      <Text style={styles.runDetailsTextStyle}>{parseFloat(props.runDistance/1000).toFixed(2)} KM</Text>
     </View>
 
     <View style={styles.runDetailsRowStyle}>
-     <Ionicons name={Platform.OS === 'android'?"md-stopwatch":"ios-stopwatch"} size={24} color='grey'/>
+     <Ionicons name={Platform.OS === 'android'?"md-stopwatch":"ios-stopwatch"} size={verticalScale(20)} color='grey'/>
      <Text style={styles.runDetailsTextStyle}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
     </View>
 
     <View style={styles.runDetailsRowStyle}>
-     <Ionicons name={Platform.OS === 'android'?"md-speedometer":"ios-speedometer"} size={24} color='grey'/>
+     <Ionicons name={Platform.OS === 'android'?"md-speedometer":"ios-speedometer"} size={verticalScale(20)} color='grey'/>
      <Text style={styles.runDetailsTextStyle}>{parseFloat(props.runPace).toFixed(2)}</Text>
     </View>
    </View>

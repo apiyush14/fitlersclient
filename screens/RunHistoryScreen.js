@@ -102,7 +102,7 @@ const RunHistoryScreen = props => {
     <View style={styles.footerContainerStyle}>
      <View style={styles.footerViewContainerStyle}>
       <View style={styles.footerValueContainerStyle}> 
-       <Ionicons name={Platform.OS === 'android'?"md-ribbon":"ios-ribbon"} size={30} color='springgreen'/>
+       <Ionicons name={Platform.OS === 'android'?"md-ribbon":"ios-ribbon"} size={verticalScale(25)} color='springgreen'/>
        <Text style={styles.footerTextStyle}>{runSummary!=null?parseInt(runSummary.totalRuns):0}</Text>
       </View>
       <Text style={styles.footerTextStyle}>Total Runs</Text>
@@ -113,7 +113,7 @@ const RunHistoryScreen = props => {
 
      <View style={styles.footerViewContainerStyle}>
       <View style={styles.footerValueContainerStyle}>
-       <Ionicons name={Platform.OS === 'android'?"md-flame":"ios-flame"} size={30} color='springgreen'/>
+       <Ionicons name={Platform.OS === 'android'?"md-flame":"ios-flame"} size={verticalScale(25)} color='springgreen'/>
        <Text style={styles.footerTextStyle}>
         {runSummary!=null?parseFloat(runSummary.averageCaloriesBurnt).toFixed(2):0}
        </Text> 
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   footerTextStyle: {
     paddingHorizontal: '3%',
     color: 'springgreen',
-    fontSize: moderateScale(18, 0.8),
+    fontSize: moderateScale(15, 0.8),
     alignSelf: 'center',
     fontFamily: 'open-sans'
   }

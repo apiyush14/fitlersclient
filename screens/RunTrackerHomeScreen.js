@@ -3,18 +3,15 @@ import NetInfo from '@react-native-community/netinfo';
 import {View,StyleSheet,Alert,Modal,ImageBackground,Text} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
-import {Pedometer} from 'expo-sensors';
 import RoundButton from '../components/RoundButton';
 import {useDispatch,useSelector} from 'react-redux';
 import {useIsFocused} from "@react-navigation/native";
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
-import * as Permissions from 'expo-permissions';
 import StatusCodes from "../utils/StatusCodes.json";
 
 import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
-//import * as Linking from 'expo-linking';
 
 const RunTrackerHomeScreen = (props) => {
   const dispatch = useDispatch();
@@ -62,13 +59,6 @@ const RunTrackerHomeScreen = (props) => {
   //Load Location Details
   useEffect(() => {
     (async () => {
-      /*Permissions.askAsync(Permissions.MOTION).then(response => {
-        //TODO : To handle alert to change settings
-        //Motion Sensor Permission Handling
-        if (response.status !== 'granted') {
-          Alert.alert("Location Alert", "Motion Sensor Permission is required!!!");
-        }
-      });*/
 
       Location.requestForegroundPermissionsAsync().then(response => {
         if (response.status === 'granted') {

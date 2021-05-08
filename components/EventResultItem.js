@@ -35,17 +35,17 @@ return(
    <View style={styles.eventResultDetailsContainerStyle}>
 
     <View style={styles.eventResultDetailsRowStyle}>
-     <Ionicons name={Platform.OS === 'android'?"md-trophy":"ios-trophy"} size={24} color='black'/>
+     <Ionicons name={Platform.OS === 'android'?"md-trophy":"ios-trophy"} size={verticalScale(20)} color='black'/>
      <Text style={styles.eventResultDetailsTextStyle}>{props.userRank}</Text>
     </View>
 
     <View style={styles.eventResultDetailsRowStyle}>
-     <Ionicons name={Platform.OS === 'android'?"md-person":"ios-person"} size={24} color='black'/>
+     <Ionicons name={Platform.OS === 'android'?"md-person":"ios-person"} size={verticalScale(20)} color='black'/>
      <Text style={styles.eventResultDetailsTextStyle}>{fullName}</Text>
     </View>
 
     <View style={styles.eventResultDetailsRowStyle}>
-     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={24} color='black'/>
+     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={verticalScale(20)} color='black'/>
      <Text style={styles.eventResultDetailsTextStyle}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
     </View>
    </View>

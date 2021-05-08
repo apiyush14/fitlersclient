@@ -58,28 +58,28 @@
        <View style={styles.userFeedbackRatingContainerStyle}>
        <TouchableOpacity onPress={()=>onRatingChange(1)}>
         {userFeedbackRating>0?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
-        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={verticalScale(30)} color='goldenrod'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={verticalScale(30)} color='black'/>)}
        </TouchableOpacity>
        <TouchableOpacity onPress={()=>onRatingChange(2)}>
         {userFeedbackRating>1?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
-        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={verticalScale(30)} color='goldenrod'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={verticalScale(30)} color='black'/>)}
        </TouchableOpacity>
        <TouchableOpacity onPress={()=>onRatingChange(3)}> 
         {userFeedbackRating>2?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
-        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={verticalScale(30)} color='goldenrod'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={verticalScale(30)} color='black'/>)}
        </TouchableOpacity>
        <TouchableOpacity onPress={()=>onRatingChange(4)}> 
         {userFeedbackRating>3?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
-        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={verticalScale(30)} color='goldenrod'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={verticalScale(30)} color='black'/>)}
        </TouchableOpacity>
        <TouchableOpacity onPress={()=>onRatingChange(5)}>
         {userFeedbackRating>4?
-        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={35} color='goldenrod'/>):
-        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={35} color='black'/>)}
+        (<Ionicons name={Platform.OS === 'android'?"md-star":"ios-star"} size={verticalScale(30)} color='goldenrod'/>):
+        (<Ionicons name={Platform.OS === 'android'?"md-star-outline":"ios-star-outline"} size={verticalScale(30)} color='black'/>)}
        </TouchableOpacity>
        </View>
       

@@ -123,6 +123,8 @@ export const loadEventRegistrationDetails = () => {
             };
             return updatedEventRegistration;
           });
+          console.log('Event Registration from db');
+          console.log(updatedEventRegistrationDetails);
 
           //Async Dispatch Event Registration State Update
           dispatch({
@@ -137,6 +139,8 @@ export const loadEventRegistrationDetails = () => {
             if (response.status >= StatusCodes.BAD_REQUEST) {
               //Do nothing
             } else if (response.data && response.data.eventDetails.length > 0) {
+              console.log('Event Registration from Server');
+              console.log(response.data.eventDetails);
               response.data.eventDetails.map((eventDetails) => {
                 //Hydrate Local DB
                 insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate, eventDetails.eventMetricType, eventDetails.eventMetricValue, eventDetails.runId);
