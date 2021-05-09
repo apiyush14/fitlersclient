@@ -123,9 +123,7 @@ export const loadEventRegistrationDetails = () => {
             };
             return updatedEventRegistration;
           });
-          console.log('Event Registration from db');
-          console.log(updatedEventRegistrationDetails);
-
+          
           //Async Dispatch Event Registration State Update
           dispatch({
             type: UPDATE_EVENT_REGISTRATION_DETAILS,
@@ -138,10 +136,8 @@ export const loadEventRegistrationDetails = () => {
           dispatch(loadEventRegistrationDetailsFromServer(0)).then((response) => {
             if (response.status >= StatusCodes.BAD_REQUEST) {
               //Do nothing
-            } else if (response.data && response.data.eventDetails.length > 0) {
-              console.log('Event Registration from Server');
-              console.log(response.data.eventDetails);
-              response.data.eventDetails.map((eventDetails) => {
+            } else if (response.data && response.data.length > 0) {
+              response.data.map((eventDetails) => {
                 //Hydrate Local DB
                 insertEventRegistrationDetails(eventDetails.eventId, eventDetails.eventName, eventDetails.eventDescription, eventDetails.eventStartDate, eventDetails.eventEndDate, eventDetails.eventMetricType, eventDetails.eventMetricValue, eventDetails.runId);
               });
@@ -178,16 +174,16 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
       .then((response) => {
         if (response.status >= StatusCodes.BAD_REQUEST) {
           return new Response(response.status, null);
-        } else if (response.eventDetails.length > 0) {
-          var updatedEventRegistrationDetails = response.eventDetails.map((eventRegistrationDetails) => {
+        } else if (response.eventRegistrationDetails.length > 0) {
+          var updatedEventRegistrationDetails = response.eventRegistrationDetails.map((eventRegistrationDetails) => {
             var updatedEventRegisration = {
-              eventId: eventRegistrationDetails.eventId,
-              eventName: eventRegistrationDetails.eventName,
-              eventDescription: eventRegistrationDetails.eventDescription,
-              eventStartDate: eventRegistrationDetails.eventStartDate,
-              eventEndDate: eventRegistrationDetails.eventEndDate,
-              eventMetricType: eventRegistrationDetails.eventMetricType,
-              eventMetricValue: eventRegistrationDetails.eventMetricValue,
+              eventId: eventRegistrationDetails.eventDetails.eventId,
+              eventName: eventRegistrationDetails.eventDetails.eventName,
+              eventDescription: eventRegistrationDetails.eventDetails.eventDescription,
+              eventStartDate: eventRegistrationDetails.eventDetails.eventStartDate,
+              eventEndDate: eventRegistrationDetails.eventDetails.eventEndDate,
+              eventMetricType: eventRegistrationDetails.eventDetails.eventMetricType,
+              eventMetricValue: eventRegistrationDetails.eventDetails.eventMetricValue,
               runId: eventRegistrationDetails.runId
             };
             return updatedEventRegisration;
@@ -199,7 +195,7 @@ export const loadEventRegistrationDetailsFromServer = (pageNumber) => {
             eventRegistrationDetails: updatedEventRegistrationDetails
           })
         }
-        return new Response(StatusCodes.OK, response);
+        return new Response(StatusCodes.OK, updatedEventRegistrationDetails);
       }).catch(err => {
         dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);

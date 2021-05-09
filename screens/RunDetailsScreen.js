@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   iconViewStyle: {
     flex: 1,
-    top:'20%',
+    top:'10%',
     alignItems: 'center'
   },
 
