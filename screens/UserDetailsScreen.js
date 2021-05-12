@@ -83,10 +83,10 @@
   };
 
     return (
-    <ScrollView>
-     <KeyboardAvoidingView
+    <KeyboardAvoidingView
       style={styles.userDetailsScreenContainerStyle}
-      behavior={Platform.OS == 'ios' ? 'position' : ''}>
+      behavior="padding" enabled keyboardVerticalOffset={20}>
+     <ScrollView>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.userDetailsSubContainerStyle}>
       <TextInputItem style = {styles.nameInputStyle}
@@ -131,8 +131,8 @@
       onPress = {onClickSubmit}/> 
       </View>
      </TouchableWithoutFeedback>
+     </ScrollView>
      </KeyboardAvoidingView>
-    </ScrollView>
     );
   };
 

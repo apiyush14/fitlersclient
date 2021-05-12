@@ -65,7 +65,7 @@ const Slider=props=>{
 
 const styles = StyleSheet.create({
   sliderContainerStyle: {
-    width: '80%',
+    width: scale(300),
     height: verticalScale(70),
     alignSelf: 'center',
     backgroundColor: 'black',
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     bottom: '35%',
     marginLeft: '30%',
     color: 'black',
-    fontSize: scale(9),
+    fontSize: scale(11),
     fontFamily: 'open-sans'
   },
   sliderButtonStyle: {

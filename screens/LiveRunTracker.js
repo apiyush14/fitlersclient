@@ -13,6 +13,9 @@ import {NativeModules,NativeEventEmitter} from 'react-native';
 var PedometerModule=NativeModules.PedometerJavaModule;
 const eventEmitter = new NativeEventEmitter(NativeModules.PedometerJavaModule);
 
+//TO BE REMOVED
+let accelerationValuesToBeStored=[];
+
 let startTime=Date.now();
 let eventId=0;
 let timerForAutoPause=0;
@@ -24,7 +27,7 @@ let updateStepsListener=null;
 let updateLocationListener=null;
 
 let rangeOfAcceleration=[10, 15, 20, 25, 30, 35, 40];
-let rangeOfMultiplyingFactor=[0.40, 0.60, 0.70, 0.75, 0.80, 0.85, 0.90];
+let rangeOfMultiplyingFactor=[0.35, 0.50, 0.65, 0.80, 0.95, 1.10, 1.25];
 let strideMultiplyingFactor=0.30;//Default Multiplier based on 12.5 average pace
 let averageAcceleration=0.3;//Default Acceleration Value based on 12.5 average pace
 let accelerationValues=[];
@@ -43,9 +46,6 @@ const LiveRunTrackerScreen = props=>{
   const [isPaused, setIsPaused] = useState(false);
   const [runDistance, setRunDistance] = useState(0);
   const [runPace, setRunPace] = useState(12.5);
-  //To be removed
-  const [stepsCountUI, setStepsCountUI] = useState(0);
-  const [locationAccuracy, setLocationAccuracy] = useState(0);
 
   const [trackTimer, setTrackTimer] = useState({
     seconds: "00",
@@ -64,11 +64,21 @@ const LiveRunTrackerScreen = props=>{
 
   //Load Time useEffect hook
   useEffect(() => {
+    //TO BE REMOVED
+    accelerationValuesToBeStored=[];
+
     var today = new Date();
     var runDate = today.getDate() + "/" + parseInt(today.getMonth() + 1) + "/" + today.getFullYear();
     var runDay = weekday[today.getDay()];
     startTime = Date.now();
     eventId = props.route.params.eventId;
+    timerForAutoPause=0;
+    runDistanceForAutoPause=0;
+    runDetails=null;
+    accelerationValues=[];
+    prevStepsCount=0;
+    stepsCount=0;
+    changeInStepsCount=0;
     subscribePedometer();
     subscribeAccelerometer();
     subscribeLocationUpdates();
@@ -95,10 +105,6 @@ const LiveRunTrackerScreen = props=>{
   const updateStepsCount = (updatedSteps) => {
     //Sync call to Update Distance
     updateDistanceBasedOnChangeInStepsCount(updatedSteps.steps - prevStepsCount);
-    //To be removed
-    setStepsCountUI((stepsCountUI) => {
-      return stepsCountUI + (updatedSteps.steps - prevStepsCount);
-    });
     prevStepsCount = updatedSteps.steps;
   };
 
@@ -111,7 +117,7 @@ const LiveRunTrackerScreen = props=>{
 
       var minStrideMultiplier = 0.30;
       var maxStrideMultiplier = 0.40;
-      var minPace = 10;
+      var minPace = 12.5;
       var maxPace = 2;
 
       for (var i = 0; i < rangeOfAcceleration.length - 1; i++) {
@@ -130,6 +136,9 @@ const LiveRunTrackerScreen = props=>{
       var strideValue = parseInt(userDetails.userHeight) * strideMultiplyingFactor;
 
       var changeInDistanceInMeters = (changeInStepsCount * strideValue) / 100;
+
+      //TO BE REMOVED
+      accelerationValuesToBeStored.push(changeInStepsCount+";"+averageAcceleration+";"+changeInDistanceInMeters);
 
       setRunDistance((prevDistance) => {
         var newDistance = prevDistance + changeInDistanceInMeters;
@@ -162,19 +171,18 @@ const LiveRunTrackerScreen = props=>{
 
   //Subscriber for Location Updates
   const subscribeLocationUpdates = () => {
-    Location.requestForegroundPermissionsAsync().then(response => {
-      if (response.status !== 'granted') {
-        //TODO : To handle alert to change settings
-        //Alert.alert("Location Alert", "Location Permission is required!!!");
-        //Linking.openURL('app-settings:');
-      } else {
-        updateLocationListener = Location.watchPositionAsync({
-          accuracy: Location.Accuracy.Highest,
-          timeInterval: 1000,
-          distanceInterval: 10
-        }, (updatedLocation) => {
-          setLocationAccuracy(updatedLocation.coords.accuracy);
-          updateLocation(updatedLocation);
+    Location.getForegroundPermissionsAsync().then(response => {
+      if (response.status === 'granted') {
+        Location.hasServicesEnabledAsync().then(response => {
+          if (response) {
+            updateLocationListener = Location.watchPositionAsync({
+              accuracy: Location.Accuracy.Highest,
+              timeInterval: 1000,
+              distanceInterval: 10
+            }, (updatedLocation) => {
+              updateLocation(updatedLocation);
+            });
+          }
         });
       }
     });
@@ -212,12 +220,12 @@ const LiveRunTrackerScreen = props=>{
     (async () => {
       DeviceMotion.setUpdateInterval(1000);
       //Automatically pause the run if there is no distance tracked since last configured secs
-      if (timerForAutoPause >= 30 && runDistanceForAutoPause < 1) {
+      if (timerForAutoPause >= 15 && runDistanceForAutoPause < 2) {
         timerForAutoPause = 0;
         runDistanceForAutoPause = 0;
         pauseRun();
       }
-      if (timerForAutoPause >= 20) {
+      else if (timerForAutoPause >= 15) {
         timerForAutoPause = 0;
         runDistanceForAutoPause = 0;
       } else {
@@ -261,6 +269,10 @@ const LiveRunTrackerScreen = props=>{
   const stopRun = () => {
     PedometerModule.stopPedometerUpdates();
     if (runDistance > 10) {
+      
+      //TO BE REMOVED
+      PedometerModule.createFile(runDetails.runId.toString(), JSON.stringify(accelerationValuesToBeStored));
+
       props.navigation.navigate('Run Details', {
         runDetails: runDetails
       });
@@ -306,7 +318,7 @@ return (
    <Slider
    sliderAction={stopRun}
    buttonTitle='Stop' 
-   bounceValue={220} 
+   bounceValue={scale(220)} 
    />
    </View>):(<View></View>)
  }
@@ -328,10 +340,6 @@ return (
   <Text style={styles.mediumTextStyle}>KM</Text>
  </View>
 
-    <View style={styles.testPosition}>
-     <Text>{stepsCountUI}</Text>
-     <Text>Location {parseFloat(locationAccuracy).toFixed(2)}</Text>
-    </View>
  </View>
  );
 };
@@ -423,22 +431,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(30, 0.8),
     color: 'lightgrey',
     fontFamily: 'open-sans'
-  },
-
-  textTest: {
-    fontSize: moderateScale(20, 0.8),
-    color: 'black',
-    alignSelf: 'center'
-  },
-  testPosition: {
-    position: 'absolute',
-    top: '50%',
-    width: verticalScale(200),
-    height: verticalScale(60),
-    backgroundColor: 'white',
-    alignSelf: 'center'
   }
-
 });
 
 export default LiveRunTrackerScreen;

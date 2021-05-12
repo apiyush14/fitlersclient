@@ -98,10 +98,10 @@
   };
 
     return (
-    <ScrollView>
      <KeyboardAvoidingView
       style={styles.userProfileScreenContainerStyle}
-      behavior={Platform.OS == 'ios' ? 'position' : ''}>
+      behavior="padding" enabled keyboardVerticalOffset={20}>
+     <ScrollView>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
      <React.Fragment>
       <View style={styles.userProfileSubContainerStyle}>
@@ -174,25 +174,25 @@
         </View>
       </React.Fragment>
      </TouchableWithoutFeedback>
+     </ScrollView>
     </KeyboardAvoidingView>
-    </ScrollView>
     );
   };
 
   const styles = StyleSheet.create({
     userProfileScreenContainerStyle: {
       flex: 1,
+      marginTop: '20%',
       flexDirection: 'column'
     },
     userProfileSubContainerStyle: {
       flex: 1
     },
     inputContainerStyle: {
-     alignSelf: 'center',
-     marginTop: '5%'
+     alignSelf: 'center'
     },
     nameInputStyle: {
-     
+     height: verticalScale(50)
     },
     buttonSubmitStyle: {
       alignSelf: 'center',
@@ -206,14 +206,14 @@
     },
     closeButtonStyle: {
       width: '100%',
-      height: verticalScale(70),
+      height: verticalScale(60),
       borderRadius: 25,
       backgroundColor: 'black',
       opacity: 0.7
     },
     smallTextStyle: {
       padding: '3%',
-      fontSize: moderateScale(15, 0.8),
+      fontSize: moderateScale(12, 0.8),
       color: 'black',
       fontFamily: 'open-sans',
       alignSelf: 'center'

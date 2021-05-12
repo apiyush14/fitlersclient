@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import {View,StyleSheet,Alert,Modal,ImageBackground,Text} from 'react-native';
+import {View,StyleSheet,Alert,Modal,ImageBackground,Text,PermissionsAndroid,Platform} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import RoundButton from '../components/RoundButton';
@@ -26,10 +26,10 @@ const RunTrackerHomeScreen = (props) => {
 
   // State Variables
   const [mapRegion, setMapRegion] = useState({
-    latitude: 31,
-    longitude: 74,
-    latitudeDelta: 0.000757,
-    longitudeDelta: 0.0008
+    latitude: 20.5937,
+    longitude: 78.9629,
+    latitudeDelta: 20,
+    longitudeDelta: 20
   });
   const [modalVisible, setModalVisible] = useState(false);
   const [modalEventDetails, setModalEventDetails] = useState(null);
@@ -59,7 +59,7 @@ const RunTrackerHomeScreen = (props) => {
   //Load Location Details
   useEffect(() => {
     (async () => {
-
+      await requestActivityRecognitionPermission();
       Location.requestForegroundPermissionsAsync().then(response => {
         if (response.status === 'granted') {
           Location.hasServicesEnabledAsync().then(response => {
@@ -72,12 +72,22 @@ const RunTrackerHomeScreen = (props) => {
                   longitudeDelta: 0.0008
                 });
               });
+            } else {
+              Alert.alert("Location Service Not Enabled", "Please enable Location Services for us to accurately track your runs");
             }
           });
         }
       });
     })();
   }, []);
+
+  //Request Pedometer Permission
+  const requestActivityRecognitionPermission = async () => {
+    const permissionsResult = await PermissionsAndroid.request(
+      "android.permission.ACTIVITY_RECOGNITION"
+    );
+    return permissionsResult;
+  };
 
   //Use effect for Event Registration Changes
   useEffect(() => {
@@ -165,6 +175,43 @@ const RunTrackerHomeScreen = (props) => {
       setIsLoading(false);
     });
   };
+
+  //Run Action
+  const runAction = async () => {
+    var permissionsResult = false;
+    if (Platform.Version > 28) {
+      permissionsResult = await PermissionsAndroid.check(
+        "android.permission.ACTIVITY_RECOGNITION"
+      );
+    } else {
+      permissionsResult = await PermissionsAndroid.check(
+        "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
+      );
+    }
+    if (permissionsResult) {
+      navigateToRunTrackerScreen();
+    } else {
+      Alert.alert("Permission Required", "Physical Activity Permission is mandatory to track distance, make sure to grant this permission", [{
+        text: 'OK',
+        onPress: () => {
+          requestActivityRecognitionPermission().then((response) => {
+            if (response==='granted') {
+              navigateToRunTrackerScreen();
+            }
+          });
+        }
+      }], {
+        cancelable: false
+      });
+    }
+  };
+  //Method to navigate to Run Tracker Screen
+  const navigateToRunTrackerScreen = () => {
+    props.navigation.navigate('LiveRunTracker', {
+      eventId: ongoingEventDetails !== null ? ongoingEventDetails.eventId : 0
+    });
+  };
+
 //Logic to handle shutter tab for challenges
 
 /*
@@ -223,8 +270,8 @@ return (
 
   <View style={styles.runButtonStyle}>
    <RoundButton
-   title="Run"
-   onPress={()=>{props.navigation.navigate('LiveRunTracker',{eventId: ongoingEventDetails!==null?ongoingEventDetails.eventId:0})}}/>
+   title="Go"
+   onPress={runAction}/>
   </View>
 
   {ongoingEventDetails===null?(

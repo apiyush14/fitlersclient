@@ -1,6 +1,6 @@
 import React from 'react';
 import {Ionicons} from '@expo/vector-icons';
-import { Platform, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Platform, View, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {createStackNavigator,HeaderBackButton} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -86,7 +86,6 @@ const RunTrackerTabNavigator=({navigation, route})=>{
      //fontFamily: 'open-sans'
     },
     tabStyle: {
-
     },
     style: {
       backgroundColor: 'white',
@@ -135,7 +134,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            height: verticalScale(50)
+            height: verticalScale(60)
           },
       headerTintColor: 'white',
       headerTitleStyle: {
@@ -148,7 +147,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
           currentActiveScreenName==='Home'?
           (<View styles={styles.person}>
           <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
-          <Ionicons name={Platform.OS === 'android'?'md-person':'ios-person'} size={verticalScale(30)} color='white'/>
+          <Ionicons name={Platform.OS === 'android'?'md-person':'ios-person'} size={verticalScale(25)} color='white'/>
           </TouchableOpacity>
           </View>):(
           currentActiveScreenName==='Run Details'?(
@@ -168,7 +167,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
         headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            height: verticalScale(50)
+            height: verticalScale(60)
           },
         headerTintColor: 'white',
         headerTitleStyle: {
@@ -195,7 +194,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
         headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            height: verticalScale(50)
+            height: verticalScale(60)
           },
         headerTintColor: 'white',
         headerTitleStyle: {
@@ -210,7 +209,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
         headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            height: verticalScale(50)
+            height: verticalScale(60)
           },
         headerTintColor: 'white',
         headerTitleStyle: {
@@ -265,7 +264,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
        headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            height: verticalScale(50)
+            height: verticalScale(60)
           },
        headerTintColor: 'white',
        headerTitleStyle: {
@@ -280,7 +279,7 @@ const RunTrackerStackNavigator=({navigation, route})=>{
       headerStyle: {
             backgroundColor: 'royalblue',
             opacity: 1,
-            height: verticalScale(50)
+            height: verticalScale(60)
           },
       headerTintColor: 'white',
       headerTitleStyle: {

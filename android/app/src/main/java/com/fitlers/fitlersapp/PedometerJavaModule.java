@@ -7,7 +7,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -15,6 +14,9 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+
+import java.io.File;
+import java.io.FileWriter;
 
 import javax.annotation.Nullable;
 
@@ -69,6 +71,24 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
     public void stopPedometerUpdates() {
         if (this.status == this.RUNNING) {
             this.stop();
+        }
+    }
+
+    @ReactMethod
+    public void createFile(String fileName, String data){
+        try {
+            File file = new File(this.reactApplicationContext.getFilesDir(), "accelerometer_data");
+            if (!file.exists()) {
+                file.mkdir();
+            }
+            File file1 = new File(file, fileName);
+            FileWriter writer = new FileWriter(file1);
+            writer.append(data);
+            writer.flush();
+            writer.close();
+        }
+        catch(Exception e){
+
         }
     }
 

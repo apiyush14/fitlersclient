@@ -101,7 +101,10 @@ const styles = StyleSheet.create({
   eventViewContainerStyle: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    position: 'absolute',
+    height: '100%',
+    width: '100%'
   },
   imageContainerStyle: {
     flex: 1,
