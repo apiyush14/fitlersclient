@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -20,7 +21,7 @@ import java.io.FileWriter;
 
 import javax.annotation.Nullable;
 
-public class PedometerJavaModule extends ReactContextBaseJavaModule implements SensorEventListener, LifecycleEventListener {
+public class PedometerJavaModule extends ReactContextBaseJavaModule implements SensorEventListener, LifecycleEventListener, StepsListener {
 
     public static int STOPPED = 0;
     public static int STARTING = 1;
@@ -37,10 +38,10 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
     ReactApplicationContext reactApplicationContext;
     SensorManager sensorManager;
     private Sensor mSensor;
+    private StepsDetector stepsDetector;
 
     public PedometerJavaModule(ReactApplicationContext reactApplicationContext) {
         super(reactApplicationContext);//required by React Native
-        System.out.println("===========Loading Pedometer Java Module===============");
         this.reactApplicationContext = reactApplicationContext;
         this.reactApplicationContext.addLifecycleEventListener(this);
 
@@ -48,14 +49,26 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
         this.numSteps = 0;
         this.startNumSteps = 0;
         this.status = this.STOPPED;
+        this.stepsDetector = new StepsDetector();
+        this.stepsDetector.registerListener(this);
         sensorManager = (SensorManager) this.reactApplicationContext.getSystemService(Context.SENSOR_SERVICE);
-        System.out.println("===========Loading Pedometer Java Module Completed===============");
     }
 
     @Override
     //getName is required to define the name of the module represented in JavaScript
     public String getName() {
         return "PedometerJavaModule";
+    }
+
+    @ReactMethod
+    public void isStepCountingAvailable(Callback callback) {
+        Sensor stepCounter = this.sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        Sensor accelerometer = this.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (accelerometer != null || stepCounter != null) {
+            callback.invoke(true);
+        } else {
+            callback.invoke(false);
+        }
     }
 
     @ReactMethod
@@ -74,7 +87,7 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
         }
     }
 
-    @ReactMethod
+/*    @ReactMethod
     public void createFile(String fileName, String data){
         try {
             File file = new File(this.reactApplicationContext.getFilesDir(), "accelerometer_data");
@@ -90,7 +103,7 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
         catch(Exception e){
 
         }
-    }
+    }*/
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -106,18 +119,21 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
         this.status = this.RUNNING;
 
         if (this.mSensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            System.out.println("===========Step Counter Event Found===============");
-
             float steps = event.values[0];
-            System.out.println(steps);
             if (this.startNumSteps == 0) {
                 this.startNumSteps = steps;
             }
             this.numSteps = steps - this.startNumSteps;
             this.sendPedometerUpdateEvent(this.getStepsParamsMap());
         } else if (this.mSensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-
+            stepsDetector.updateAcceleration(event.timestamp, event.values[0], event.values[1], event.values[2]);
         }
+    }
+
+    @Override
+    public void step(long timeNs) {
+        this.numSteps++;
+        this.sendPedometerUpdateEvent(this.getStepsParamsMap());
     }
 
     @Override
@@ -131,7 +147,6 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
      */
     private void start() {
         // If already starting or running, then return
-        System.out.println("===========Start Pedometer Sensor===============");
         if ((this.status == this.RUNNING) || (this.status == this.STARTING)) {
             return;
         }
@@ -144,19 +159,15 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
         // Get pedometer or accelerometer from sensor manager
         this.mSensor = this.sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         if (this.mSensor == null) {
-            System.out.println("=========== Pedometer Sensor Not Found===============");
             this.mSensor = this.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         }
 
         // If found, then register as listener
         if (this.mSensor != null) {
-            System.out.println("=========== Pedometer Sensor Found===============");
             int sensorDelay = this.mSensor.getType() == Sensor.TYPE_STEP_COUNTER ? SensorManager.SENSOR_DELAY_UI : SensorManager.SENSOR_DELAY_FASTEST;
             if (this.sensorManager.registerListener(this, this.mSensor, sensorDelay)) {
                 this.status = this.STARTING;
-                System.out.println("===========Pedometer Registration Completed===============");
             } else {
-                System.out.println("===========Pedometer Registration Failed===============");
                 this.status = this.ERROR_FAILED_TO_START;
                 return;
             }
@@ -174,6 +185,9 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
         if (this.status != this.STOPPED) {
             this.sensorManager.unregisterListener(this);
         }
+        this.startAt = 0;
+        this.numSteps = 0;
+        this.startNumSteps = 0;
         this.status = this.STOPPED;
     }
 
@@ -186,8 +200,8 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements S
         // pedometerData.floorsAscended;
         // pedometerData.floorsDescended;
         try {
-            map.putInt("startDate", (int)this.startAt);
-            map.putInt("endDate", (int)System.currentTimeMillis());
+            map.putInt("startDate", (int) this.startAt);
+            map.putInt("endDate", (int) System.currentTimeMillis());
             map.putDouble("steps", this.numSteps);
             map.putDouble("distance", this.numSteps * this.STEP_IN_METERS);
         } catch (Exception e) {

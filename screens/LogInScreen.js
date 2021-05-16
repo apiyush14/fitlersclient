@@ -46,7 +46,9 @@
           cancelable: false
         });
       } else {
+        setRetryOtpTimer(30);
         setModalVisible(true);
+        clearInterval(retryTimerId);
         //Update Retry Timer each second to display on screen, once timer is started
         var intervalId = setInterval(() => updateRetryTimer(), 1000);
         setRetryTimerId(intervalId);

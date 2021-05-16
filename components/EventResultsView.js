@@ -8,10 +8,6 @@ import EventResultList from '../components/EventResultList';
 import * as eventActions from '../store/event-actions';
 import StatusCodes from "../utils/StatusCodes.json";
 
-/*
-Event Result View, Best Resolution found using 1080*1920 image
-*/
-
 const EventResultsView=props=>{
 
   const dispatch = useDispatch();

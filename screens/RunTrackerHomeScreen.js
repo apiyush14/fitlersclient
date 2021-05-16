@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import {View,StyleSheet,Alert,Modal,ImageBackground,Text,PermissionsAndroid,Platform} from 'react-native';
+import {View,StyleSheet,Alert,Modal,ImageBackground,Text,PermissionsAndroid,Platform,NativeModules} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import RoundButton from '../components/RoundButton';
@@ -12,6 +12,8 @@ import StatusCodes from "../utils/StatusCodes.json";
 
 import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
+
+var PedometerModule=NativeModules.PedometerJavaModule;
 
 const RunTrackerHomeScreen = (props) => {
   const dispatch = useDispatch();
@@ -179,31 +181,39 @@ const RunTrackerHomeScreen = (props) => {
   //Run Action
   const runAction = async () => {
     var permissionsResult = false;
-    if (Platform.Version > 28) {
-      permissionsResult = await PermissionsAndroid.check(
-        "android.permission.ACTIVITY_RECOGNITION"
-      );
-    } else {
-      permissionsResult = await PermissionsAndroid.check(
-        "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
-      );
-    }
-    if (permissionsResult) {
-      navigateToRunTrackerScreen();
-    } else {
-      Alert.alert("Permission Required", "Physical Activity Permission is mandatory to track distance, make sure to grant this permission", [{
-        text: 'OK',
-        onPress: () => {
-          requestActivityRecognitionPermission().then((response) => {
-            if (response==='granted') {
-              navigateToRunTrackerScreen();
+    PedometerModule.isStepCountingAvailable((response) => {
+      var isMotionSensorAvailable = response;
+      console.log(isMotionSensorAvailable)
+      if (isMotionSensorAvailable) {
+        if (Platform.Version > 28) {
+          permissionsResult = PermissionsAndroid.check(
+            "android.permission.ACTIVITY_RECOGNITION"
+          );
+        } else {
+          permissionsResult = PermissionsAndroid.check(
+            "com.google.android.gms.permission.ACTIVITY_RECOGNITION"
+          );
+        }
+        if (permissionsResult) {
+          navigateToRunTrackerScreen();
+        } else {
+          Alert.alert("Permission Required", "Physical Activity Permission is mandatory to track distance, make sure to grant this permission", [{
+            text: 'OK',
+            onPress: () => {
+              requestActivityRecognitionPermission().then((response) => {
+                if (response === 'granted') {
+                  navigateToRunTrackerScreen();
+                }
+              });
             }
+          }], {
+            cancelable: false
           });
         }
-      }], {
-        cancelable: false
-      });
-    }
+      } else {
+        Alert.alert("No Sensor Detected", "We could not detect any motion sensor in this device");
+      }
+    });
   };
   //Method to navigate to Run Tracker Screen
   const navigateToRunTrackerScreen = () => {

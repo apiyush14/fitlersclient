@@ -37,13 +37,14 @@ const EventHistoryItem = props => {
       hours: hoursVar
     });
 
-    setMapRegion({
-      latitude: props.runPath[Math.floor(props.runPath.length / 2)].latitude,
-      longitude: props.runPath[Math.floor(props.runPath.length / 2)].longitude,
-      latitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].latitude - props.runPath[0].latitude) + 0.002,
-      longitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].longitude - props.runPath[0].longitude) + 0.002
-    });
-
+    if (props.runPath.length > 0) {
+      setMapRegion({
+        latitude: props.runPath[Math.floor(props.runPath.length / 2)].latitude,
+        longitude: props.runPath[Math.floor(props.runPath.length / 2)].longitude,
+        latitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].latitude - props.runPath[0].latitude) + 0.002,
+        longitudeDelta: Math.abs(props.runPath[props.runPath.length - 1].longitude - props.runPath[0].longitude) + 0.002
+      });
+    }
     var index = eventRegistrationDetails.findIndex((event) => event.eventId === props.eventId);
     if (index >= 0) {
       setEventName(eventRegistrationDetails[index].eventName);

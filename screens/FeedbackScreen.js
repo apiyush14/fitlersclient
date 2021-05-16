@@ -1,5 +1,5 @@
   import React, {useState} from 'react';
-  import {View,StyleSheet,TouchableWithoutFeedback,Keyboard,TouchableOpacity,Alert} from 'react-native';
+  import {View,StyleSheet,TouchableWithoutFeedback,Keyboard,TouchableOpacity,Alert,ScrollView,KeyboardAvoidingView} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import StatusCodes from "../utils/StatusCodes.json";
   import RoundButton from '../components/RoundButton';
@@ -51,8 +51,11 @@
   };
     //View
     return (
+   <KeyboardAvoidingView
+      style={styles.userFeedbackScreenContainerStyle}
+      behavior="padding" enabled keyboardVerticalOffset={20}>
+    <ScrollView>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-     <View style={styles.userFeedbackScreenContainerStyle}>
       <View style={styles.userFeedbackSubContainerStyle}>
        
        <View style={styles.userFeedbackRatingContainerStyle}>
@@ -97,9 +100,7 @@
        title = "Submit"
        disabled = {false}
        onPress = {onClickSubmit}/> 
-      </View>
 
-      <View style={styles.closeButtonContainerStyle}>
        <RoundButton 
                  title="Close" 
                  style={styles.closeButtonStyle} 
@@ -112,8 +113,9 @@
                   }
                 }}/>
         </View>
-     </View>
      </TouchableWithoutFeedback>
+    </ScrollView>
+     </KeyboardAvoidingView>
     );
   };
 
@@ -121,7 +123,8 @@
     userFeedbackScreenContainerStyle: {
       flex: 1,
       flexDirection: 'column',
-      alignItems: 'center'
+      alignItems: 'center',
+      top: '20%'
     },
     userFeedbackSubContainerStyle: {
       flex: 1
@@ -134,25 +137,22 @@
     },
     commentsInputStyle: {
       height: verticalScale(200),
-      width: verticalScale(350)
+      width: verticalScale(350),
+      marginTop: '10%'
     },
     buttonSubmitStyle: {
       marginTop: '5%',
       alignSelf: 'center'
     },
-    closeButtonContainerStyle: {
-      padding: '4%',
-      width: '100%',
-      alignSelf: 'center',
-      alignItems: 'center'
-    },
     closeButtonStyle: {
-      width: '100%',
-      height: verticalScale(70),
+      width: '90%',
+      height: verticalScale(60),
+      alignSelf: 'center',
       borderRadius: 25,
-      bottom: '2%',
+      marginTop: '5%',
       backgroundColor: 'black',
-      opacity: 0.7
+      opacity: 0.7,
+      bottom: '1%'
     }
   });
 

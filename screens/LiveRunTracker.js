@@ -1,9 +1,9 @@
 import React, { useState, useEffect} from 'react';
 import {useSelector} from 'react-redux';
-import { View, Text, StyleSheet, TouchableOpacity, Button, Platform,Alert} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Button, Platform} from 'react-native';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import * as Location from 'expo-location';
-import { DeviceMotion, Pedometer } from 'expo-sensors';
+import { DeviceMotion} from 'expo-sensors';
 import Slider from '../components/Slider';
 import { Ionicons } from '@expo/vector-icons';
 import RunDetails from '../models/rundetails';
@@ -13,8 +13,7 @@ import {NativeModules,NativeEventEmitter} from 'react-native';
 var PedometerModule=NativeModules.PedometerJavaModule;
 const eventEmitter = new NativeEventEmitter(NativeModules.PedometerJavaModule);
 
-//TO BE REMOVED
-let accelerationValuesToBeStored=[];
+//let accelerationValuesToBeStored=[];
 
 let startTime=Date.now();
 let eventId=0;
@@ -64,8 +63,8 @@ const LiveRunTrackerScreen = props=>{
 
   //Load Time useEffect hook
   useEffect(() => {
-    //TO BE REMOVED
-    accelerationValuesToBeStored=[];
+    
+    //accelerationValuesToBeStored=[];
 
     var today = new Date();
     var runDate = today.getDate() + "/" + parseInt(today.getMonth() + 1) + "/" + today.getFullYear();
@@ -98,6 +97,7 @@ const LiveRunTrackerScreen = props=>{
     prevStepsCount=0;
     if (updateStepsListener) {
       updateStepsListener.remove();
+      PedometerModule.stopPedometerUpdates();
     }
   };
 
@@ -137,8 +137,7 @@ const LiveRunTrackerScreen = props=>{
 
       var changeInDistanceInMeters = (changeInStepsCount * strideValue) / 100;
 
-      //TO BE REMOVED
-      accelerationValuesToBeStored.push(changeInStepsCount+";"+averageAcceleration+";"+changeInDistanceInMeters);
+      //accelerationValuesToBeStored.push(changeInStepsCount+";"+averageAcceleration+";"+changeInDistanceInMeters);
 
       setRunDistance((prevDistance) => {
         var newDistance = prevDistance + changeInDistanceInMeters;
@@ -205,6 +204,7 @@ const LiveRunTrackerScreen = props=>{
 
   //Method to Subscribe to Accelerometer and add a listener to update every second
   const subscribeAccelerometer = () => {
+    DeviceMotion.setUpdateInterval(1000);
     DeviceMotion.addListener(accelerometerData => {
       updateAccelerometerData(accelerometerData);
     });
@@ -218,7 +218,6 @@ const LiveRunTrackerScreen = props=>{
   //Method to Update UI each second based on accelerometer data
   const updateAccelerometerData = (accelerometerData) => {
     (async () => {
-      DeviceMotion.setUpdateInterval(1000);
       //Automatically pause the run if there is no distance tracked since last configured secs
       if (timerForAutoPause >= 15 && runDistanceForAutoPause < 2) {
         timerForAutoPause = 0;
@@ -267,11 +266,9 @@ const LiveRunTrackerScreen = props=>{
 
   //Complete the run if distance more than 10m and load Run Details Screen
   const stopRun = () => {
-    PedometerModule.stopPedometerUpdates();
     if (runDistance > 10) {
       
-      //TO BE REMOVED
-      PedometerModule.createFile(runDetails.runId.toString(), JSON.stringify(accelerationValuesToBeStored));
+      //PedometerModule.createFile(runDetails.runId.toString(), JSON.stringify(accelerationValuesToBeStored));
 
       props.navigation.navigate('Run Details', {
         runDetails: runDetails

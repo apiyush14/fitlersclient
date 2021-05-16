@@ -1,5 +1,5 @@
   import React, {useState,useEffect} from 'react';
-  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard,Switch,ScrollView,KeyboardAvoidingView,Platform} from 'react-native';
+  import {View,Text,TextInput,Alert,StyleSheet,TouchableWithoutFeedback,Keyboard,ScrollView,KeyboardAvoidingView} from 'react-native';
   import { scale, moderateScale, verticalScale} from '../utils/Utils';
   import StatusCodes from "../utils/StatusCodes.json";
   import RoundButton from '../components/RoundButton';

@@ -9,7 +9,6 @@ import * as eventActions from '../store/event-actions';
 import Card from '../components/Card';
 import {Ionicons} from '@expo/vector-icons';
 import {useSelector} from 'react-redux';
-import {useIsFocused} from "@react-navigation/native";
 import RunDetails from '../models/rundetails';
 import EventResultsView from '../components/EventResultsView';
 
@@ -54,6 +53,10 @@ const RunDetailsScreen = props=>{
       if (props.route.params.sourceScreen === 'RunHistoryScreen') {
         isCalledFromHistoryScreenVar=true;
         setIsCalledFromHistoryScreen(true);
+      }
+      else{
+        isCalledFromHistoryScreenVar=false;
+        setIsCalledFromHistoryScreen(false);
       }
     }
 
