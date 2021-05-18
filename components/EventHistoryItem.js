@@ -112,6 +112,14 @@ return(
  	 <View style={styles.calendarLineStyle}>
  	 </View>
  	 <Text style={styles.calendarTextStyle}>{props.runDate}</Text>
+   {props.isSyncDone==="1"?(
+   <View style={styles.syncStatusDoneViewStyle}>
+    <Text style={styles.syncStatusTextStyle}>Sync Done</Text>
+   </View>):
+   (
+   <View style={styles.syncStatusPendingViewStyle}>
+    <Text style={styles.syncStatusTextStyle}>Sync Pending</Text>
+   </View>)}
  	</View>
 
   {eventName!==null?(
@@ -195,6 +203,22 @@ const styles = StyleSheet.create({
     borderWidth: 0.4,
     borderColor: 'lightgrey'
   },
+  syncStatusDoneViewStyle:{
+    position: "absolute",
+    bottom: 0,
+    backgroundColor: 'lightgreen',
+    borderRadius: 20,
+    width: '95%',
+    opacity: 0.5
+  },
+  syncStatusPendingViewStyle:{
+    position: "absolute",
+    bottom: 0,
+    backgroundColor: 'orange',
+    borderRadius: 20,
+    width: '95%',
+    opacity: 0.5
+  },
 
   runDetailsTextStyle: {
     fontSize: moderateScale(14, 0.8),
@@ -225,6 +249,13 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(5),
     textAlign: 'center',
     fontFamily: 'open-sans'
+  },
+  syncStatusTextStyle: {
+    fontSize: moderateScale(8, 0.8),
+    color: 'black',
+    paddingVertical: '2%',
+    alignSelf: 'center',
+    fontFamily: 'open-sans',
   }
 });
 

@@ -24,6 +24,7 @@ const renderEventHistoryItem=itemData=>{
  runDistance={itemData.item.runDistance}
  runPace={itemData.item.runPace}
  runCaloriesBurnt={itemData.item.runCaloriesBurnt}
+ isSyncDone={itemData.item.isSyncDone}
  userRank={eventResult!==undefined?eventResult.userRank:eventResult}
  onSelectRunItem={()=>{props.onSelectRunItem(itemData)}}/>;
 };

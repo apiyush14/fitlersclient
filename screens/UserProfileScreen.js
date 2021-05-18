@@ -182,11 +182,11 @@
   const styles = StyleSheet.create({
     userProfileScreenContainerStyle: {
       flex: 1,
-      marginTop: '20%',
       flexDirection: 'column'
     },
     userProfileSubContainerStyle: {
-      flex: 1
+      flex: 1,
+      marginTop: '20%'
     },
     inputContainerStyle: {
      alignSelf: 'center'

@@ -123,11 +123,11 @@
     userFeedbackScreenContainerStyle: {
       flex: 1,
       flexDirection: 'column',
-      alignItems: 'center',
-      top: '20%'
+      alignItems: 'center'
     },
     userFeedbackSubContainerStyle: {
-      flex: 1
+      flex: 1,
+      marginTop: '40%'
     },
     userFeedbackRatingContainerStyle: {
       flex: 1,
@@ -152,7 +152,7 @@
       marginTop: '5%',
       backgroundColor: 'black',
       opacity: 0.7,
-      bottom: '1%'
+      bottom: '2%'
     }
   });
 

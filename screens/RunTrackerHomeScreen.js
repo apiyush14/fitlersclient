@@ -25,6 +25,7 @@ const RunTrackerHomeScreen = (props) => {
   const eventDetails = useSelector(state => state.events.eventDetails);
   const [isLoading, setIsLoading] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const pendingRunsForSync = useSelector(state => state.runs.runs.filter(run => run.isSyncDone === "0"));
 
   // State Variables
   const [mapRegion, setMapRegion] = useState({
@@ -43,6 +44,9 @@ const RunTrackerHomeScreen = (props) => {
       setIsMoreContentAvailableOnServer(true);
       setOngoingEventDetails(null);
       checkAndUpdateOngoingEvent();
+      if (pendingRunsForSync !== null && pendingRunsForSync.length > 0) {
+        dispatch(runActions.syncPendingRuns(pendingRunsForSync));
+      }
     }
   }, [props, isFocused]);
 
@@ -183,7 +187,6 @@ const RunTrackerHomeScreen = (props) => {
     var permissionsResult = false;
     PedometerModule.isStepCountingAvailable((response) => {
       var isMotionSensorAvailable = response;
-      console.log(isMotionSensorAvailable)
       if (isMotionSensorAvailable) {
         if (Platform.Version > 28) {
           permissionsResult = PermissionsAndroid.check(
