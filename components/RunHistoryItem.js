@@ -88,7 +88,7 @@ return(
    <View style={styles.calendarLineStyle}>
    </View>
    <Text style={styles.calendarTextStyle}>{props.runDate}</Text>
-   {props.isSyncDone==="1"?(
+   {props.isSyncDone!=="0"?(
    <View style={styles.syncStatusDoneViewStyle}>
     <Text style={styles.syncStatusTextStyle}>Sync Done</Text>
    </View>):

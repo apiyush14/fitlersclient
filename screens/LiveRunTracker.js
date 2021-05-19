@@ -254,8 +254,6 @@ const LiveRunTrackerScreen = props=>{
           accelerometerData.accelerationIncludingGravity.y * accelerometerData.accelerationIncludingGravity.y +
           accelerometerData.accelerationIncludingGravity.z * accelerometerData.accelerationIncludingGravity.z);
 
-        //console.log(magnitude);
-
         accelerationValues.push(magnitude);
 
         const sum = accelerationValues.reduce((a, b) => a + b, 0);
@@ -267,7 +265,7 @@ const LiveRunTrackerScreen = props=>{
   //Complete the run if distance more than 10m and load Run Details Screen
   const stopRun = () => {
     if (runDistance > 10) {
-      
+      updatePaceAndCalories(runDetails.runDistance);
       //PedometerModule.createFile(runDetails.runId.toString(), JSON.stringify(accelerationValuesToBeStored));
 
       props.navigation.navigate('Run Details', {
@@ -289,6 +287,8 @@ const LiveRunTrackerScreen = props=>{
   //Resume Run
   const resumeRun = () => {
     startTime = Date.now();
+    timerForAutoPause = 0;
+    runDistanceForAutoPause = 0;
     setIsPaused(false);
     subscribeAccelerometer();
     subscribePedometer();

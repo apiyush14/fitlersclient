@@ -25,6 +25,7 @@ const EventsListSummaryScreen = props => {
   });
   const runsHistoryDetails = useSelector(state => state.runs.runs);
   const eventRunsHistoryDetails = useSelector(state => state.runs.runs).filter((run) => run.eventId > 0);
+  const eventResultDetails = useSelector(state => state.events.eventResultDetails);
 
   //State Variables
   const [upcomingEventsSelected, setUpcomingEventsSelected] = useState(false);
@@ -34,6 +35,7 @@ const EventsListSummaryScreen = props => {
   const [modalEventDetails, setModalEventDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMoreContentAvailableOnServer, setIsMoreContentAvailableOnServer] = useState(true);
+  const [isMoreContentAvailableOnServerForEventResults, setIsMoreContentAvailableOnServerForEventResults] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   //Load Time useEffect hook
@@ -45,6 +47,7 @@ const EventsListSummaryScreen = props => {
   useEffect(() => {
     if (isFocused) {
       setIsMoreContentAvailableOnServer(true);
+      setIsMoreContentAvailableOnServerForEventResults(true);
     }
   }, [props, isFocused]);
 
@@ -62,6 +65,7 @@ const EventsListSummaryScreen = props => {
       setRegisteredEventsSelected(true);
     } else if (selectedOption === 'completedEvents') {
       setIsMoreContentAvailableOnServer(true);
+      setIsMoreContentAvailableOnServerForEventResults(true);
       setUpcomingEventsSelected(false);
       setRegisteredEventsSelected(false);
       setCompletedEventsSelected(true);
@@ -120,16 +124,35 @@ const EventsListSummaryScreen = props => {
 
   //Method to lazy load Event Results from server 
   const loadMoreEventResultsFromServer = () => {
-    if (isMoreContentAvailableOnServer) {
+    
+    //TO BE OPTIMIZED BY CALLING SERVICE TO GET RUN DETAILS BASED ON RUN ID
+    if (isMoreContentAvailableOnServer && runsHistoryDetails.length<30) {
       setIsLoading(true);
-      let pageNumber = Math.floor(eventRunsHistoryDetails.length / 10);
-      dispatch(eventActions.loadEventResultDetailsFromServer(pageNumber)).then((response) => {
+      let pageNumber = Math.floor(runsHistoryDetails.length / 10);
+
+      dispatch(runActions.loadRunsFromServer(false, pageNumber)).then((response) => {
         if (response.status >= StatusCodes.BAD_REQUEST) {
           setIsMoreContentAvailableOnServer(false);
-        } else if (response.data && (!response.data.moreContentAvailable)) {
+        } else if (response.data && (!isMoreContentAvailableOnServerForEventResults) && (eventRunsHistoryDetails.length >= eventResultDetails.length)) {
           setIsMoreContentAvailableOnServer(false);
+        }
+        setIsLoading(false);
+      });
+    }
+    if (isMoreContentAvailableOnServerForEventResults) {
+      setIsLoading(true);
+      let pageNumber = Math.floor(eventRunsHistoryDetails.length / 10);
+
+      dispatch(eventActions.loadEventResultDetailsFromServer(pageNumber)).then((response) => {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
+          setIsMoreContentAvailableOnServerForEventResults(false);
+        } else if (response.data && (!response.data.moreContentAvailable)) {
+          setIsMoreContentAvailableOnServerForEventResults(false);
+          if(eventRunsHistoryDetails.length >= eventResultDetails.length){
+            setIsMoreContentAvailableOnServer(false);
+          }
         } else {
-          setIsMoreContentAvailableOnServer(true);
+          setIsMoreContentAvailableOnServerForEventResults(true);
         }
         setIsLoading(false);
       });
@@ -266,7 +289,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   eventItemsListStyle: {
-    height: '80%',
+    flex: 1,
     backgroundColor: 'white'
   },
   touchableOptionStyle: {
