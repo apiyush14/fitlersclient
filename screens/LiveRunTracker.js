@@ -3,7 +3,6 @@ import {useSelector} from 'react-redux';
 import { View, Text, StyleSheet, TouchableOpacity, Button, Platform} from 'react-native';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import * as Location from 'expo-location';
-import { DeviceMotion} from 'expo-sensors';
 import Slider from '../components/Slider';
 import { Ionicons } from '@expo/vector-icons';
 import RunDetails from '../models/rundetails';
@@ -12,17 +11,20 @@ import {NativeModules,NativeEventEmitter} from 'react-native';
 
 var PedometerModule=NativeModules.PedometerJavaModule;
 const eventEmitter = new NativeEventEmitter(NativeModules.PedometerJavaModule);
+var AccelerometerModule=NativeModules.AccelerometerJavaModule;
+const accelerometerEventEmitter = new NativeEventEmitter(NativeModules.AccelerometerJavaModule);
 
 //let accelerationValuesToBeStored=[];
 
 let startTime=Date.now();
 let eventId=0;
-let timerForAutoPause=0;
+let timerForAutoPause=Date.now();
 let runDistanceForAutoPause=0;
 let runDetails=null;
 
 //Variables for Listeners
 let updateStepsListener=null;
+let updateAccelerometerDataListener=null;
 let updateLocationListener=null;
 
 let rangeOfAcceleration=[10, 15, 20, 25, 30, 35, 40];
@@ -71,7 +73,7 @@ const LiveRunTrackerScreen = props=>{
     var runDay = weekday[today.getDay()];
     startTime = Date.now();
     eventId = props.route.params.eventId;
-    timerForAutoPause=0;
+    timerForAutoPause=startTime;
     runDistanceForAutoPause=0;
     runDetails=null;
     accelerationValues=[];
@@ -204,34 +206,36 @@ const LiveRunTrackerScreen = props=>{
 
   //Method to Subscribe to Accelerometer and add a listener to update every second
   const subscribeAccelerometer = () => {
-    DeviceMotion.setUpdateInterval(1000);
-    DeviceMotion.addListener(accelerometerData => {
-      updateAccelerometerData(accelerometerData);
+    AccelerometerModule.watchAccelerometerUpdates();
+    updateAccelerometerDataListener=eventEmitter.addListener('accelerometerDataDidUpdate',(accelerometerData)=>{
+       updateAccelerometerData(accelerometerData);
     });
   };
 
   //Method to Unsubscribe Accelerometer
   const unSubscribeAccelerometer = () => {
-    DeviceMotion.removeAllListeners();
+    if (updateAccelerometerDataListener) {
+      updateAccelerometerDataListener.remove();
+      AccelerometerModule.stopAccelerometerUpdates();
+    }
   };
 
   //Method to Update UI each second based on accelerometer data
   const updateAccelerometerData = (accelerometerData) => {
     (async () => {
+      const currentTime = await Date.now();
+
       //Automatically pause the run if there is no distance tracked since last configured secs
-      if (timerForAutoPause >= 15 && runDistanceForAutoPause < 2) {
-        timerForAutoPause = 0;
+      var diff=currentTime - timerForAutoPause;
+      var timerSeconds=Math.floor(diff / 1000 % 60);
+      if (timerSeconds >= 15) {
+        if (runDistanceForAutoPause < 2) {
+          pauseRun();
+        }
+        timerForAutoPause = currentTime;
         runDistanceForAutoPause = 0;
-        pauseRun();
-      }
-      else if (timerForAutoPause >= 15) {
-        timerForAutoPause = 0;
-        runDistanceForAutoPause = 0;
-      } else {
-        timerForAutoPause = timerForAutoPause + 1;
       }
 
-      const currentTime = await Date.now();
       let updatedLapsedTime = await runDetails.runTotalTime + (currentTime - startTime);
       let secondsVar = await ("0" + (Math.floor(updatedLapsedTime / 1000) % 60)).slice(-2);
       let minutesVar = await ("0" + (Math.floor(updatedLapsedTime / 60000) % 60)).slice(-2);
@@ -249,10 +253,10 @@ const LiveRunTrackerScreen = props=>{
       /*let magnitude = Math.sqrt(accelerometerData.acceleration.x * accelerometerData.acceleration.x +
         accelerometerData.acceleration.y * accelerometerData.acceleration.y +
         accelerometerData.acceleration.z * accelerometerData.acceleration.z);*/
-      if (accelerometerData && accelerometerData.accelerationIncludingGravity) {
-        let magnitude = Math.sqrt(accelerometerData.accelerationIncludingGravity.x * accelerometerData.accelerationIncludingGravity.x +
-          accelerometerData.accelerationIncludingGravity.y * accelerometerData.accelerationIncludingGravity.y +
-          accelerometerData.accelerationIncludingGravity.z * accelerometerData.accelerationIncludingGravity.z);
+      if (accelerometerData) {
+        let magnitude = Math.sqrt(accelerometerData.x * accelerometerData.x +
+          accelerometerData.y * accelerometerData.y +
+          accelerometerData.z * accelerometerData.z);
 
         accelerationValues.push(magnitude);
 
@@ -287,7 +291,7 @@ const LiveRunTrackerScreen = props=>{
   //Resume Run
   const resumeRun = () => {
     startTime = Date.now();
-    timerForAutoPause = 0;
+    timerForAutoPause = startTime;
     runDistanceForAutoPause = 0;
     setIsPaused(false);
     subscribeAccelerometer();
