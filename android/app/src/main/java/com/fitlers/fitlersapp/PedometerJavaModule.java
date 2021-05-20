@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.os.Build;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -58,7 +59,11 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements L
             this.mLocalBroadcastReceiver = new LocalBroadcastReceiver();
             LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(reactApplicationContext);
             localBroadcastManager.registerReceiver(mLocalBroadcastReceiver, new IntentFilter("pedometer_event"));
-            this.reactApplicationContext.startService(new Intent(this.reactApplicationContext, PedometerService.class));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                this.reactApplicationContext.startForegroundService(new Intent(this.reactApplicationContext, PedometerService.class));
+            } else {
+                this.reactApplicationContext.startService(new Intent(this.reactApplicationContext, PedometerService.class));
+            }
         } catch (IllegalViewOperationException e) {
 
         }

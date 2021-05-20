@@ -1,15 +1,22 @@
 package com.fitlers.fitlersapp;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.HashMap;
@@ -35,6 +42,9 @@ public class PedometerService extends Service implements SensorEventListener, St
     @Override
     public void onCreate() {
         super.onCreate();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startServiceAsForegroundService();
+        }
     }
 
     @Override
@@ -172,5 +182,32 @@ public class PedometerService extends Service implements SensorEventListener, St
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel(String channelId, String channelName) {
+        NotificationChannel channel = new NotificationChannel(channelId,
+                channelName, NotificationManager.IMPORTANCE_NONE);
+        channel.setLightColor(Color.blue(1));
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        service.createNotificationChannel(channel);
+        return channelId;
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private void startServiceAsForegroundService() {
+        String channelId = "";
+        channelId = createNotificationChannel("Fitlers", "Pedometer Background Service");
+        Intent notificationIntent = new Intent(this, PedometerService.class);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        Notification notification = new Notification.Builder(this, channelId)
+                .setContentTitle("Fitlers is using Step Data")
+                .setSmallIcon(R.drawable.icon)
+                .setContentIntent(pendingIntent)
+                .setTicker("Fitlers")
+                .build();
+        startForeground(1, notification);
     }
 }
