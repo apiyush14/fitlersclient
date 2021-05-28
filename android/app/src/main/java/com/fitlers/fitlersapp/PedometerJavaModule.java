@@ -46,6 +46,7 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements L
     public void isStepCountingAvailable(Callback callback) {
         Sensor stepCounter = this.sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         Sensor accelerometer = this.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        //testMethod();
         if (accelerometer != null || stepCounter != null) {
             callback.invoke(true);
         } else {
