@@ -383,7 +383,7 @@ export const syncPendingRuns = (pendingRunsForSync) => {
         }
       }).catch(err => {
         dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
-        return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
+        return new Response(StatusCodes.OK, null);
       });
   }
 };

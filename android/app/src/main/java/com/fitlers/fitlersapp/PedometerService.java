@@ -19,7 +19,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PedometerService extends Service implements SensorEventListener, StepsListener {
 
@@ -38,6 +41,7 @@ public class PedometerService extends Service implements SensorEventListener, St
     SensorManager sensorManager;
     private Sensor mSensor;
     private StepsDetector stepsDetector;
+    private Timer timer;
 
     @Override
     public void onCreate() {
@@ -59,6 +63,15 @@ public class PedometerService extends Service implements SensorEventListener, St
         this.stepsDetector.registerListener(this);
         sensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
         this.start();
+
+        timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                sendPedometerUpdateEvent(getStepsParamsMap());
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, new Date(), 1000);
         return START_STICKY;
     }
 
@@ -73,7 +86,6 @@ public class PedometerService extends Service implements SensorEventListener, St
         if (this.status == this.STOPPED) {
             return;
         }
-        this.status = this.RUNNING;
 
         if (this.mSensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             float steps = event.values[0];
@@ -81,7 +93,7 @@ public class PedometerService extends Service implements SensorEventListener, St
                 this.startNumSteps = steps;
             }
             this.numSteps = steps - this.startNumSteps;
-            this.sendPedometerUpdateEvent(this.getStepsParamsMap());
+            //this.sendPedometerUpdateEvent(this.getStepsParamsMap());
         } else if (this.mSensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             stepsDetector.updateAcceleration(event.timestamp, event.values[0], event.values[1], event.values[2]);
         }
@@ -90,7 +102,7 @@ public class PedometerService extends Service implements SensorEventListener, St
     @Override
     public void step(long timeNs) {
         this.numSteps++;
-        this.sendPedometerUpdateEvent(this.getStepsParamsMap());
+        //this.sendPedometerUpdateEvent(this.getStepsParamsMap());
     }
 
     @Override
@@ -122,7 +134,7 @@ public class PedometerService extends Service implements SensorEventListener, St
         if (this.mSensor != null) {
             int sensorDelay = this.mSensor.getType() == Sensor.TYPE_STEP_COUNTER ? SensorManager.SENSOR_DELAY_UI : SensorManager.SENSOR_DELAY_FASTEST;
             if (this.sensorManager.registerListener(this, this.mSensor, sensorDelay)) {
-                this.status = this.STARTING;
+                this.status = this.RUNNING;
             } else {
                 this.status = this.ERROR_FAILED_TO_START;
                 return;
@@ -144,6 +156,8 @@ public class PedometerService extends Service implements SensorEventListener, St
         this.startAt = 0;
         this.numSteps = 0;
         this.startNumSteps = 0;
+        timer.cancel();
+        timer.purge();
         this.status = this.STOPPED;
     }
 

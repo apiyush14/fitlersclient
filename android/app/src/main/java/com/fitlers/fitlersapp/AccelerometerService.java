@@ -19,7 +19,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class AccelerometerService extends Service implements SensorEventListener {
 
@@ -32,6 +35,8 @@ public class AccelerometerService extends Service implements SensorEventListener
 
     SensorManager sensorManager;
     private Sensor mSensor;
+    private AccelerometerData accelerometerData;
+    private Timer timer;
 
     @Override
     public void onCreate() {
@@ -48,6 +53,17 @@ public class AccelerometerService extends Service implements SensorEventListener
         this.status = this.STOPPED;
         sensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
         this.start();
+
+        timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (null != accelerometerData) {
+                    sendAccelerometerUpdateEvent(getStepsParamsMap(accelerometerData.getX(), accelerometerData.getY(), accelerometerData.getZ()));
+                }
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, new Date(), 1000);
         return START_STICKY;
     }
 
@@ -64,7 +80,8 @@ public class AccelerometerService extends Service implements SensorEventListener
         }
 
         if (this.mSensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            sendAccelerometerUpdateEvent(getStepsParamsMap(event.values[0], event.values[1], event.values[2]));
+            accelerometerData = new AccelerometerData(event.values[0], event.values[1], event.values[2]);
+            //sendAccelerometerUpdateEvent(getStepsParamsMap(event.values[0], event.values[1], event.values[2]));
         }
     }
 
@@ -107,6 +124,8 @@ public class AccelerometerService extends Service implements SensorEventListener
         if (this.status != this.STOPPED) {
             this.sensorManager.unregisterListener(this);
         }
+        timer.cancel();
+        timer.purge();
         this.status = this.STOPPED;
     }
 
@@ -165,5 +184,29 @@ public class AccelerometerService extends Service implements SensorEventListener
                 .setTicker("Fitlers")
                 .build();
         startForeground(1, notification);
+    }
+}
+
+class AccelerometerData {
+    private float x;
+    private float y;
+    private float z;
+
+    public float getX() {
+        return this.x;
+    }
+
+    public float getY() {
+        return this.y;
+    }
+
+    public float getZ() {
+        return this.z;
+    }
+
+    public AccelerometerData(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 }

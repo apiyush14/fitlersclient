@@ -13,7 +13,7 @@ import StatusCodes from "../utils/StatusCodes.json";
 import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
 
-var PedometerModule=NativeModules.PedometerJavaModule;
+var DistanceCalculatorModule=NativeModules.DistanceCalculatorModule;
 
 const RunTrackerHomeScreen = (props) => {
   const dispatch = useDispatch();
@@ -185,7 +185,7 @@ const RunTrackerHomeScreen = (props) => {
   //Run Action
   const runAction = async () => {
     var permissionsResult = false;
-    PedometerModule.isStepCountingAvailable((response) => {
+    DistanceCalculatorModule.isStepCountingAvailable((response) => {
       var isMotionSensorAvailable = response;
       if (isMotionSensorAvailable) {
         if (Platform.Version > 28) {

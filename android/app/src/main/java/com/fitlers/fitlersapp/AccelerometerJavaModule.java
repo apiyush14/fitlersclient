@@ -23,11 +23,13 @@ public class AccelerometerJavaModule extends ReactContextBaseJavaModule implemen
 
     ReactApplicationContext reactApplicationContext;
     private AccelerometerJavaModule.LocalBroadcastReceiver mLocalBroadcastReceiver;
+    private LocalBroadcastManager localBroadcastManager;
 
     public AccelerometerJavaModule(ReactApplicationContext reactApplicationContext) {
         super(reactApplicationContext);//required by React Native
         this.reactApplicationContext = reactApplicationContext;
         this.reactApplicationContext.addLifecycleEventListener(this);
+        this.mLocalBroadcastReceiver = new AccelerometerJavaModule.LocalBroadcastReceiver();
     }
 
     @Override
@@ -40,8 +42,7 @@ public class AccelerometerJavaModule extends ReactContextBaseJavaModule implemen
     @ReactMethod
     public void watchAccelerometerUpdates() {
         try {
-            this.mLocalBroadcastReceiver = new AccelerometerJavaModule.LocalBroadcastReceiver();
-            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(reactApplicationContext);
+            localBroadcastManager = LocalBroadcastManager.getInstance(reactApplicationContext);
             localBroadcastManager.registerReceiver(mLocalBroadcastReceiver, new IntentFilter("accelerometer_event"));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 this.reactApplicationContext.startForegroundService(new Intent(this.reactApplicationContext, AccelerometerService.class));
@@ -55,6 +56,9 @@ public class AccelerometerJavaModule extends ReactContextBaseJavaModule implemen
 
     @ReactMethod
     public void stopAccelerometerUpdates() {
+        if(null!=localBroadcastManager&&null!=this.mLocalBroadcastReceiver) {
+            localBroadcastManager.unregisterReceiver(this.mLocalBroadcastReceiver);
+        }
         this.reactApplicationContext.stopService(new Intent(this.reactApplicationContext, AccelerometerService.class));
     }
 

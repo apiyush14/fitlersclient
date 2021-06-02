@@ -9,12 +9,7 @@ import RunDetails from '../models/rundetails';
 
 import {NativeModules,NativeEventEmitter} from 'react-native';
 
-var PedometerModule=NativeModules.PedometerJavaModule;
-const eventEmitter = new NativeEventEmitter(NativeModules.PedometerJavaModule);
-var AccelerometerModule=NativeModules.AccelerometerJavaModule;
-const accelerometerEventEmitter = new NativeEventEmitter(NativeModules.AccelerometerJavaModule);
-
-//let accelerationValuesToBeStored=[];
+let accelerationValuesToBeStored=[];
 
 let startTime=Date.now();
 let eventId=0;
@@ -23,22 +18,15 @@ let runDistanceForAutoPause=0;
 let runDetails=null;
 
 //Variables for Listeners
-let updateStepsListener=null;
-let updateAccelerometerDataListener=null;
+let updateDistanceListener=null;
 let updateLocationListener=null;
 
-let rangeOfAcceleration=[10, 15, 20, 25, 30, 35, 40];
-let rangeOfMultiplyingFactor=[0.35, 0.50, 0.65, 0.80, 0.95, 1.10, 1.25];
-let strideMultiplyingFactor=0.30;//Default Multiplier based on 12.5 average pace
-let averageAcceleration=0.3;//Default Acceleration Value based on 12.5 average pace
-let accelerationValues=[];
-
-let prevStepsCount=0;
-let stepsCount=0;
-let changeInStepsCount=0;
+let prevDistance=0;
 
 //Live Run Tracker Screen, uses 3 sensors for operation (pedometer, accelerometer, gps)
 const LiveRunTrackerScreen = props=>{
+  var DistanceCalculatorModule=NativeModules.DistanceCalculatorModule;
+  var distanceUpdateEventEmitter = new NativeEventEmitter(NativeModules.DistanceCalculatorModule);
 
   // State Selectors
   const userDetails = useSelector(state => state.userDetails);
@@ -65,8 +53,7 @@ const LiveRunTrackerScreen = props=>{
 
   //Load Time useEffect hook
   useEffect(() => {
-    
-    //accelerationValuesToBeStored=[];
+    accelerationValuesToBeStored=[];
 
     var today = new Date();
     var runDate = today.getDate() + "/" + parseInt(today.getMonth() + 1) + "/" + today.getFullYear();
@@ -77,79 +64,48 @@ const LiveRunTrackerScreen = props=>{
     runDistanceForAutoPause=0;
     runDetails=null;
     accelerationValues=[];
-    prevStepsCount=0;
-    stepsCount=0;
-    changeInStepsCount=0;
-    subscribePedometer();
-    subscribeAccelerometer();
+    prevDistance=0;
+
+    subscribeDistanceCalculator();
     subscribeLocationUpdates();
+
     runDetails = new RunDetails(today.getTime(), 0, 0, runPace, 0, 0,  today.toJSON(), runDate, runDay, [], "", eventId, "0");
   }, []);
 
-  //Subscribe Pedometer to count steps
-  const subscribePedometer = () => {
-    PedometerModule.watchStepCount();
-    updateStepsListener=eventEmitter.addListener('pedometerDataDidUpdate',(updatedSteps)=>{
-       updateStepsCount(updatedSteps);
+  //Subscribe Distance Calculator to get distance updates
+  const subscribeDistanceCalculator = () => {
+    if (updateDistanceListener) {
+      updateDistanceListener.remove();
+    }
+    DistanceCalculatorModule.watchDistanceUpdates(parseInt(userDetails.userHeight));
+    updateDistanceListener=distanceUpdateEventEmitter.addListener('distanceDataDidUpdate',(updatedDistance)=>{
+       console.log(updatedDistance);
+       updateTimeOnUI();
+       updateDistanceData(updatedDistance);
     });
   };
 
   //UnSubscribe Pedometer Updates
-  const unSubscribePedometer = () => {
-    prevStepsCount=0;
-    if (updateStepsListener) {
-      updateStepsListener.remove();
-      PedometerModule.stopPedometerUpdates();
+  const unSubscribeDistanceCalculator = () => {
+    prevDistance=0;
+    if (updateDistanceListener) {
+      updateDistanceListener.remove();
+      DistanceCalculatorModule.stopDistanceUpdates();
     }
   };
 
-  //Pedometer's Updates Listener
-  const updateStepsCount = (updatedSteps) => {
+  //Distance Calculator Updates Listener
+  const updateDistanceData = (updatedDistance) => {
     //Sync call to Update Distance
-    updateDistanceBasedOnChangeInStepsCount(updatedSteps.steps - prevStepsCount);
-    prevStepsCount = updatedSteps.steps;
-  };
-
-  //Sync Update distance once steps count changes
-  const updateDistanceBasedOnChangeInStepsCount = (changeInStepsCount) => {
-    if (changeInStepsCount > 0) {
-      //Empty the array to calculate average acceleration
-      accelerationValues = [];
-      runDistanceForAutoPause = runDistanceForAutoPause + 1;
-
-      var minStrideMultiplier = 0.30;
-      var maxStrideMultiplier = 0.40;
-      var minPace = 12.5;
-      var maxPace = 2;
-
-      for (var i = 0; i < rangeOfAcceleration.length - 1; i++) {
-        if (averageAcceleration >= rangeOfAcceleration[i] &&
-          averageAcceleration <= rangeOfAcceleration[i + 1]) {
-          minStrideMultiplier = rangeOfMultiplyingFactor[i];
-          maxStrideMultiplier = rangeOfMultiplyingFactor[i + 1];
-          minPace = rangeOfAcceleration[i + 1];
-          maxPace = rangeOfAcceleration[i];
-          break;
-        }
-      }
-
-      strideMultiplyingFactor = maxStrideMultiplier - (((averageAcceleration - (minPace)) / (maxPace - minPace)) *
-        (maxStrideMultiplier - minStrideMultiplier));
-      var strideValue = parseInt(userDetails.userHeight) * strideMultiplyingFactor;
-
-      var changeInDistanceInMeters = (changeInStepsCount * strideValue) / 100;
-
-      //accelerationValuesToBeStored.push(changeInStepsCount+";"+averageAcceleration+";"+changeInDistanceInMeters);
-
-      setRunDistance((prevDistance) => {
-        var newDistance = prevDistance + changeInDistanceInMeters;
-        runDetails.runDistance = newDistance;
-        updatePaceAndCalories(newDistance);
-        return newDistance;
-      });
+    var changeInDistanceInMeters = parseFloat(updatedDistance.distance) - prevDistance;
+    prevDistance = updatedDistance.distance;
+    if (changeInDistanceInMeters > 0.0) {
+      runDetails.runDistance = runDetails.runDistance + changeInDistanceInMeters;
+      setRunDistance(runDetails.runDistance);
+      updatePaceAndCalories(runDetails.runDistance);
+      accelerationValuesToBeStored.push(updatedDistance.steps+";"+updatedDistance.distance);
     }
   };
-
 
   //Sync method to Update Pace And Calories based on total distance
   const updatePaceAndCalories = (runDistance) => {
@@ -204,37 +160,10 @@ const LiveRunTrackerScreen = props=>{
     }
   };
 
-  //Method to Subscribe to Accelerometer and add a listener to update every second
-  const subscribeAccelerometer = () => {
-    AccelerometerModule.watchAccelerometerUpdates();
-    updateAccelerometerDataListener=eventEmitter.addListener('accelerometerDataDidUpdate',(accelerometerData)=>{
-       updateAccelerometerData(accelerometerData);
-    });
-  };
-
-  //Method to Unsubscribe Accelerometer
-  const unSubscribeAccelerometer = () => {
-    if (updateAccelerometerDataListener) {
-      updateAccelerometerDataListener.remove();
-      AccelerometerModule.stopAccelerometerUpdates();
-    }
-  };
-
-  //Method to Update UI each second based on accelerometer data
-  const updateAccelerometerData = (accelerometerData) => {
+  //Method to Update UI each second
+  const updateTimeOnUI = (accelerometerData) => {
     (async () => {
       const currentTime = await Date.now();
-
-      //Automatically pause the run if there is no distance tracked since last configured secs
-      var diff=currentTime - timerForAutoPause;
-      var timerSeconds=Math.floor(diff / 1000 % 60);
-      if (timerSeconds >= 15) {
-        if (runDistanceForAutoPause < 2) {
-          pauseRun();
-        }
-        timerForAutoPause = currentTime;
-        runDistanceForAutoPause = 0;
-      }
 
       let updatedLapsedTime = await runDetails.runTotalTime + (currentTime - startTime);
       let secondsVar = await ("0" + (Math.floor(updatedLapsedTime / 1000) % 60)).slice(-2);
@@ -249,29 +178,13 @@ const LiveRunTrackerScreen = props=>{
 
       runDetails.runTotalTime = updatedLapsedTime;
       startTime = currentTime;
-
-      /*let magnitude = Math.sqrt(accelerometerData.acceleration.x * accelerometerData.acceleration.x +
-        accelerometerData.acceleration.y * accelerometerData.acceleration.y +
-        accelerometerData.acceleration.z * accelerometerData.acceleration.z);*/
-      if (accelerometerData) {
-        let magnitude = Math.sqrt(accelerometerData.x * accelerometerData.x +
-          accelerometerData.y * accelerometerData.y +
-          accelerometerData.z * accelerometerData.z);
-
-        accelerationValues.push(magnitude);
-
-        const sum = accelerationValues.reduce((a, b) => a + b, 0);
-        averageAcceleration = (sum / accelerationValues.length) || 0.3;
-      }
     })();
   };
-
   //Complete the run if distance more than 10m and load Run Details Screen
   const stopRun = () => {
     if (runDistance > 10) {
       updatePaceAndCalories(runDetails.runDistance);
-      //PedometerModule.createFile(runDetails.runId.toString(), JSON.stringify(accelerationValuesToBeStored));
-
+      DistanceCalculatorModule.createFile(runDetails.runId.toString(), JSON.stringify(accelerationValuesToBeStored));
       props.navigation.navigate('Run Details', {
         runDetails: runDetails
       });
@@ -283,8 +196,7 @@ const LiveRunTrackerScreen = props=>{
   // Pause Run
   const pauseRun = () => {
     setIsPaused(true);
-    unSubscribeAccelerometer();
-    unSubscribePedometer();
+    unSubscribeDistanceCalculator();
     accelerationValues = [];
   };
 
@@ -294,9 +206,9 @@ const LiveRunTrackerScreen = props=>{
     timerForAutoPause = startTime;
     runDistanceForAutoPause = 0;
     setIsPaused(false);
-    subscribeAccelerometer();
-    subscribePedometer();
+    subscribeDistanceCalculator();
   };
+
 //View
 return (
  <View style={styles.liveRunTrackerContainerStyle}>

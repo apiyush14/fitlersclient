@@ -20,6 +20,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.HashMap;
 
 public class PedometerJavaModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
@@ -28,12 +30,14 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements L
     SensorManager sensorManager;
 
     private LocalBroadcastReceiver mLocalBroadcastReceiver;
+    private LocalBroadcastManager localBroadcastManager;
 
     public PedometerJavaModule(ReactApplicationContext reactApplicationContext) {
         super(reactApplicationContext);//required by React Native
         this.reactApplicationContext = reactApplicationContext;
         this.reactApplicationContext.addLifecycleEventListener(this);
         sensorManager = (SensorManager) this.reactApplicationContext.getSystemService(Context.SENSOR_SERVICE);
+        this.mLocalBroadcastReceiver = new LocalBroadcastReceiver();
     }
 
     @Override
@@ -57,8 +61,7 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements L
     @ReactMethod
     public void watchStepCount() {
         try {
-            this.mLocalBroadcastReceiver = new LocalBroadcastReceiver();
-            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(reactApplicationContext);
+            localBroadcastManager = LocalBroadcastManager.getInstance(reactApplicationContext);
             localBroadcastManager.registerReceiver(mLocalBroadcastReceiver, new IntentFilter("pedometer_event"));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 this.reactApplicationContext.startForegroundService(new Intent(this.reactApplicationContext, PedometerService.class));
@@ -72,11 +75,14 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements L
 
     @ReactMethod
     public void stopPedometerUpdates() {
+        if (null != localBroadcastManager && null != this.mLocalBroadcastReceiver) {
+            localBroadcastManager.unregisterReceiver(this.mLocalBroadcastReceiver);
+        }
         this.reactApplicationContext.stopService(new Intent(this.reactApplicationContext, PedometerService.class));
     }
 
-/*    @ReactMethod
-    public void createFile(String fileName, String data){
+    @ReactMethod
+    public void createFile(String fileName, String data) {
         try {
             File file = new File(this.reactApplicationContext.getFilesDir(), "accelerometer_data");
             if (!file.exists()) {
@@ -87,11 +93,10 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements L
             writer.append(data);
             writer.flush();
             writer.close();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
 
         }
-    }*/
+    }
 
     @Override
     public void onHostResume() {
@@ -103,6 +108,7 @@ public class PedometerJavaModule extends ReactContextBaseJavaModule implements L
 
     @Override
     public void onHostDestroy() {
+        System.out.println("===============Host Destroyed=============");
         this.stopPedometerUpdates();
     }
 

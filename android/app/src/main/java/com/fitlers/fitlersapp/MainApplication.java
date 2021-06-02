@@ -38,8 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       List<ReactPackage> packages = new PackageList(this).getPackages();
       packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
-      packages.add(new PedometerPackage());
-      packages.add(new AccelerometerPackage());
+      packages.add(new DistanceCalculatorPackage());
       return packages;
     }
 
