@@ -6,5 +6,5 @@
         <certificates src="@raw/fitlers"/>
     </trust-anchors>
 </domain-config>
-    <base-config cleartextTrafficPermitted="true" />
+    <base-config cleartextTrafficPermitted="false" />
 </network-security-config>

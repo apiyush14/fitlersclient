@@ -9,7 +9,7 @@ import RunDetails from '../models/rundetails';
 
 import {NativeModules,NativeEventEmitter} from 'react-native';
 
-let accelerationValuesToBeStored=[];
+//let accelerationValuesToBeStored=[];
 
 let startTime=Date.now();
 let eventId=0;
@@ -53,7 +53,7 @@ const LiveRunTrackerScreen = props=>{
 
   //Load Time useEffect hook
   useEffect(() => {
-    accelerationValuesToBeStored=[];
+    //accelerationValuesToBeStored=[];
 
     var today = new Date();
     var runDate = today.getDate() + "/" + parseInt(today.getMonth() + 1) + "/" + today.getFullYear();
@@ -79,7 +79,6 @@ const LiveRunTrackerScreen = props=>{
     }
     DistanceCalculatorModule.watchDistanceUpdates(parseInt(userDetails.userHeight));
     updateDistanceListener=distanceUpdateEventEmitter.addListener('distanceDataDidUpdate',(updatedDistance)=>{
-       console.log(updatedDistance);
        updateTimeOnUI();
        updateDistanceData(updatedDistance);
     });
@@ -87,11 +86,11 @@ const LiveRunTrackerScreen = props=>{
 
   //UnSubscribe Pedometer Updates
   const unSubscribeDistanceCalculator = () => {
-    prevDistance=0;
     if (updateDistanceListener) {
       updateDistanceListener.remove();
       DistanceCalculatorModule.stopDistanceUpdates();
     }
+    prevDistance=0;
   };
 
   //Distance Calculator Updates Listener
@@ -103,7 +102,7 @@ const LiveRunTrackerScreen = props=>{
       runDetails.runDistance = runDetails.runDistance + changeInDistanceInMeters;
       setRunDistance(runDetails.runDistance);
       updatePaceAndCalories(runDetails.runDistance);
-      accelerationValuesToBeStored.push(updatedDistance.steps+";"+updatedDistance.distance);
+      //accelerationValuesToBeStored.push(updatedDistance.steps+";"+updatedDistance.distance);
     }
   };
 
@@ -184,7 +183,7 @@ const LiveRunTrackerScreen = props=>{
   const stopRun = () => {
     if (runDistance > 10) {
       updatePaceAndCalories(runDetails.runDistance);
-      DistanceCalculatorModule.createFile(runDetails.runId.toString(), JSON.stringify(accelerationValuesToBeStored));
+      //DistanceCalculatorModule.createFile(runDetails.runId.toString(), JSON.stringify(accelerationValuesToBeStored));
       props.navigation.navigate('Run Details', {
         runDetails: runDetails
       });

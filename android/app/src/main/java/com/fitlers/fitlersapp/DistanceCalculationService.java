@@ -50,8 +50,8 @@ public class DistanceCalculationService extends Service implements SensorEventLi
     private Timer timer;
     private List<Double> accelerationValues;
 
-    private int[] rangeOfAcceleration = {10, 15, 20, 25, 30, 35, 40};
-    private double[] rangeOfMultiplyingFactor = {0.35, 0.50, 0.65, 0.80, 0.95, 1.10, 1.25};
+    private int[] rangeOfAcceleration = {10, 15, 20, 25, 30, 35, 40, 45, 50};
+    private double[] rangeOfMultiplyingFactor = {0.40, 0.55, 0.70, 0.85, 1.00, 1.15, 1.30, 1.45, 1.60};
     private double defaultStrideMultiplyingFactor = 0.30;//Default Multiplier based on 12.5 average pace
     private double defaultAverageAcceleration = 9.8;//Default Acceleration Value based on 12.5 average pace
 
@@ -160,8 +160,8 @@ public class DistanceCalculationService extends Service implements SensorEventLi
             }
             accelerationValues.clear();
 
-            double minStrideMultiplier = 0.30;
-            double maxStrideMultiplier = 0.40;
+            double minStrideMultiplier = 0.40;
+            double maxStrideMultiplier = 1.60;
             double minPace = 12.5;
             double maxPace = 2;
 

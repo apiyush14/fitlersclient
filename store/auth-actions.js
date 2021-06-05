@@ -61,7 +61,6 @@ export const generateOTPForMSISDN = (msisdn) => {
           return new Response(StatusCodes.OK, response);
         }
       }).catch(err => {
-        console.log(err.message);
         dispatch(loggingActions.sendErrorLogsToServer(new ExceptionDetails(err.message, err.stack)));
         return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
       });

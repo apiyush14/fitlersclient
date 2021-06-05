@@ -20,8 +20,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.HashMap;
 
 public class DistanceCalculatorModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
@@ -83,7 +81,7 @@ public class DistanceCalculatorModule extends ReactContextBaseJavaModule impleme
         this.reactApplicationContext.stopService(new Intent(this.reactApplicationContext, DistanceCalculationService.class));
     }
 
-    @ReactMethod
+    /*@ReactMethod
     public void createFile(String fileName, String data) {
         try {
             File file = new File(this.reactApplicationContext.getFilesDir(), "accelerometer_data");
@@ -98,7 +96,7 @@ public class DistanceCalculatorModule extends ReactContextBaseJavaModule impleme
         } catch (Exception e) {
 
         }
-    }
+    }*/
 
     @Override
     public void onHostResume() {
