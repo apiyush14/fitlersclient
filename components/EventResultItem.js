@@ -35,17 +35,17 @@ return(
    <View style={styles.eventResultDetailsContainerStyle}>
 
     <View style={styles.eventResultDetailsRowStyle}>
-     <Ionicons name={Platform.OS === 'android'?"md-trophy":"ios-trophy"} size={verticalScale(20)} color='black'/>
+     <Ionicons name={Platform.OS === 'android'?"md-trophy":"ios-trophy"} size={verticalScale(20)} color='springgreen'/>
      <Text style={styles.eventResultDetailsTextStyle}>{props.userRank}</Text>
     </View>
 
     <View style={styles.eventResultDetailsRowStyle}>
-     <Ionicons name={Platform.OS === 'android'?"md-person":"ios-person"} size={verticalScale(20)} color='black'/>
+     <Ionicons name={Platform.OS === 'android'?"md-person":"ios-person"} size={verticalScale(20)} color='springgreen'/>
      <Text style={styles.eventResultDetailsTextStyle}>{fullName}</Text>
     </View>
 
     <View style={styles.eventResultDetailsRowStyle}>
-     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={verticalScale(20)} color='black'/>
+     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={verticalScale(20)} color='springgreen'/>
      <Text style={styles.eventResultDetailsTextStyle}>{trackTimer.hours}:{trackTimer.minutes}:{trackTimer.seconds}</Text>
     </View>
    </View>
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   eventResultItemContainerStyle: {
     height: verticalScale(125),
     width: scale(330),
-    backgroundColor: 'lightsteelblue',
+    backgroundColor: 'black',
     borderRadius: 20,
     marginVertical: verticalScale(8),
     shadowOffset: {
@@ -69,7 +69,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 2,
     elevation: 5,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    opacity: 0.7
   },
 
   eventResultDetailsContainerStyle: {
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
 
   eventResultDetailsTextStyle: {
     fontSize: moderateScale(14, 0.8),
-    color: 'black',
+    color: 'springgreen',
     paddingHorizontal: '7%',
     fontFamily: 'open-sans'
   }
