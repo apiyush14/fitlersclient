@@ -21,8 +21,6 @@ let runDetails=null;
 let updateDistanceListener=null;
 let updateLocationListener=null;
 
-let prevDistance=0;
-
 //Live Run Tracker Screen, uses 3 sensors for operation (pedometer, accelerometer, gps)
 const LiveRunTrackerScreen = props=>{
   var DistanceCalculatorModule=NativeModules.DistanceCalculatorModule;
@@ -63,8 +61,6 @@ const LiveRunTrackerScreen = props=>{
     timerForAutoPause=startTime;
     runDistanceForAutoPause=0;
     runDetails=null;
-    accelerationValues=[];
-    prevDistance=0;
 
     subscribeDistanceCalculator();
     subscribeLocationUpdates();
@@ -90,14 +86,12 @@ const LiveRunTrackerScreen = props=>{
       updateDistanceListener.remove();
       DistanceCalculatorModule.stopDistanceUpdates();
     }
-    prevDistance=0;
   };
 
   //Distance Calculator Updates Listener
   const updateDistanceData = (updatedDistance) => {
     //Sync call to Update Distance
-    var changeInDistanceInMeters = parseFloat(updatedDistance.distance) - prevDistance;
-    prevDistance = updatedDistance.distance;
+    var changeInDistanceInMeters=parseFloat(updatedDistance.changeInDistance);
     if (changeInDistanceInMeters > 0.0) {
       runDetails.runDistance = runDetails.runDistance + changeInDistanceInMeters;
       setRunDistance(runDetails.runDistance);
@@ -196,7 +190,6 @@ const LiveRunTrackerScreen = props=>{
   const pauseRun = () => {
     setIsPaused(true);
     unSubscribeDistanceCalculator();
-    accelerationValues = [];
   };
 
   //Resume Run

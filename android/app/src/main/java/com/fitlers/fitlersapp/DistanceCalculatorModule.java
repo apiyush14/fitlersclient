@@ -20,6 +20,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.HashMap;
 
 public class DistanceCalculatorModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
@@ -81,7 +83,7 @@ public class DistanceCalculatorModule extends ReactContextBaseJavaModule impleme
         this.reactApplicationContext.stopService(new Intent(this.reactApplicationContext, DistanceCalculationService.class));
     }
 
-    /*@ReactMethod
+    @ReactMethod
     public void createFile(String fileName, String data) {
         try {
             File file = new File(this.reactApplicationContext.getFilesDir(), "accelerometer_data");
@@ -96,7 +98,7 @@ public class DistanceCalculatorModule extends ReactContextBaseJavaModule impleme
         } catch (Exception e) {
 
         }
-    }*/
+    }
 
     @Override
     public void onHostResume() {
@@ -121,6 +123,7 @@ public class DistanceCalculatorModule extends ReactContextBaseJavaModule impleme
             mapStepsData.putString("endDate", stepsData.get("endDate"));
             mapStepsData.putDouble("steps", Double.parseDouble(stepsData.get("steps")));
             mapStepsData.putDouble("distance", Double.parseDouble(stepsData.get("distance")));
+            mapStepsData.putDouble("changeInDistance", Double.parseDouble(stepsData.get("changeInDistance")));
             reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                     .emit("distanceDataDidUpdate", mapStepsData);
         }

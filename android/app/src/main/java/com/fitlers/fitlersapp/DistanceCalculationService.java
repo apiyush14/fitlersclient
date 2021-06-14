@@ -42,6 +42,7 @@ public class DistanceCalculationService extends Service implements SensorEventLi
     private double prevStepsCount; //previous value, to be subtracted in step counter sensor type
     private double stepsCount; // number of the steps
     private double totalDistance;
+    private double prevDistance;
 
     SensorManager sensorManager;
     private Sensor pedometerSensor;
@@ -72,6 +73,7 @@ public class DistanceCalculationService extends Service implements SensorEventLi
         this.prevStepsCount = 0;
         this.stepsCount = 0;
         this.totalDistance = 0.0;
+        this.prevDistance = 0.0;
 
         accelerationValues = new ArrayList<Double>();
         this.userHeight = DistanceCalculatorModule.userHeight;
@@ -105,6 +107,7 @@ public class DistanceCalculationService extends Service implements SensorEventLi
         this.prevStepsCount = 0;
         this.stepsCount = 0;
         this.totalDistance = 0;
+        this.prevDistance = 0.0;
         this.status = this.STARTING;
 
         this.pedometerSensor = this.sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
@@ -200,6 +203,7 @@ public class DistanceCalculationService extends Service implements SensorEventLi
         this.prevStepsCount = 0;
         this.stepsCount = 0;
         this.totalDistance = 0;
+        this.prevDistance = 0.0;
         timer.cancel();
         timer.purge();
         this.status = this.STOPPED;
@@ -207,11 +211,15 @@ public class DistanceCalculationService extends Service implements SensorEventLi
 
     private HashMap<String, String> getDistanceParamsMap() {
         HashMap<String, String> map = new HashMap<String, String>();
+        double tempDistance=this.totalDistance;
+        double changeInDistance=tempDistance-this.prevDistance;
+        this.prevDistance=tempDistance;
         try {
             map.put("startDate", String.valueOf(this.startAt));
             map.put("endDate", String.valueOf(System.currentTimeMillis()));
             map.put("steps", String.valueOf(this.stepsCount));
             map.put("distance", String.valueOf(this.totalDistance));
+            map.put("changeInDistance", String.valueOf(changeInDistance));
         } catch (Exception e) {
 
         }
