@@ -164,7 +164,7 @@ public class DistanceCalculationService extends Service implements SensorEventLi
             accelerationValues.clear();
 
             double minStrideMultiplier = 0.39;
-            double maxStrideMultiplier = 1.59;
+            double maxStrideMultiplier = 0.54;
             double minPace = 12.5;
             double maxPace = 2;
 
