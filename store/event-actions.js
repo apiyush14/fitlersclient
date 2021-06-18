@@ -231,7 +231,8 @@ export const loadEventResultDetailsFromServer = (pageNumber) => {
             var updatedEventResult = {
               eventId: eventResultDetails.eventId,
               runId: eventResultDetails.runId,
-              userRank: eventResultDetails.userRank
+              userRank: eventResultDetails.userRank,
+              eventName: eventResultDetails.eventDetails.eventName
             };
             return updatedEventResult;
           });

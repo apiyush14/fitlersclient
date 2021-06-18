@@ -56,7 +56,7 @@ const RunTrackerHomeScreen = (props) => {
       dispatch(runActions.loadRuns());
       dispatch(runActions.loadRunSummary());
       dispatch(eventActions.loadEventsFromServer(0));
-      dispatch(eventActions.loadEventRegistrationDetails(0));
+      dispatch(eventActions.loadEventRegistrationDetails());
       dispatch(eventActions.loadEventResultDetailsFromServer(0));
     }
     fetchData();
@@ -113,8 +113,7 @@ const RunTrackerHomeScreen = (props) => {
         if (currentTime >= eventStartDateTime.getTime() &&
           currentTime < eventEndDateTime.getTime()) {
           setOngoingEventDetails(event);
-          var networkStatus = NetInfo.fetch();
-          setIsOfflineMode(!networkStatus.isConnected);
+          NetInfo.fetch().then(state=>setIsOfflineMode(!state.isConnected));
         }
       });
     }

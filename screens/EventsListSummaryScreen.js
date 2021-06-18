@@ -177,6 +177,24 @@ const EventsListSummaryScreen = props => {
     }
   };
 
+  //Method to lazy load Registration Details from server 
+  const loadMoreEventRegistrationDetailsFromServer = () => {
+    if (isMoreContentAvailableOnServer) {
+      setIsLoading(true);
+      let pageNumber = Math.floor(eventRegistrationDetails.length / 10);
+      dispatch(eventActions.loadEventRegistrationDetailsFromServer(pageNumber)).then((response) => {
+        if (response.status >= StatusCodes.BAD_REQUEST) {
+          setIsMoreContentAvailableOnServer(false);
+        } else if (response.data && (!response.data.moreContentAvailable)) {
+          setIsMoreContentAvailableOnServer(false);
+        } else {
+          setIsMoreContentAvailableOnServer(true);
+        }
+        setIsLoading(false);
+      });
+    }
+  };
+
   //Event Listener to be called on selecting Run and to navigate to Run History Screen
   const onSelectRunHistoryItem = (itemdata) => {
     var runDetails = new RunDetails(itemdata.item.runId, itemdata.item.runTotalTime, itemdata.item.runDistance, itemdata.item.runPace, itemdata.item.runCaloriesBurnt, 0, itemdata.item.runStartDateTime, itemdata.item.runDate, itemdata.item.runDay, itemdata.item.runPath, itemdata.item.runTrackSnapUrl, itemdata.item.eventId, "1");
@@ -254,7 +272,7 @@ return (
    (<View style={styles.eventItemsListStyle}>
     <EventItemsList
     onClickEventItem={onClickEventItem}
-    onEndReached={loadMoreEventsFromServer}
+    onEndReached={loadMoreEventRegistrationDetailsFromServer}
     isLoading={isLoading}
     footer={renderEventSummaryFooter()}
     listData={eventRegistrationDetails}/>
