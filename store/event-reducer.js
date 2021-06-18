@@ -41,10 +41,11 @@ export default (state = initialState, action) => {
             var updatedEventResultDetails = action.eventResultDetails.map((eventResult) => {
                 var index=state.eventResultDetails.findIndex(eventResultState => eventResultState.runId === eventResult.runId);
                 if (index < 0) {
-                    return new EventResultDetails(eventResult.eventId, eventResult.runId, eventResult.userRank);
+                    return new EventResultDetails(eventResult.eventId, eventResult.runId, eventResult.userRank, eventResult.eventName);
                 }
                 else{
                     state.eventResultDetails[index].userRank=eventResult.userRank;
+                    state.eventResultDetails[index].eventName=eventResult.eventName;
                 }
             }).filter(updatedEventResult => updatedEventResult !== undefined);
             state.eventResultDetails = state.eventResultDetails.concat(updatedEventResultDetails);

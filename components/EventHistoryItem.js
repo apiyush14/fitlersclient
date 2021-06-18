@@ -78,10 +78,11 @@ return(
    </View>
 
   <View style={styles.runDetailsContainerStyle}>
+  {props.userRank!==undefined&&props.userRank!==null?(
    <View style={styles.runDetailsRowStyle}>
     <Ionicons name={Platform.OS === 'android'?"md-trophy":"ios-trophy"} size={verticalScale(20)} color='grey'/>
     <Text style={styles.runDetailsTextStyle}>{props.userRank}</Text>
-   </View>
+   </View>):(<View></View>)}
 
    <View style={styles.runDetailsRowStyle}>
     <Ionicons name={Platform.OS === 'android'?"md-walk":"ios-walk"} size={verticalScale(20)} color='grey'/>
@@ -122,9 +123,9 @@ return(
    </View>)}
  	</View>
 
-  {eventName!==null?(
+  {props.eventName!==undefined&&props.eventName!==null?(
   <View style={styles.textViewFooterStyle}>
-     <Text style={styles.textStyle}>{eventName}</Text>
+     <Text style={styles.textStyle}>{props.eventName}</Text>
   </View>):(<View></View>)}
 
  	</TouchableOpacity>

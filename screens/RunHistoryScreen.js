@@ -118,7 +118,7 @@ const RunHistoryScreen = props => {
         {runSummary!=null?parseFloat(runSummary.averageCaloriesBurnt).toFixed(2):0}
        </Text> 
       </View>
-      <Text style={styles.footerTextStyle}>Calories</Text>
+      <Text style={styles.footerTextStyle}>Avg Calories</Text>
      </View>
 
     </View>
