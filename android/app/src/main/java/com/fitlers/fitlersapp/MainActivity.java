@@ -24,7 +24,6 @@ import java.util.List;
 import expo.modules.splashscreen.singletons.SplashScreen;
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
 
-
 public class MainActivity extends ReactActivity {
 
     @Override
@@ -51,16 +50,16 @@ public class MainActivity extends ReactActivity {
         }
         SplashScreen.show(this, SplashScreenImageResizeMode.COVER, ReactRootView.class, false);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        /*List<String> permissions = new ArrayList<String>();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+        List<String> permissions = new ArrayList<>();
+        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
-        }
+        }*/
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
         if (!permissions.isEmpty()) {
             ActivityCompat.requestPermissions(this, permissions.toArray(new String[permissions.size()]), 123);
-        }*/
+        }
     }
 
     @Override
@@ -95,5 +94,12 @@ public class MainActivity extends ReactActivity {
                 return new RNGestureHandlerEnabledRootView(MainActivity.this);
             }
         };
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("========================On Activity Result called in Main Activity==============================");
+        getReactInstanceManager().onActivityResult(this,requestCode,resultCode,data);
     }
 }

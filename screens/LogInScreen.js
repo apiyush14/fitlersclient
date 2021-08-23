@@ -10,8 +10,17 @@
   import TermsAndConditions from '../screens/TermsAndConditions';
   import Privacy from '../screens/Privacy';
 
+  //TO BE Removed
+  import {NativeModules,NativeEventEmitter} from 'react-native';
+  import GoogleFitRunsList from '../components/GoogleFitRunsList';
+  import RunDetails from '../models/rundetails';
+
   //Login Screen
   const LogInScreen = props => {
+
+
+  //TO BE REMOVED
+  var GoogleFitJavaModule=NativeModules.GoogleFitJavaModule;
 
   const dispatch = useDispatch();
 
@@ -25,6 +34,19 @@
   const [retryOtpTimer, setRetryOtpTimer] = useState(30);
   const [retryTimerId, setRetryTimerId] = useState(null);
   const [screenName, setScreenName] = useState("");
+
+  //TO BE REMOVED
+  const [modalGoogleFitVisible, setModalGoogleFitVisible] = useState(false);
+  const [runHistory, setRunHistory]=useState([]);
+
+  var weekday = new Array(7);
+  weekday[0] = "Sunday";
+  weekday[1] = "Monday";
+  weekday[2] = "Tuesday";
+  weekday[3] = "Wednesday";
+  weekday[4] = "Thursday";
+  weekday[5] = "Friday";
+  weekday[6] = "Saturday";
 
   const timerRef=useRef(null);
 
@@ -122,6 +144,98 @@
     });
   };
 
+  //TO BE REMOVED
+  const onClickTest = () =>{
+    //GoogleFitJavaModule.fetchAllActivityForToday((response)=>{
+     var response={"1628046344418":{"distance":"203.4629","endTime":"1628086773318","startTime":"1628048285333"},"1628045339849":{"distance":"1076.96","endTime":"1628046344418","startTime":"1628045339849"},"1628044822014":{},"1628042219988":{"distance":"3543.12","endTime":"1628044822014","startTime":"1628042219988"},"1628014594000":{"distance":"36.47","endTime":"1628041446794","startTime":"1628041405972"}};
+     var responseMap=new Map(Object.entries(response));
+     var responseKeys=Object.keys(response);
+     //console.log(responseMap.get(responseKeys[0]));
+     runHistory.length=0;
+
+     for(var j=0;j<responseKeys.length;j++){
+      var responseKey=responseKeys[j];
+      //console.log(responseKey);
+      var bucketMap=new Map(Object.entries(responseMap.get(responseKey)));
+      var keys=Array.from(bucketMap.keys());
+      var distance=0.0;
+      var startTime=0;
+      var endTime=0;
+            for(var i=0;i<keys.length;i++){
+                 var currentKey=keys[i];
+                 console.log(currentKey);
+                 if(currentKey==="distance"){
+                    distance=parseFloat(bucketMap.get(currentKey));
+                 }
+                 else if(currentKey==="startTime"){
+                    startTime=parseFloat(bucketMap.get(currentKey));
+                 }
+                 else if(currentKey==="endTime"){
+                    endTime=parseFloat(bucketMap.get(currentKey));
+                 }
+            }
+            if(distance>100){
+            var runDateFromTime=new Date(startTime);
+            var runDate = runDateFromTime.getDate() + "/" + parseInt(runDateFromTime.getMonth() + 1) + "/" + runDateFromTime.getFullYear();
+            var runDay = weekday[runDateFromTime.getDay()];
+            
+            var runTotalTime=endTime-startTime;
+            const lapsedTimeinMinutes = runTotalTime / 60000;
+            const averagePace = lapsedTimeinMinutes / (distance / 1000);
+
+            const lapsedTimeinHours = lapsedTimeinMinutes / 60;
+            const averagePaceKmPerHour = (distance / 1000) / lapsedTimeinHours;
+            const caloriesBurnt = parseInt((averagePaceKmPerHour * 3.5 * parseInt(69)) / 200) * lapsedTimeinMinutes;
+            
+            if(averagePaceKmPerHour<100){
+             var runDetails=new RunDetails(startTime, runTotalTime, distance, averagePace, caloriesBurnt, 0, runDateFromTime.toJSON(), runDate, runDay, [], "", 0, "0");
+             runHistory.push(runDetails);
+           }
+          }
+     }
+     console.log(runHistory);
+     setModalGoogleFitVisible(true);
+
+    /*GoogleFitJavaModule.fetchAllActivityForToday((response)=>{
+      console.log(JSON.stringify(response));
+      var run="{"1628046344418":{"distance":"203.4629","endTime":"1628086773318","startTime":"1628048285333"},"1628045339849":{"distance":"1076.96","endTime":"1628046344418","startTime":"1628045339849"},"1628044822014":{},"1628042219988":{"distance":"3543.12","endTime":"1628044822014","startTime":"1628042219988"},"1628014594000":{"distance":"36.47","endTime":"1628041446794","startTime":"1628041405972"}}";
+      
+      var responseMap=new Map(Object.entries(response));
+      var updatedRuns=responseMap.map((bucket) => {
+            var bucketMap=new Map(Object.entries(bucket));
+            var keys=Object.keys(bucketMap);
+            var distance="";
+            var startTime="";
+            var endTime="";
+            for(var i=0;i<keys.length;i++){
+                 var currentKey=keys[i];
+                 if(currentKey==="distance"){
+                    distance=bucketMap.get(currentKey);
+                 }
+                 else if(currentKey==="startTime"){
+                    startTime=bucketMap.get(currentKey);
+                 }
+                 else if(currentKey==="endTime"){
+                    endTime=bucketMap.get(currentKey);
+                 }
+            }
+            return new RunDetails(startTime, endTime, distance, "0", "0", "0", startTime, "", "", "", "", "", "0");
+      })
+      var updatedRuns = response.map((run) => {
+                  console.log(run);
+                  return new RunDetails(run.startTime, run.endTime-run.startTime, run.distance, "0", "0", "0", run.startTime, "", "", "", "", "", "0");
+            });
+      console.log(updatedRuns);*/
+    //});
+  };
+
+    //TO BE REMOVED
+  const onClickTest1 = () =>{
+    GoogleFitJavaModule.signInToGoogleFit((response)=>{
+      console.log(response);
+    });
+  };
+
   //Modal Closed Event Handler
   const onModalClosed = () => {
     clearInterval(retryTimerId);
@@ -207,7 +321,30 @@
          title = "Get OTP"
          disabled = {(!isValidMSISDN || (MSISDN.length === 0))}
          onPress = {onClickGetOTP}
-        /> 
+        />
+          
+         <RoundButton style = {styles.buttonTestStyle}
+          title = "Test"
+          onPress = {onClickTest}/>
+
+          <RoundButton style = {styles.buttonTest1Style}
+          title = "Fit"
+          onPress = {onClickTest1}/>
+
+          <Modal animationType = "slide"
+           transparent = {false}
+           visible = {modalGoogleFitVisible}
+           onDismiss = {onModalClosed}
+           onRequestClose = {() => {}}>
+           <View style={styles.runHistoryContainerStyle}>
+    <GoogleFitRunsList
+     listData={runHistory}
+     onEndReached={()=>{}}
+     onSelectRunItem={()=>{}}
+     />
+   </View>
+           
+      </Modal>
         
         <View style={styles.footerContainerStyle}>
          <Text style={styles.footerTextStyle}>            By signing in, you agree to our{"\n"} 
@@ -265,7 +402,8 @@
          <RoundButton style = {styles.buttonSubmitOtpStyle}
           title = "Submit"
           disabled = {(!isValidOTP || (otpCode.length === 0))}
-          onPress = {onClickSubmitOTP}/> 
+          onPress = {onClickSubmitOTP}/>
+
         </View> 
        </ImageBackground> 
       </TouchableWithoutFeedback> 
@@ -338,7 +476,22 @@
     buttonSubmitOtpStyle: {
       alignSelf: 'center',
       top: '95%'
+    },
+
+    buttonTestStyle: {
+      alignSelf: 'center',
+      top: '50%'
+    },
+    buttonTest1Style: {
+      top: '50%'
+    },
+    runHistoryContainerStyle: {
+      flex: 1,
+    backgroundColor: 'white',
+    flexDirection: 'column',
+    marginTop: '2%'
     }
+
   });
 
   export default LogInScreen;
