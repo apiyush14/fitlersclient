@@ -1,11 +1,14 @@
 import React,{ useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Platform, ImageBackground} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Platform, ImageBackground, Alert} from 'react-native';
 import MapView, {Marker, Polyline} from 'react-native-maps';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import { Ionicons } from '@expo/vector-icons';
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import RangeSlider from 'rn-range-slider';
 import {NativeModules,NativeEventEmitter} from 'react-native';
+import {useSelector,useDispatch} from 'react-redux';
+import RunDetails from '../models/rundetails';
+import * as runActions from '../store/run-actions';
+import StatusCodes from "../utils/StatusCodes.json";
 
 /*
 Google Fit Run History Card Item with shadow effects
@@ -13,6 +16,7 @@ Google Fit Run History Card Item with shadow effects
 const GoogleFitRunItem=props=>{
 
 var GoogleFitJavaModule=NativeModules.GoogleFitJavaModule;
+const dispatch = useDispatch();
 
 //State Variables
 const [trackTimer, setTrackTimer]=useState({
@@ -25,8 +29,12 @@ const [runPath, setRunPath] = useState([]);
 const [runTotalTime, setRunTotalTime] = useState(0);
 const [runDistance, setRunDistance] = useState(0);
 const [runPace, setRunPace] = useState(0);
+const [runCaloriesBurnt, setRunCaloriesBurnt] = useState(0);
 const [runStartTimestamp, setRunStartTimestamp] = useState("");
 const [runEndTimestamp, setRunEndTimestamp] = useState("");
+
+// State Selectors
+const userDetails = useSelector(state => state.userDetails);
 
   //Load Time Use effect hook
   useEffect(() => {
@@ -57,17 +65,17 @@ const [runEndTimestamp, setRunEndTimestamp] = useState("");
     }
   }, []);
 
+  //Event Trigger for range selection changes
   const onRangeChange = (min, max) => {
 
     var startTime = min.toString();
     var endTime = max.toString();
 
-    /*GoogleFitJavaModule.fetchAllActivityForGivenTime(startTime, endTime, (response) => {
+    GoogleFitJavaModule.fetchAllActivityForGivenTime(startTime, endTime, (response) => {
       var responseMap = new Map(Object.entries(response));
       var responseKeys = Object.keys(response);
 
       var responseKey = responseKeys[0];
-      //console.log(responseKey);
       var bucketMap = new Map(Object.entries(responseMap.get(responseKey)));
       var keys = Array.from(bucketMap.keys());
       var distance = 0.0;
@@ -75,7 +83,6 @@ const [runEndTimestamp, setRunEndTimestamp] = useState("");
       var endTime = 0;
       for (var i = 0; i < keys.length; i++) {
         var currentKey = keys[i];
-        console.log(currentKey);
         if (currentKey === "distance") {
           distance = parseFloat(bucketMap.get(currentKey));
         } else if (currentKey === "startTime") {
@@ -85,13 +92,18 @@ const [runEndTimestamp, setRunEndTimestamp] = useState("");
         }
       }
       if (distance > 10) {
-        var newRunTotalTime=endTime - startTime;
+        var newRunTotalTime = endTime - startTime;
         setRunDistance(distance);
         setRunTotalTime(newRunTotalTime);
 
         const lapsedTimeinMinutes = newRunTotalTime / 60000;
         const averagePace = lapsedTimeinMinutes / (distance / 1000);
         setRunPace(averagePace);
+
+        const lapsedTimeinHours = lapsedTimeinMinutes / 60;
+        const averagePaceKmPerHour = (distance / 1000) / lapsedTimeinHours;
+        const caloriesBurnt = parseInt((averagePaceKmPerHour * 3.5 * parseInt(userDetails.userWeight)) / 200) * lapsedTimeinMinutes;
+        setRunCaloriesBurnt(caloriesBurnt);
 
         let secondsVar = ("0" + (Math.floor(newRunTotalTime / 1000) % 60)).slice(-2);
         let minutesVar = ("0" + (Math.floor(newRunTotalTime / 60000) % 60)).slice(-2);
@@ -102,16 +114,75 @@ const [runEndTimestamp, setRunEndTimestamp] = useState("");
           hours: hoursVar
         });
       }
-    });*/
+    });
     setRunStartTimestamp(formatLongDateTimeToString(min));
     setRunEndTimestamp(formatLongDateTimeToString(max));
   };
+  
+  //Method to format Date Time to readable format
+  const formatLongDateTimeToString = (longDateTime) => {
+    var date = new Date(longDateTime);
+    var formattedTime = ("0" + Math.floor(date.getHours())).slice(-2) + ":" + ("0" + Math.floor(date.getMinutes())).slice(-2) + ":" + ("0" + Math.floor(date.getSeconds())).slice(-2);
+    return formattedTime;
+  };
 
-const formatLongDateTimeToString = (longDateTime) => {
- var date=new Date(longDateTime);
- var formattedTime=("0"+Math.floor(date.getHours())).slice(-2) + ":" + ("0"+ Math.floor(date.getMinutes())).slice(-2) + ":" + ("0" + Math.floor(date.getSeconds())).slice(-2);
- return formattedTime;
-};
+  //Trigger Event to Select Run
+  const onSelectRunItem = () => {
+    Alert.alert(
+      "Submit Run",
+      "Are you sure you want to submit this run?", [{
+        text: "Yes",
+        onPress: submitRun
+      }, {
+        text: "No",
+      }], {
+        cancelable: true
+      }
+    );
+  };
+
+  //Trigger Event to Submit Run
+  const submitRun = () => {
+    let runDetails = new RunDetails(props.runStartTime, runTotalTime, runDistance, runPace, runCaloriesBurnt, 0, props.runStartDateTime, props.runDate, props.runDay, props.runPath, props.runTrackSnapUrl, props.eventId, props.isSyncDone);
+    if (runDetails.eventId > 0) {
+      dispatch(runActions.validateIfRunEligibleForEventSubmission(runDetails)).then((response) => {
+        if (response.status === StatusCodes.DISTANCE_NOT_ELIGIBLE) {
+          Alert.alert("Run Not Eligible", "The selected Run is not eligible for submission, please resubmit!!!");
+        } else if (response.status === StatusCodes.TIME_NOT_ELIGIBLE) {
+          Alert.alert("Run Not Eligible", "The selected Run is not eligible for submission, please resubmit!!!");
+        } else if (response.status >= StatusCodes.BAD_REQUEST) {
+
+        } else {
+          submitRunDetails(runDetails);
+        }
+      });
+    } else {
+      submitRunDetails(runDetails);
+    }
+  };
+
+  //Method to submit run details to DB and Server
+  const submitRunDetails = (runDetails) => {
+    var isResponseReceived = false;
+    dispatch(runActions.addRun(runDetails)).then((response) => {
+      isResponseReceived = true;
+      if (runDetails.eventId > 0) {
+        if (response.status === StatusCodes.NO_INTERNET) {
+          Alert.alert("Internet Issue", "The selected run is not yet submitted due to connectivity issue, please check the internet connection and reload the application to submit this run!!!");
+        } else if (response.status >= StatusCodes.BAD_REQUEST) {
+          Alert.alert("Technical Issue", "The selected run is not yet submitted due to technical issue, please reload the application to submit this run!!!");
+        } else {
+          Alert.alert("Success", "The selected run has been submitted successfully for the event!!!");
+          props.onSubmitRun();
+        }
+      } else if (response.status === StatusCodes.INTERNAL_SERVER_ERROR) {
+        Alert.alert("Run Not Saved", "Sorry, we could not save this Run!!!");
+      } else {
+        Alert.alert("Success", "Your Run has been submitted successfully!!!");
+        props.onSubmitRun();
+      }
+    });
+  };
 
 const renderThumb=()=>{
   return (
@@ -183,7 +254,7 @@ const renderNotch=()=>{
 
 return(
  	<View style={styles.googleFitRunItemContainerStyle}>
- 	<TouchableOpacity onPress={props.onSelectRunItem}>
+ 	<TouchableOpacity onPress={onSelectRunItem}>
   
  	 <View style={styles.mapContainerViewStyle}>
    {runPath&&runPath.length>0?(

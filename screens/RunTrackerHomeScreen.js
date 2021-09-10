@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import {View,StyleSheet,Alert,Modal,ImageBackground,Text,PermissionsAndroid,Platform,NativeModules} from 'react-native';
+import {View,StyleSheet,Alert,Modal,ImageBackground,Text,PermissionsAndroid,Platform,NativeModules,TouchableOpacity} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import * as Location from 'expo-location';
 import RoundButton from '../components/RoundButton';
@@ -9,11 +9,18 @@ import {useIsFocused} from "@react-navigation/native";
 import * as runActions from '../store/run-actions';
 import * as eventActions from '../store/event-actions';
 import StatusCodes from "../utils/StatusCodes.json";
+import { scale, moderateScale, verticalScale} from '../utils/Utils';
+import {Ionicons} from '@expo/vector-icons';
 
 import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
 
+import SettingsScreen from '../screens/SettingsScreen';
+import GoogleFitRunsList from '../components/GoogleFitRunsList';
+import RunDetails from '../models/rundetails';
+
 var DistanceCalculatorModule=NativeModules.DistanceCalculatorModule;
+var GoogleFitJavaModule=NativeModules.GoogleFitJavaModule;
 
 const RunTrackerHomeScreen = (props) => {
   const dispatch = useDispatch();
@@ -25,8 +32,9 @@ const RunTrackerHomeScreen = (props) => {
   const eventDetails = useSelector(state => state.events.eventDetails);
   const [isLoading, setIsLoading] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
+  const runsHistoryList = useSelector(state => state.runs.runs);
   const pendingRunsForSync = useSelector(state => state.runs.runs.filter(run => run.isSyncDone === "0"));
-
+  const userDetails = useSelector(state => state.userDetails);
   // State Variables
   const [mapRegion, setMapRegion] = useState({
     latitude: 20.5937,
@@ -37,6 +45,21 @@ const RunTrackerHomeScreen = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalEventDetails, setModalEventDetails] = useState(null);
   const [ongoingEventDetails, setOngoingEventDetails] = useState(null);
+
+
+  //Google Fit
+  const [googleFitModalVisible, setGoogleFitModalVisible] = useState(false);
+  const [isGoogleFitConnected, setIsGoogleFitConnected] = useState(false);
+  const [runHistory, setRunHistory]=useState([]);
+
+  var weekday = new Array(7);
+  weekday[0] = "Sunday";
+  weekday[1] = "Monday";
+  weekday[2] = "Tuesday";
+  weekday[3] = "Wednesday";
+  weekday[4] = "Thursday";
+  weekday[5] = "Friday";
+  weekday[6] = "Saturday";
 
   // Use Effect Hook to be loaded everytime the screen loads
   useEffect(() => {
@@ -224,6 +247,112 @@ const RunTrackerHomeScreen = (props) => {
     });
   };
 
+  //Trigger Action to Upload Google Fit Runs
+  const onClickUpload = () => {
+    dispatch(runActions.isConnectedToNetwork()).then((response) => {
+      if (response.status === StatusCodes.NO_INTERNET) {
+        Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+          text: 'OK',
+          onPress: () => {
+            setModalVisible(false)
+          }
+        }], {
+          cancelable: false
+        });
+      } else {
+        GoogleFitJavaModule.hasPermissionsForGoogleFitAPI((response) => {
+          setIsGoogleFitConnected(response);
+          if (!response) {
+            setGoogleFitModalVisible(true);
+          } else {
+            fetchGoogleFitRuns();
+          }
+        });
+      }
+    });
+  };
+
+  //Trigger Action to Close Google Fit Modal
+  const onCloseGoogleFitModal = () => {
+    setGoogleFitModalVisible(false);
+  };
+
+  //Trigger Action to Close the modal once Google Run is submitted from within the modal
+  const onSubmitGoogleFitRun = (runId) => {
+    var runIndex = runHistory.findIndex(run => run.runId.toString() === runId.toString());
+    if (runIndex > -1) {
+      runHistory.splice(runIndex, 1);
+    }
+    if (ongoingEventDetails != null) {
+      onCloseGoogleFitModal();
+    }
+  };
+
+  //Method to fetch last 24hrs Google Fit Runs
+  const fetchGoogleFitRuns = () => {
+    GoogleFitJavaModule.fetchAllActivityForToday((response) => {
+      const fetchData = async () => {
+        //var response={"1628046344418":{"distance":"203.4629","endTime":"1628086773318","startTime":"1628048285333"},"1628045339849":{"distance":"1076.96","endTime":"1628046344418","startTime":"1628045339849"},"1628044822014":{},"1628042219988":{"distance":"3543.12","endTime":"1628044822014","startTime":"1628042219988"},"1628014594000":{"distance":"36.47","endTime":"1628041446794","startTime":"1628041405972"}};
+        var responseMap = new Map(Object.entries(response));
+        var responseKeys = Object.keys(response);
+        runHistory.length = 0;
+
+        for (var j = 0; j < responseKeys.length; j++) {
+          var responseKey = responseKeys[j];
+          var bucketMap = new Map(Object.entries(responseMap.get(responseKey)));
+          var keys = Array.from(bucketMap.keys());
+          var distance = 0.0;
+          var startTime = 0;
+          var endTime = 0;
+          for (var i = 0; i < keys.length; i++) {
+            var currentKey = keys[i];
+            if (currentKey === "distance") {
+              distance = parseFloat(bucketMap.get(currentKey));
+            } else if (currentKey === "startTime") {
+              startTime = parseFloat(bucketMap.get(currentKey));
+            } else if (currentKey === "endTime") {
+              endTime = parseFloat(bucketMap.get(currentKey));
+            }
+          }
+          var runIndex = runsHistoryList.findIndex(run => run.runId.toString() === startTime.toString());
+          if (distance > 100 && runIndex < 0) {
+            var runDateFromTime = new Date(startTime);
+            var runDate = runDateFromTime.getDate() + "/" + parseInt(runDateFromTime.getMonth() + 1) + "/" + runDateFromTime.getFullYear();
+            var runDay = weekday[runDateFromTime.getDay()];
+
+            var runTotalTime = endTime - startTime;
+            const lapsedTimeinMinutes = runTotalTime / 60000;
+            const averagePace = lapsedTimeinMinutes / (distance / 1000);
+
+            const lapsedTimeinHours = lapsedTimeinMinutes / 60;
+            const averagePaceKmPerHour = (distance / 1000) / lapsedTimeinHours;
+            const caloriesBurnt = parseInt((averagePaceKmPerHour * 3.5 * parseInt(userDetails.userWeight)) / 200) * lapsedTimeinMinutes;
+            var eventId = ongoingEventDetails !== null ? ongoingEventDetails.eventId : 0;
+
+            if (averagePace < 500) {
+              var runDetails = new RunDetails(startTime, runTotalTime, distance, averagePace, caloriesBurnt, 0, runDateFromTime.toJSON(), runDate, runDay, [], "", eventId, "0");
+              if (runDetails.eventId > 0) {
+                var validationResponse = await dispatch(runActions.validateIfRunEligibleForEventSubmission(runDetails));
+                if (validationResponse.status !== StatusCodes.DISTANCE_NOT_ELIGIBLE && validationResponse.status !== StatusCodes.TIME_NOT_ELIGIBLE) {
+                  setRunHistory((runsHistory) => [...runsHistory, runDetails]);
+                }
+              } else {
+                runHistory.push(runDetails);
+              }
+            }
+          }
+        }
+        if (runHistory.length > 0) {
+          runHistory.sort(function(a, b) {
+            return new Date(b.runStartDateTime) - new Date(a.runStartDateTime);
+          });
+        }
+        setGoogleFitModalVisible(true);
+      }
+      fetchData();
+    });
+  };
+  
 //Logic to handle shutter tab for challenges
 
 /*
@@ -286,6 +415,42 @@ return (
    onPress={runAction}/>
   </View>
 
+  <View style={styles.uploadViewStyle}>
+    <TouchableOpacity style={styles.uploadButtonStyle} onPress={onClickUpload}>
+     <Ionicons name={Platform.OS === 'android'?"md-cloud-upload":"ios-cloud-upload"} size={verticalScale(21)} color='springgreen'/>
+     <Text style={styles.buttonTitleStyle}>Upload</Text>
+    </TouchableOpacity>
+  </View>
+
+  <Modal animationType="slide" transparent={false} visible={googleFitModalVisible}
+  onRequestClose={()=>{}}>
+ {!isGoogleFitConnected?(
+  <SettingsScreen
+   onClose={onCloseGoogleFitModal}/>):(
+  runHistory.length>0?(
+   <View style={styles.runHistoryContainerStyle}>
+    <GoogleFitRunsList
+     listData={runHistory}
+     onEndReached={()=>{}}
+     onSelectRunItem={()=>{}}
+     onSubmitRun={onSubmitGoogleFitRun}
+     />
+     <RoundButton 
+            title="Close" 
+            style={styles.closeButtonStyle} 
+            onPress={onCloseGoogleFitModal}/>
+   </View>):(
+     <View style={styles.runHistoryContainerStyle}>
+      <Text style={styles.defaultTextStyle}>No Eligible Runs</Text>
+      <RoundButton 
+            title="Close" 
+            style={styles.closeButtonStyle} 
+            onPress={onCloseGoogleFitModal}/>
+     </View>
+   )
+   )}
+  </Modal>
+
   {ongoingEventDetails===null?(
   <View style={styles.challengeListStyle}>
   <ChallengeList 
@@ -329,15 +494,62 @@ const styles = StyleSheet.create({
 
   runButtonStyle: {
     position: 'absolute',
-    top: '70%',
+    top: '65%',
     alignSelf: 'center',
     opacity: 0.9
+  },
+
+  uploadViewStyle: {
+    position: 'absolute',
+    top: '85%',
+    alignSelf: 'center',
+    opacity: 0.9
+  },
+  uploadButtonStyle: {
+    backgroundColor: 'black',
+    width: verticalScale(120),
+    height: verticalScale(60),
+    borderRadius: verticalScale(25),
+    opacity: 0.7,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
 
   challengeListStyle: {
     position: 'absolute',
     top: '2%'
   },
+
+  buttonTitleStyle: {
+    color: 'white',
+    fontSize: moderateScale(15, 0.8),
+    fontFamily: 'open-sans'
+  },
+
+  runHistoryContainerStyle: {
+    flex: 1,
+    backgroundColor: 'white',
+    flexDirection: 'column',
+    marginTop: '2%'
+  },
+
+  closeButtonStyle: {
+      width: '90%',
+      height: verticalScale(60),
+      alignSelf: 'center',
+      borderRadius: 25,
+      backgroundColor: 'black',
+      opacity: 0.7,
+      bottom: '2%',
+      position: 'absolute'
+    },
+  defaultTextStyle: {
+    fontSize: moderateScale(15, 0.5),
+    alignSelf: 'center',
+    top: '50%',
+    color: 'grey',
+    fontFamily: 'open-sans'
+  }
 
   /*tabListView: {
     position: 'absolute',

@@ -109,9 +109,11 @@ const RunDetailsScreen = props=>{
         if (runDetails.eventId > 0) {
           if (response.status === StatusCodes.NO_INTERNET) {
             Alert.alert("Internet Issue", "Your Event Run is not yet submitted due to connectivity issue, please check the internet connection and reload the application to submit this run!!!");
-          } else if (response.status === StatusCodes.DISTANCE_NOT_ELIGIBLE) {
+          } 
+          else if (response.status === StatusCodes.DISTANCE_NOT_ELIGIBLE) {
             Alert.alert("Run Not Eligible", "Your Event Run is not eligible for submission, we have saved it as a normal run!!!");
-          } else if (response.status >= StatusCodes.BAD_REQUEST) {
+          }
+          else if (response.status >= StatusCodes.BAD_REQUEST) {
             Alert.alert("Technical Issue", "Your Event Run is not yet submitted due to technical issue, please reload the application to submit this run!!!");
           } else {
             Alert.alert("Success", "Your Event Run has been submitted successfully!!!");

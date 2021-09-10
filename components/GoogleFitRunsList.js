@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet,View,FlatList,ActivityIndicator} from 'react-native';
+import { StyleSheet,View,FlatList} from 'react-native';
 import GoogleFitRunItem from '../components/GoogleFitRunItem';
 /*
 List of Google Fit Runs History Cards
@@ -13,13 +13,16 @@ const renderGoogleFitRunItem=itemData=>{
  runDate={itemData.item.runDate}
  runDay={itemData.item.runDay}
  runTotalTime={itemData.item.runTotalTime}
+ runStartDateTime={itemData.item.runStartDateTime}
  runDistance={itemData.item.runDistance}
  runPace={itemData.item.runPace}
  runCaloriesBurnt={itemData.item.runCaloriesBurnt}
  isSyncDone={itemData.item.isSyncDone}
  runStartTime={itemData.item.runId}
  runEndTime={itemData.item.runId+itemData.item.runTotalTime}
- onSelectRunItem={()=>{props.onSelectRunItem(itemData)}}/>;
+ eventId={itemData.item.eventId}
+ onSelectRunItem={()=>{props.onSelectRunItem(itemData)}}
+ onSubmitRun={()=>{props.onSubmitRun(itemData.item.runId)}}/>;
 };
 
 return(

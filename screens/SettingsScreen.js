@@ -1,32 +1,63 @@
 import React, {useState, useEffect} from 'react';
-import {View,StyleSheet,Text,TouchableOpacity} from 'react-native';
+import {View,StyleSheet,Text,TouchableOpacity,Alert} from 'react-native';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import RoundButton from '../components/RoundButton';
 import {NativeModules,NativeEventEmitter} from 'react-native';
+import {useIsFocused} from "@react-navigation/native";
+import StatusCodes from "../utils/StatusCodes.json";
+import * as runActions from '../store/run-actions';
+import {useDispatch} from 'react-redux';
 
 //Settings Screen
 const SettingsScreen = props => {
+  const dispatch = useDispatch();
+  const isFocused = useIsFocused();
   const [isGoogleFitConnected,setIsGoogleFitConnected] = useState(false);
   
   var GoogleFitJavaModule=NativeModules.GoogleFitJavaModule;
 
+  //Load time useEffect, gets called everytime screen is opened
   useEffect(() => {
-    GoogleFitJavaModule.hasPermissionsForGoogleFitAPI((response) => {
-      console.log('===========Google Fit Permissions===============');
-      console.log(response);
-      setIsGoogleFitConnected(response);
-    });
-  }, []);
+    if (isFocused) {
+      GoogleFitJavaModule.hasPermissionsForGoogleFitAPI((response) => {
+        setIsGoogleFitConnected(response);
+      });
+    }
+  }, [props, isFocused]);
   
-  const onClickConnect = () =>{
-    GoogleFitJavaModule.signInToGoogleFit((response)=>{
-      setIsGoogleFitConnected(response);
+  //Trigger Action to Connect Google Fit
+  const onClickConnect = () => {
+    dispatch(runActions.isConnectedToNetwork()).then((response) => {
+      if (response.status === StatusCodes.NO_INTERNET) {
+        Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+          text: 'OK',
+          onPress: () => {}
+        }], {
+          cancelable: false
+        });
+      } else {
+        GoogleFitJavaModule.signInToGoogleFit((response) => {
+          setIsGoogleFitConnected(response);
+        });
+      }
     });
   };
 
-  const onClickDisconnect = () =>{
-    GoogleFitJavaModule.signOutFromGoogleFit((response) => {
-      setIsGoogleFitConnected(!response);
+  //Trigger Action to Disconnect
+  const onClickDisconnect = () => {
+    dispatch(runActions.isConnectedToNetwork()).then((response) => {
+      if (response.status === StatusCodes.NO_INTERNET) {
+        Alert.alert("Internet Issue", "Active Internet Connection Required!!!", [{
+          text: 'OK',
+          onPress: () => {}
+        }], {
+          cancelable: false
+        });
+      } else {
+        GoogleFitJavaModule.signOutFromGoogleFit((response) => {
+          setIsGoogleFitConnected(!response);
+        });
+      }
     });
   };
 

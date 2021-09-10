@@ -29,6 +29,7 @@ import com.google.android.gms.fitness.request.DataReadRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class GoogleFitJavaModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
@@ -46,13 +47,13 @@ public class GoogleFitJavaModule extends ReactContextBaseJavaModule implements A
     }
 
     @ReactMethod
-    public void hasPermissionsForGoogleFitAPI(Callback callback){
+    public void hasPermissionsForGoogleFitAPI(Callback callback) {
         callback.invoke(hasPermissionsForGoogleFitAPIHelper());
     }
 
     @ReactMethod
-    public void signInToGoogleFit(Callback callback){
-        this.callback=callback;
+    public void signInToGoogleFit(Callback callback) {
+        this.callback = callback;
         FitnessOptions fitnessOptions = getFitnessOptions();
         GoogleSignInAccount googleSignInAccount = GoogleSignIn.getAccountForExtension(this.getReactApplicationContext(), fitnessOptions);
         GoogleSignIn.requestPermissions(
@@ -95,120 +96,98 @@ public class GoogleFitJavaModule extends ReactContextBaseJavaModule implements A
         long startSeconds = start.atZone(ZoneId.systemDefault()).toEpochSecond();
         GoogleSignInAccount account = GoogleSignIn.getAccountForExtension(this.getReactApplicationContext(), getFitnessOptions());
         DataReadRequest dataReadRequest = new DataReadRequest.Builder()
-                //.read(DataType.TYPE_ACTIVITY_SEGMENT)
-                //.aggregate(DataType.AGGREGATE_ACTIVITY_SUMMARY)
-                //.aggregate(DataType.AGGREGATE_CALORIES_EXPENDED)
                 .aggregate(DataType.AGGREGATE_DISTANCE_DELTA)
-                //.read(DataType.TYPE_SPEED)
-                //.aggregate(DataType.AGGREGATE_SPEED_SUMMARY)
-                //.aggregate(DataType.AGGREGATE_STEP_COUNT_DELTA)
-                //.aggregate(DataType.TYPE_STEP_COUNT_DELTA)
                 .setTimeRange(startSeconds, endSeconds, TimeUnit.SECONDS)
-                .bucketByActivitySegment(2,TimeUnit.MINUTES)
+                .bucketByActivitySegment(2, TimeUnit.MINUTES)
                 .enableServerQueries()
                 .build();
 
-        System.out.println("=======================Going to Fetch Results========================");
         Fitness.getHistoryClient(this.getReactApplicationContext(), account)
                 .readData(dataReadRequest)
                 .addOnSuccessListener(response ->
                         {
                             WritableMap result = Arguments.createMap();
-                            if(!response.getBuckets().isEmpty()) {
+                            if (!response.getBuckets().isEmpty()) {
                                 for (Bucket bucket : response.getBuckets()) {
                                     if (!CollectionUtils.isEmpty(bucket.getDataSets())) {
                                         for (DataSet dataSet : bucket.getDataSets()) { //Will be single, since we are getting distance only
-                                            WritableMap dataMap=Arguments.createMap();
+                                            WritableMap dataMap = Arguments.createMap();
                                             for (DataPoint dataPoint : dataSet.getDataPoints()) {
-                                                System.out.println("Bucket : " + dataPoint.getStartTime(TimeUnit.MILLISECONDS)+" Start "+dataPoint.getEndTime(TimeUnit.MILLISECONDS));
-                                                dataMap.putString("startTime",String.valueOf(dataPoint.getStartTime(TimeUnit.MILLISECONDS)));
-                                                dataMap.putString("endTime",String.valueOf(dataPoint.getEndTime(TimeUnit.MILLISECONDS)));
+                                                //if(dataPoint.getOriginalDataSource().getDevice()!=null) {
+                                                dataMap.putString("startTime", String.valueOf(dataPoint.getStartTime(TimeUnit.MILLISECONDS)));
+                                                dataMap.putString("endTime", String.valueOf(dataPoint.getEndTime(TimeUnit.MILLISECONDS)));
                                                 for (Field field : dataPoint.getDataType().getFields()) {
-                                                    System.out.println(field.getName() + " : " + dataPoint.getValue(field));
                                                     dataMap.putString(field.getName(), dataPoint.getValue(field).toString());
                                                 }
+                                                //}
                                             }
-                                            result.putMap(bucket.getStartTime(TimeUnit.MILLISECONDS)+"",dataMap);
+                                            //To eliminate manually inserted records
+                                            if (dataMap.hasKey("startTime")) {
+                                                result.putMap(bucket.getStartTime(TimeUnit.MILLISECONDS) + "", dataMap);
+                                            }
                                         }
                                     }
                                 }
                             }
-                            System.out.println("====================Passed========================");
                             callback.invoke(result);
                         }
                 )
-                .addOnFailureListener(e -> System.out.println("========================Failed======================="));
+                .addOnFailureListener(e -> {
+                });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @ReactMethod
-    public void fetchAllActivityForGivenTime(String startTime, String endTime,Callback callback) {
+    public void fetchAllActivityForGivenTime(String startTime, String endTime, Callback callback) {
         GoogleSignInAccount account = GoogleSignIn.getAccountForExtension(this.getReactApplicationContext(), getFitnessOptions());
         DataReadRequest dataReadRequest = new DataReadRequest.Builder()
-                //.read(DataType.TYPE_ACTIVITY_SEGMENT)
-                //.aggregate(DataType.AGGREGATE_ACTIVITY_SUMMARY)
-                //.aggregate(DataType.AGGREGATE_CALORIES_EXPENDED)
                 .aggregate(DataType.AGGREGATE_DISTANCE_DELTA)
-                //.read(DataType.TYPE_SPEED)
-                //.aggregate(DataType.AGGREGATE_SPEED_SUMMARY)
-                //.aggregate(DataType.AGGREGATE_STEP_COUNT_DELTA)
-                //.aggregate(DataType.TYPE_STEP_COUNT_DELTA)
                 .setTimeRange(Long.parseLong(startTime), Long.parseLong(endTime), TimeUnit.MILLISECONDS)
-                .bucketByActivitySegment(2,TimeUnit.MINUTES)
+                .bucketByActivitySegment(2, TimeUnit.MINUTES)
                 .enableServerQueries()
                 .build();
 
-        System.out.println("=======================Going to Fetch Results========================");
         Fitness.getHistoryClient(this.getReactApplicationContext(), account)
                 .readData(dataReadRequest)
                 .addOnSuccessListener(response ->
                         {
                             WritableMap result = Arguments.createMap();
-                            if(!response.getBuckets().isEmpty()) {
+                            if (!response.getBuckets().isEmpty()) {
                                 for (Bucket bucket : response.getBuckets()) {
                                     if (!CollectionUtils.isEmpty(bucket.getDataSets())) {
                                         for (DataSet dataSet : bucket.getDataSets()) { //Will be single, since we are getting distance only
-                                            WritableMap dataMap=Arguments.createMap();
+                                            WritableMap dataMap = Arguments.createMap();
                                             for (DataPoint dataPoint : dataSet.getDataPoints()) {
-                                                System.out.println("Bucket : " + dataPoint.getStartTime(TimeUnit.MILLISECONDS)+" Start "+dataPoint.getEndTime(TimeUnit.MILLISECONDS));
-                                                dataMap.putString("startTime",String.valueOf(dataPoint.getStartTime(TimeUnit.MILLISECONDS)));
-                                                dataMap.putString("endTime",String.valueOf(dataPoint.getEndTime(TimeUnit.MILLISECONDS)));
+                                                //System.out.println("Bucket : " + dataPoint.getStartTime(TimeUnit.MILLISECONDS)+" Start "+dataPoint.getEndTime(TimeUnit.MILLISECONDS));
+                                                dataMap.putString("startTime", String.valueOf(dataPoint.getStartTime(TimeUnit.MILLISECONDS)));
+                                                dataMap.putString("endTime", String.valueOf(dataPoint.getEndTime(TimeUnit.MILLISECONDS)));
                                                 for (Field field : dataPoint.getDataType().getFields()) {
-                                                    System.out.println(field.getName() + " : " + dataPoint.getValue(field));
+                                                    //System.out.println(field.getName() + " : " + dataPoint.getValue(field));
                                                     dataMap.putString(field.getName(), dataPoint.getValue(field).toString());
                                                 }
                                             }
-                                            result.putMap(bucket.getStartTime(TimeUnit.MILLISECONDS)+"",dataMap);
+                                            result.putMap(bucket.getStartTime(TimeUnit.MILLISECONDS) + "", dataMap);
                                         }
                                     }
                                 }
                             }
-                            System.out.println("====================Passed========================");
                             callback.invoke(result);
                         }
                 )
-                .addOnFailureListener(e -> System.out.println("========================Failed======================="));
+                .addOnFailureListener(e -> {
+                });
     }
 
-    private boolean hasPermissionsForGoogleFitAPIHelper(){
+    private boolean hasPermissionsForGoogleFitAPIHelper() {
         FitnessOptions fitnessOptions = getFitnessOptions();
         GoogleSignInAccount googleSignInAccount = GoogleSignIn.getAccountForExtension(this.getReactApplicationContext(), fitnessOptions);
         return !googleSignInAccount.isExpired();
-        //return GoogleSignIn.hasPermissions(googleSignInAccount, fitnessOptions);
     }
 
     private FitnessOptions getFitnessOptions() {
         FitnessOptions fitnessOptions = FitnessOptions.builder()
-                //.addDataType(DataType.TYPE_ACTIVITY_SEGMENT, FitnessOptions.ACCESS_READ)
-                //.addDataType(DataType.TYPE_CALORIES_EXPENDED, FitnessOptions.ACCESS_READ)
                 .addDataType(DataType.TYPE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
-                //.addDataType(DataType.TYPE_SPEED, FitnessOptions.ACCESS_READ)
-                //.addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-                //.addDataType(DataType.AGGREGATE_ACTIVITY_SUMMARY, FitnessOptions.ACCESS_READ)
-                //.addDataType(DataType.AGGREGATE_CALORIES_EXPENDED, FitnessOptions.ACCESS_READ)
                 .addDataType(DataType.AGGREGATE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ).build();
-                //.addDataType(DataType.AGGREGATE_SPEED_SUMMARY, FitnessOptions.ACCESS_READ)
-                //.addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ).build();
         return fitnessOptions;
     }
 
@@ -218,15 +197,14 @@ public class GoogleFitJavaModule extends ReactContextBaseJavaModule implements A
         if (requestCode == 2001) {
             if (resultCode == Activity.RESULT_OK) {
                 subscribeGoogleFitData();
-                if(this.callback!=null){
+                if (this.callback != null) {
                     this.callback.invoke(true);
-                    this.callback=null;
+                    this.callback = null;
                 }
-            }
-            else{
-                if(this.callback!=null){
+            } else {
+                if (this.callback != null) {
                     this.callback.invoke(false);
-                    this.callback=null;
+                    this.callback = null;
                 }
             }
         }
@@ -234,10 +212,12 @@ public class GoogleFitJavaModule extends ReactContextBaseJavaModule implements A
 
     private void subscribeGoogleFitData() {
         GoogleSignInAccount googleSignInAccount = GoogleSignIn.getAccountForExtension(this.getReactApplicationContext(), getFitnessOptions());
-        Fitness.getRecordingClient(this.getReactApplicationContext(),googleSignInAccount)
+        Fitness.getRecordingClient(this.getReactApplicationContext(), googleSignInAccount)
                 .subscribe(DataType.AGGREGATE_DISTANCE_DELTA)
-                .addOnSuccessListener((response)->{System.out.println("Subscribed Success");})
-                .addOnFailureListener((response)->{System.out.println("Subscribed Failure");});
+                .addOnSuccessListener((response) -> {
+                })
+                .addOnFailureListener((response) -> {
+                });
     }
 
     @Override

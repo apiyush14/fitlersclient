@@ -53,13 +53,13 @@ public class MainActivity extends ReactActivity {
         List<String> permissions = new ArrayList<>();
         /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
-        }*/
+        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
         if (!permissions.isEmpty()) {
             ActivityCompat.requestPermissions(this, permissions.toArray(new String[permissions.size()]), 123);
-        }
+        }*/
     }
 
     @Override
@@ -99,7 +99,6 @@ public class MainActivity extends ReactActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println("========================On Activity Result called in Main Activity==============================");
         getReactInstanceManager().onActivityResult(this,requestCode,resultCode,data);
     }
 }

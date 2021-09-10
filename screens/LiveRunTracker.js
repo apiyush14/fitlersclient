@@ -177,8 +177,8 @@ const LiveRunTrackerScreen = props=>{
   const stopRun = () => {
     if (runDistance > 10) {
 
-      runDetails.runDistance=1000;
-      runDetails.runTotalTime=320000;
+      //runDetails.runDistance=1000;
+      //runDetails.runTotalTime=320000;
 
       updatePaceAndCalories(runDetails.runDistance);
       //DistanceCalculatorModule.createFile(runDetails.runId.toString(), JSON.stringify(accelerationValuesToBeStored));
