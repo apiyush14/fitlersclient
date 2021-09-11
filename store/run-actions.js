@@ -456,18 +456,19 @@ const checkAndDeleteRunsIfNeeded = () => {
   };
 };
 
-//Private Method to Check whether current run is eligible for Event Submission based on Event Metric Value
-const validateIfRunEligibleForEventSubmission = (runDetails) => {
+//Public Method to Check whether current run is eligible for Event Submission based on Event Metric Value
+export const validateIfRunEligibleForEventSubmission = (runDetails) => {
   return async dispatch => {
     try {
       return fetchEventDetailsBasedOnEventId(runDetails.eventId).then((response) => {
-        var currentTime = new Date().getTime();
-        var eventEndDateTime = new Date(response.rows._array[0].EVENT_END_DATE);
+        var runStartTime = new Date(runDetails.runStartDateTime).getTime();
+        var eventStartDateTime = new Date(response.rows._array[0].EVENT_START_DATE).getTime();
+        var eventEndDateTime = new Date(response.rows._array[0].EVENT_END_DATE).getTime();
         var eventMetricValue = response.rows._array[0].EVENT_METRIC_VALUE;
 
         if (parseFloat(runDetails.runDistance / 1000) < parseFloat(eventMetricValue)) {
           return new Response(StatusCodes.DISTANCE_NOT_ELIGIBLE, null);
-        } else if (currentTime > eventEndDateTime) {
+        } else if (runStartTime > eventEndDateTime || runStartTime < eventStartDateTime) {
           return new Response(StatusCodes.TIME_NOT_ELIGIBLE, null);
         }
         return new Response(StatusCodes.OK, null);
@@ -477,4 +478,17 @@ const validateIfRunEligibleForEventSubmission = (runDetails) => {
       return new Response(StatusCodes.INTERNAL_SERVER_ERROR, null);
     }
   };
+};
+//Public Method to check is Phone is connected to Internet
+export const isConnectedToNetwork = () => {
+  return async dispatch => {
+    var networkStatus = await NetInfo.fetch().then(state => {
+      if (!state.isConnected) {
+        return new Response(StatusCodes.NO_INTERNET, null);
+      } else {
+        return new Response(StatusCodes.OK, null);
+      }
+    });
+    return networkStatus;
+  }
 };

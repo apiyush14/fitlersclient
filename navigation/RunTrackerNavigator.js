@@ -11,6 +11,7 @@ import RunDetailsScreen from '../screens/RunDetailsScreen';
 import RunHistoryScreen from '../screens/RunHistoryScreen';
 import LogInScreen from '../screens/LogInScreen';
 import FeedbackScreen from '../screens/FeedbackScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import LogOutScreen from '../screens/LogOutScreen';
 import SplashScreen from '../screens/SplashScreen';
 import TermsAndConditions from '../screens/TermsAndConditions';
@@ -36,13 +37,14 @@ const RunTrackerNavigator=()=>{
     }}>
     <drawerNavigator.Screen name="Home" component={RunTrackerStackNavigator}/>
     <drawerNavigator.Screen name="Profile" component={UserProfileScreen}/>
+    <drawerNavigator.Screen name="Settings" component={SettingsScreen}/>
     <drawerNavigator.Screen name="Terms & Conditions" component={TermsAndConditions}/>
     <drawerNavigator.Screen name="Privacy" component={Privacy}/>
     <drawerNavigator.Screen name="Feedback" component={FeedbackScreen}/>
     <drawerNavigator.Screen name="LogOut" component={LogOutScreen}
     listeners={({ navigation }) => ({
         state: (e) => {
-        if (e.data.state.index === 5) {
+        if (e.data.state.index === 6) {
           dispatch(userActions.cleanUserDataStateAndDB());
         }
         }
