@@ -307,6 +307,7 @@ return(
         style={{width: 300, height: 80}}
         min={props.runStartTime}
         max={props.runEndTime}
+        minRange={300000}
         step={300000}
         floatingLabel={true}
         allowLabelOverflow={false}

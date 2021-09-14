@@ -329,7 +329,7 @@ const RunTrackerHomeScreen = (props) => {
             const caloriesBurnt = parseInt((averagePaceKmPerHour * 3.5 * parseInt(userDetails.userWeight)) / 200) * lapsedTimeinMinutes;
             var eventId = ongoingEventDetails !== null ? ongoingEventDetails.eventId : 0;
 
-            if (averagePace < 500) {
+            if ((lapsedTimeinMinutes<=5 && distance>=1000) || (lapsedTimeinMinutes>5 && averagePace<=20)) {
               var runDetails = new RunDetails(startTime, runTotalTime, distance, averagePace, caloriesBurnt, 0, runDateFromTime.toJSON(), runDate, runDay, [], "", eventId, "0");
               if (runDetails.eventId > 0) {
                 var validationResponse = await dispatch(runActions.validateIfRunEligibleForEventSubmission(runDetails));
@@ -428,6 +428,7 @@ return (
   <SettingsScreen
    onClose={onCloseGoogleFitModal}/>):(
   runHistory.length>0?(
+  <React.Fragment>
    <View style={styles.runHistoryContainerStyle}>
     <GoogleFitRunsList
      listData={runHistory}
@@ -435,18 +436,22 @@ return (
      onSelectRunItem={()=>{}}
      onSubmitRun={onSubmitGoogleFitRun}
      />
-     <RoundButton 
+   </View>
+   <RoundButton 
             title="Close" 
             style={styles.closeButtonStyle} 
             onPress={onCloseGoogleFitModal}/>
-   </View>):(
+    </React.Fragment>
+   ):(
+   <React.Fragment>
      <View style={styles.runHistoryContainerStyle}>
       <Text style={styles.defaultTextStyle}>No Eligible Runs</Text>
-      <RoundButton 
+     </View>
+   <RoundButton 
             title="Close" 
             style={styles.closeButtonStyle} 
             onPress={onCloseGoogleFitModal}/>
-     </View>
+    </React.Fragment>
    )
    )}
   </Modal>
@@ -530,7 +535,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     flexDirection: 'column',
-    marginTop: '2%'
+    marginTop: '2%',
   },
 
   closeButtonStyle: {
@@ -541,7 +546,6 @@ const styles = StyleSheet.create({
       backgroundColor: 'black',
       opacity: 0.7,
       bottom: '2%',
-      position: 'absolute'
     },
   defaultTextStyle: {
     fontSize: moderateScale(15, 0.5),
