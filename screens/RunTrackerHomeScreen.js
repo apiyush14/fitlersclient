@@ -11,6 +11,7 @@ import * as eventActions from '../store/event-actions';
 import StatusCodes from "../utils/StatusCodes.json";
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import {Ionicons} from '@expo/vector-icons';
+import configData from "../config/config.json";
 
 import ChallengeList from '../components/ChallengeList';
 import EventView from '../components/EventView';
@@ -398,7 +399,7 @@ return (
     <View style={styles.mapContainerStyle}>
     {!isOfflineMode?(
     <ImageBackground
-      source={{uri:"http://192.168.1.66:7001/event-details/getDisplayImage/"+ongoingEventDetails.eventId+"?imageType=DISPLAY"}}
+      source={{uri:configData.SERVER_URL+"event-details/getDisplayImage/"+ongoingEventDetails.eventId+"?imageType=DISPLAY"}}
       style={styles.bgImageStyle}>
     </ImageBackground>):(
     <ImageBackground
