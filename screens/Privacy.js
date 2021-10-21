@@ -8,7 +8,7 @@ const Privacy = props => {
 	return ( 
 	 <View style={styles.privacyContainerStyle}>
 	  <ScrollView style={styles.privacyScrollViewStyle}>
-          <Text style={styles.smallTextStyle}>Last Updated on: April 29, 2021</Text>
+          <Text style={styles.smallTextStyle}>Last Updated on: September 5, 2021</Text>
         <Text style={styles.largeTextStyle}>PRIVACY POLICY</Text>
          <Text style={styles.smallTextStyle}>
 This document is an electronic record in terms of Information Technology Act, 2000 and rules made thereunder and the same may be amended from time to time. Being a system generated electronic record, it does not require any physical or digital signature. Our Privacy Policy explains how we collect, use, disclose, and protect your information when you use our mobile application. Please read this Privacy Policy carefully. By accepting this Privacy Policy You are representing that you are eighteen (18) years of age or above. In case you are under the age of eighteen (18) years, then you are requested to not share any Sensitive Personal Information or Personal Information with us without having your Parents to accept this Privacy Policy on your behalf. IF YOU DO NOT AGREE WITH THE TERMS OF THIS PRIVACY POLICY, PLEASE DO NOT ACCESS THE APPLICATION.
@@ -40,6 +40,9 @@ We use Accelerometer and Pedometer sensors to track the activity and to calculat
 <Text style={styles.smallTextStyle}>
 We neither knowingly collect any information nor promote our Platform to any minor under the age of 18 (eighteen) years. If you are less than 18 (eighteen) years old or a minor in any other jurisdiction from where you access our Platform, we request that you do not submit information to us. If we become aware that a minor has registered with us and provided us with personal information, we may take steps to terminate such person’s registration and delete their account with us.
  </Text>
+  <Text style={styles.mediumTextStyle}>GOOGLE FIT DATA</Text>
+    <Text style={styles.smallTextStyle}>Our application provides integration to the Google Fit. Once you provide in application access to integrate to your Google Fit account, the application can access data related to the distance and aggregate distance from Google Fit account. We do not access any other data except those mentioned here. We don't share the data related to Google Fit Integration with any third party.
+    </Text>
         <Text style={styles.mediumTextStyle}>USE OF YOUR INFORMATION</Text>
          <Text style={styles.smallTextStyle}>
          Having accurate information about you permit us to provide you with a smooth, efficient, and customized experience. We use the collected information for below purposes

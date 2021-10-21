@@ -15,6 +15,7 @@
     "@react-navigation/drawer": "^5.9.0",
     "@react-navigation/native": "^5.7.3",
     "@react-navigation/stack": "^5.9.0",
+    "axios": "^0.23.0",
     "expo": "^41.0.0",
     "expo-crypto": "~9.1.0",
     "expo-linear-gradient": "~9.1.0",

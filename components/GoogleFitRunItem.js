@@ -42,6 +42,7 @@ const userDetails = useSelector(state => state.userDetails);
     setRunTotalTime(props.runTotalTime);
     setRunDistance(props.runDistance);
     setRunPace(props.runPace);
+    setRunCaloriesBurnt(props.runCaloriesBurnt);
 
     setRunStartTimestamp(formatLongDateTimeToString(props.runStartTime));
     setRunEndTimestamp(formatLongDateTimeToString(props.runEndTime));
