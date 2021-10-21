@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View,StyleSheet,Text,TouchableOpacity,Alert} from 'react-native';
+import {View,StyleSheet,Text,TouchableOpacity,Alert,Image} from 'react-native';
 import { scale, moderateScale, verticalScale} from '../utils/Utils';
 import RoundButton from '../components/RoundButton';
 import {NativeModules,NativeEventEmitter} from 'react-native';
@@ -71,23 +71,22 @@ const SettingsScreen = props => {
       {!isGoogleFitConnected?(
         <View style = {styles.buttonsViewContainerStyle}>
          <TouchableOpacity 
-         style={{...styles.buttonStyle,...{backgroundColor: 'black'}}} 
+         style={styles.buttonStyle} 
          onPress={onClickConnect} disabled={false}>
-          <Text style={styles.buttonTitleStyle}>Connect</Text>
-         </TouchableOpacity>
-         <TouchableOpacity style={{...styles.buttonStyle,...{backgroundColor: 'grey'}}} onPress={()=>{}} disabled={true}>
-          <Text style={styles.buttonTitleStyle}>Disconnected</Text>
+         <View style={styles.imageViewContainerStyle}>
+          <Image 
+           source={require('../assets/images/btn_google_signin_new.png')} 
+           style={styles.bgButtonImageStyle}>
+           </Image>
+          </View>
          </TouchableOpacity>
         </View>
          ):(
-        <View style = {styles.buttonsViewContainerStyle}>
+        <View style = {{...styles.buttonsViewContainerStyle, ...{backgroundColor: 'royalblue'}}}>
          <TouchableOpacity 
-         style={{...styles.buttonStyle,...{backgroundColor: 'green'}}} 
-         onPress={onClickConnect} disabled={true}>
-          <Text style={styles.buttonTitleStyle}>Connected</Text>
-         </TouchableOpacity>
-         <TouchableOpacity style={styles.buttonStyle} onPress={onClickDisconnect} disabled={false}>
-          <Text style={styles.buttonTitleStyle}>Disconnect</Text>
+         style={styles.buttonStyle} 
+         onPress={onClickDisconnect} disabled={false}>
+          <Text style={styles.buttonTitleStyle}>Sign Out</Text>
          </TouchableOpacity>
         </View>
          )}
@@ -116,13 +115,13 @@ const styles = StyleSheet.create({
   settingsCardStyle: {
      marginTop: '10%',
      marginBottom: '1%',
-     backgroundColor: 'lightgrey',
+     backgroundColor: 'white',
      height: verticalScale(150),
      width: '100%',
      alignItems: 'center',
      alignSelf: 'center',
-     borderBottomColor: 'darkgrey',
-     borderBottomWidth: 2
+     borderColor: 'darkgrey',
+     borderWidth: 2
   },
   labelViewStyle: {
   },
@@ -135,23 +134,34 @@ const styles = StyleSheet.create({
   buttonsViewContainerStyle: {
     bottom: 2,
     position: 'absolute',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    width: '60%'
   },
   buttonStyle: {
-    backgroundColor: 'black',
-    width: verticalScale(100),
-    height: verticalScale(40),
-    borderRadius: 10,
+    width: '100%',
+    height: verticalScale(50),
     opacity: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 0.5,
-    marginHorizontal: '2%'
+    alignSelf: 'center',
+    flex: 1,
   },
   buttonTitleStyle: {
     color: 'white',
-    fontSize: moderateScale(15, 0.8),
+    fontSize: moderateScale(13, 0.8),
     fontFamily: 'open-sans',
+  },
+  imageViewContainerStyle: {
+    height: '100%',
+    width: '100%',
+  },
+  bgButtonImageStyle: {
+    width: '100%',
+    height: '100%',
+    overflow:'hidden',
+    resizeMode: 'contain'
   },
 
   closeButtonStyle: {

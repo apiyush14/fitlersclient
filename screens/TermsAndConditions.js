@@ -8,7 +8,7 @@ const TermsAndConditions = props => {
 	return ( 
 	 <View style={styles.termsAndConditionsContainerStyle}>
 	  <ScrollView style={styles.termsAndConditionsScrollViewStyle}>
-          <Text style={styles.smallTextStyle}>Last Updated on: May 5, 2021</Text>
+          <Text style={styles.smallTextStyle}>Last Updated on: September 5, 2021</Text>
         <Text style={styles.largeTextStyle}>TERMS & CONDITIONS (T&C)</Text>
          <Text style={styles.smallTextStyle}>This document is an electronic record that constitute a legally binding agreement made between you, whether personally or on behalf of an entity (“you”) and Fitlers (“we,” “us” or “our”), concerning your access to and use of the application. You agree that by accessing our application, you have read, understood, and agree to be bound by all of these Terms and Conditions. If you do not agree with all of the Terms & Conditions, then you are expressly prohibited from using our application. By using the application, you have indicated to us that you have read, acknowledged and understood as well as fully agreed, to be bound by these App Terms and Conditions and Privacy Policy. By accepting this Privacy Policy you are representing that you are eighteen (18) years of age or above. In case you are under the age of eighteen (18) years, then you are requested to not share any Sensitive Personal Information or Personal Information with us by using the application.
          </Text>
@@ -57,6 +57,9 @@ const TermsAndConditions = props => {
 </Text>
          <Text style={styles.smallTextStyle}>By using the App, you hereby permit us to use the information you provide us, including your experiences to facilitate us to improve the App and its functionality as well as for promotional purposes, including the permission to share your non-personal information to use for research and analytical purposes.
          </Text>
+        <Text style={styles.mediumTextStyle}>GOOGLE FIT DATA</Text>
+      <Text style={styles.smallTextStyle}>Our application provides integration to the Google Fit. Once you provide in application access to integrate to your Google Fit account, the application can access data related to the distance and aggregate distance from Google Fit account. We do not access any other data except those mentioned here. We don't share the data related to Google Fit Integration with any third party.
+      </Text>
         <Text style={styles.mediumTextStyle}>CHANGES TO THE APP</Text>
          <Text style={styles.smallTextStyle}>We reserve the right, in our sole discretion, at any time to modify or discontinue, temporarily or permanently, the App with or without notice. You agree that we shall not be liable to you or for any changes, suspension or termination of the App.It is your responsibility to periodically review these Terms and Conditions. You will be subject to have been made aware of and to have accepted, the changes in any revised Terms and Conditions by your continued use of the application after the Last Updated date.
          </Text>

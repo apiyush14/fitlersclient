@@ -53,6 +53,9 @@ const RunTrackerHomeScreen = (props) => {
   const [isGoogleFitConnected, setIsGoogleFitConnected] = useState(false);
   const [runHistory, setRunHistory]=useState([]);
 
+  //SnackBar
+  const [isSnackBarVisible, setIsSnackBarVisible] = useState(false);
+
   var weekday = new Array(7);
   weekday[0] = "Sunday";
   weekday[1] = "Monday";
@@ -137,6 +140,7 @@ const RunTrackerHomeScreen = (props) => {
         if (currentTime >= eventStartDateTime.getTime() &&
           currentTime < eventEndDateTime.getTime()) {
           setOngoingEventDetails(event);
+          setIsSnackBarVisible(true);
           NetInfo.fetch().then(state=>setIsOfflineMode(!state.isConnected));
         }
       });
@@ -280,10 +284,9 @@ const RunTrackerHomeScreen = (props) => {
 
   //Trigger Action to Close the modal once Google Run is submitted from within the modal
   const onSubmitGoogleFitRun = (runId) => {
-    var runIndex = runHistory.findIndex(run => run.runId.toString() === runId.toString());
-    if (runIndex > -1) {
-      runHistory.splice(runIndex, 1);
-    }
+    setRunHistory((runsHistory)=>{
+         return runsHistory.filter((run) => run.runId.toString()!==runId.toString());
+      });
     if (ongoingEventDetails != null) {
       onCloseGoogleFitModal();
     }
@@ -330,7 +333,7 @@ const RunTrackerHomeScreen = (props) => {
             const caloriesBurnt = parseInt((averagePaceKmPerHour * 3.5 * parseInt(userDetails.userWeight)) / 200) * lapsedTimeinMinutes;
             var eventId = ongoingEventDetails !== null ? ongoingEventDetails.eventId : 0;
 
-            if ((lapsedTimeinMinutes<=5 && distance>=1000) || (lapsedTimeinMinutes>5 && averagePace<=20)) {
+            //if ((lapsedTimeinMinutes<=5 && distance>=1000) || (lapsedTimeinMinutes>5 && averagePace<=20)) {
               var runDetails = new RunDetails(startTime, runTotalTime, distance, averagePace, caloriesBurnt, 0, runDateFromTime.toJSON(), runDate, runDay, [], "", eventId, "0");
               if (runDetails.eventId > 0) {
                 var validationResponse = await dispatch(runActions.validateIfRunEligibleForEventSubmission(runDetails));
@@ -340,7 +343,7 @@ const RunTrackerHomeScreen = (props) => {
               } else {
                 runHistory.push(runDetails);
               }
-            }
+            //}
           }
         }
         if (runHistory.length > 0) {
@@ -466,6 +469,20 @@ return (
   onClickEventItem={onClickEventItem}/>
   </View>):(<View></View>)}
 
+  {isSnackBarVisible?(
+  <View style={styles.snackBarViewContainerStyle}>
+   <View style={styles.snackBarTextContainerStyle}>
+    <Text style={{...styles.buttonTitleStyle,...{fontSize: moderateScale(13, 0.8)}}}>
+    You have an ongoing event. Press Go/Upload to Start/Upload the Event Run
+    </Text>
+   </View>
+   <View styles={styles.snackBarButtonContainerStyle}>
+    <TouchableOpacity style={styles.buttonSnackBarStyle} onPress={()=>setIsSnackBarVisible(false)}>
+     <Text style={{...styles.buttonTitleStyle,...{fontSize: moderateScale(15, 0.8),color:'aqua'}}}>Close</Text>
+    </TouchableOpacity>
+   </View>
+  </View>):(<View></View>)}
+
   {/* Commented for now as Challenge is out of scope for now
   <Animated.View style={[styles.subView,{transform: [{translateY:bounceValue}]}]}>
   <Button title="Challenge" onPress={()=>{toggleSubView()}}/>
@@ -500,14 +517,14 @@ const styles = StyleSheet.create({
 
   runButtonStyle: {
     position: 'absolute',
-    top: '65%',
+    top: '60%',
     alignSelf: 'center',
     opacity: 0.9
   },
 
   uploadViewStyle: {
     position: 'absolute',
-    top: '85%',
+    top: '80%',
     alignSelf: 'center',
     opacity: 0.9
   },
@@ -524,6 +541,29 @@ const styles = StyleSheet.create({
   challengeListStyle: {
     position: 'absolute',
     top: '2%'
+  },
+
+  snackBarViewContainerStyle: {
+    width: '100%',
+    height: verticalScale(50),
+    position: 'absolute',
+    backgroundColor: 'black',
+    opacity: 0.7,
+    bottom: 1,
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  snackBarTextContainerStyle: {
+    width: '80%',
+    marginLeft: '2%'
+  },
+  snackBarButtonContainerStyle:{
+    width: '15%',
+  },
+  buttonSnackBarStyle: {
+    width: verticalScale(200),
+    height: verticalScale(50),
+    top: '30%'
   },
 
   buttonTitleStyle: {
